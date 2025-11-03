@@ -36,9 +36,9 @@ export default async function RootLayout({
             <body className={`${manrope.className} dark:bg-foreground text-font-primary dark:text-background antialiased`}>
                 <NextIntlClientProvider>
                     <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
-                        {/* <Navbar /> */}
+                        <Navbar />
                         {children}
-                        {/* <FooterSection /> */}
+                        <FooterSection />
                     </ThemeProvider>
                 </NextIntlClientProvider>
             </body>
