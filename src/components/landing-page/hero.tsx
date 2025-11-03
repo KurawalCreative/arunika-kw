@@ -34,7 +34,7 @@ const HeroSection = () => {
         <motion.div style={{ y: mapY }} className='absolute inset-0 bottom-40 pointer-events-none'>
           <div className='relative w-full h-full md:h-screen overflow-hidden'>
             <Image src={map} alt='map' draggable={false} loading='eager' fill className='object-contain md:object-contain object-top select-none' priority />
-            
+
             {/* Pin map */}
             <PinMapDesign src={pinmap1} className='left-[16%] bottom-[56%]' />
             <PinMapDesign src={pinmap2} className='left-[34.5%] bottom-[35%]' />
