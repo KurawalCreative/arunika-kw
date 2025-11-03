@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
@@ -15,10 +9,66 @@ datasource db {
 }
 
 model Post {
-  id    String @id @default(auto()) @map("_id") @db.ObjectId
-  slug  String @unique
-  title String
-  body  String
+  id        String      @id @default(auto()) @map("_id") @db.ObjectId
+  content   String
+  images    PostImage[]
+  authorId  String
+  author    User        @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  likes     Like[]
+  comments  Comment[]
+  tags      PostTag[]
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  @@map("posts")
+}
+
+enum Status {
+  pending
+  success
+}
+
+model PostImage {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  url       String
+  postId    String   @db.ObjectId
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  status    Status   @default(pending)
+  createdAt DateTime @default(now())
+
+  @@map("post_images")
+}
+
+model Comment {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  content      String
+  authorId     String
+  postId       String?  @db.ObjectId
+  targetUserId String?
+  author       User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  post         Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  targetUser   User?    @relation("UserComments", fields: [targetUserId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("comments")
+}
+
+model Like {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String
+  postId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, postId])
+  @@map("likes")
+}
+
+enum Role {
+  admin
+  user
 }
 
 model User {
@@ -27,10 +77,19 @@ model User {
   email         String
   emailVerified Boolean   @default(false)
   image         String?
+  role          Role      @default(user)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @default(now()) @updatedAt
   sessions      Session[]
   accounts      Account[]
+  Post          Post[]
+  Comment       Comment[]
+  Like          Like[]
+  followers     Follow[]  @relation("followers")
+  following     Follow[]  @relation("following")
+
+  // relasi tambahan: komentar yang ditujukan ke user ini
+  receivedComments Comment[] @relation("UserComments")
 
   @@unique([email])
   @@map("user")
@@ -65,7 +124,7 @@ model Account {
   scope                 String?
   password              String?
   createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
+  updatedAt             DateTime  @default(now()) @updatedAt
 
   @@map("account")
 }
@@ -79,4 +138,38 @@ model Verification {
   updatedAt  DateTime @default(now()) @updatedAt
 
   @@map("verification")
+}
+
+model Tag {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  name      String    @unique
+  posts     PostTag[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
+
+  @@map("tags")
+}
+
+model PostTag {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  postId    String   @db.ObjectId
+  tagId     String   @db.ObjectId
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  tag       Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([postId, tagId])
+  @@map("post_tags")
+}
+
+model Follow {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  followerId  String
+  followingId String
+  follower    User     @relation("following", fields: [followerId], references: [id], onDelete: Cascade)
+  following   User     @relation("followers", fields: [followingId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+
+  @@unique([followerId, followingId])
+  @@map("follows")
 }
