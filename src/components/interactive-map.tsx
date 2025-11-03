@@ -1,9 +1,11 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import maplibregl, { Map, Popup } from 'maplibre-gl'
+import maplibregl, { Map, Popup, StyleSpecification } from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import { ZoomIn, ZoomOut, Maximize2 } from 'lucide-react'
+import { FeatureCollection } from 'geojson';
+
 import indonesia from '@/assets/coordinates/id.json'
 
 const InteractiveMap = () => {
@@ -19,7 +21,7 @@ const InteractiveMap = () => {
       [150, 20],
     ]
 
-    const baseStyle = {
+    const baseStyle: StyleSpecification = {
       version: 8,
       name: 'Enhanced Indonesia Map',
       sources: {
@@ -85,7 +87,10 @@ const InteractiveMap = () => {
           color: getColor(f.properties.NAME_1 || f.properties.name || 'Tanpa Nama'),
         },
       }))
-      const coloredData = { ...indonesia, features }
+      const coloredData: FeatureCollection = {
+        type: 'FeatureCollection',  // literal string
+        features: features,         // array GeoJSON Feature
+      };
 
       map.addSource('indonesia', { type: 'geojson', data: coloredData })
 
