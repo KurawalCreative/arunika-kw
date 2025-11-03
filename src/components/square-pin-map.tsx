@@ -16,7 +16,7 @@ const SquarePinMap = ({ src, className }: SquarePinMapProps) => {
         >
           {/* Pin dengan pinggiran tipis dan ujung sedikit membulat */}
           <path
-            d="M20 10
+            d={`M20 10
                L120 10
                Q130 10, 130 20
                L130 120
@@ -26,7 +26,7 @@ const SquarePinMap = ({ src, className }: SquarePinMapProps) => {
                L20 130
                Q10 130, 10 120
                L10 20
-               Q10 10, 20 10Z"
+               Q10 10, 20 10Z`.trim()}
             fill="white"
             stroke="white"
             strokeWidth="1.2"

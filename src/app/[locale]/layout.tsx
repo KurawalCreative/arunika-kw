@@ -6,6 +6,8 @@ import "../globals.css";
 
 import { routing } from "@/i18n/routing";
 import { ThemeProvider } from "@/components/theme-provider";
+import FooterSection from "@/components/footer";
+import Navbar from "@/components/navbar";
 
 const manrope = Manrope({
     subsets: ["latin"],
@@ -34,7 +36,9 @@ export default async function RootLayout({
             <body className={`${manrope.className} antialiased dark:bg-foreground text-font-primary dark:text-background`}>
                 <NextIntlClientProvider>
                     <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
+                        <Navbar />
                         {children}
+                        <FooterSection />
                     </ThemeProvider>
                 </NextIntlClientProvider>
             </body>
