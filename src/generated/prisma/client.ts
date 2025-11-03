@@ -49,6 +49,21 @@ path.join(process.cwd(), "src/generated/prisma/query_engine-windows.dll.node")
  */
 export type Post = Prisma.PostModel
 /**
+ * Model PostImage
+ * 
+ */
+export type PostImage = Prisma.PostImageModel
+/**
+ * Model Comment
+ * 
+ */
+export type Comment = Prisma.CommentModel
+/**
+ * Model Like
+ * 
+ */
+export type Like = Prisma.LikeModel
+/**
  * Model User
  * 
  */
@@ -68,3 +83,18 @@ export type Account = Prisma.AccountModel
  * 
  */
 export type Verification = Prisma.VerificationModel
+/**
+ * Model Tag
+ * 
+ */
+export type Tag = Prisma.TagModel
+/**
+ * Model PostTag
+ * 
+ */
+export type PostTag = Prisma.PostTagModel
+/**
+ * Model Follow
+ * 
+ */
+export type Follow = Prisma.FollowModel
