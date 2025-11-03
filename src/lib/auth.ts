@@ -5,12 +5,6 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 const prisma = new PrismaClient();
 
 export const auth = betterAuth({
-    session: {
-        cookieCache: {
-            enabled: true,
-            maxAge: 5 * 60 * 3600,
-        },
-    },
     database: prismaAdapter(prisma, {
         provider: "mongodb",
     }),

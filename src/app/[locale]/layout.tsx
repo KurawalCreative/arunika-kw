@@ -33,12 +33,12 @@ export default async function RootLayout({
 
     return (
         <html lang={locale} suppressHydrationWarning>
-            <body className={`${manrope.className} antialiased dark:bg-foreground text-font-primary dark:text-background`}>
+            <body className={`${manrope.className} dark:bg-foreground text-font-primary dark:text-background antialiased`}>
                 <NextIntlClientProvider>
                     <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
-                        <Navbar />
+                        {/* <Navbar /> */}
                         {children}
-                        <FooterSection />
+                        {/* <FooterSection /> */}
                     </ThemeProvider>
                 </NextIntlClientProvider>
             </body>

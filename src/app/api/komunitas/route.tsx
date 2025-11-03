@@ -1,40 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import { PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
+import { DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { headers } from "next/headers";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import s3 from "@/lib/s3";
 
 export async function GET(req: NextRequest) {
     try {
         const { searchParams } = new URL(req.url);
-        const fileName = searchParams.get("fileName");
-        const fileType = searchParams.get("fileType");
+        const search = searchParams.get("search") || "";
+        const page = parseInt(searchParams.get("page") || "1");
+        const limit = parseInt(searchParams.get("limit") || "10");
+        const skip = (page - 1) * limit;
 
-        const isWantUrl = searchParams.get("mode") === "url";
-
-        if (isWantUrl) {
-            if (!fileType || !fileName) {
-                return NextResponse.json({ error: "fileName dan fileType wajib ada" }, { status: 400 });
-            }
-
-            const ext = fileName.includes(".") ? fileName.split(".").pop() : "";
-            const randomName = Math.random().toString(36).substring(2, 10);
-            const key = ext ? `posts/${Date.now()}-${randomName}.${ext}` : `posts/${Date.now()}-${randomName}`;
-
-            const command = new PutObjectCommand({
-                Bucket: process.env.S3_BUCKET!,
-                Key: key,
-                ContentType: fileType,
-            });
-
-            const uploadUrl = await getSignedUrl(s3, command, { expiresIn: 300 });
-
-            return NextResponse.json({ uploadUrl, fileUrl: `${process.env.NEXT_PUBLIC_S3_PUBLIC_URL!}/${key}` });
+        const where: any = {};
+        if (search) {
+            where.OR = [{ content: { contains: search, mode: "insensitive" } }, { author: { name: { contains: search, mode: "insensitive" } } }, { tags: { some: { tag: { name: { contains: search, mode: "insensitive" } } } } }];
         }
 
         const posts = await prisma.post.findMany({
+            where,
             include: {
                 author: true,
                 likes: {
@@ -45,24 +30,45 @@ export async function GET(req: NextRequest) {
                 comments: {
                     include: {
                         author: true,
+                        targetUser: true,
+                        replies: {
+                            include: {
+                                author: true,
+                                targetUser: true,
+                                replies: {
+                                    include: {
+                                        author: true,
+                                        targetUser: true,
+                                        replies: true,
+                                    },
+                                    orderBy: { createdAt: "asc" },
+                                },
+                            },
+                            orderBy: { createdAt: "asc" },
+                        },
                     },
+                    where: { parentId: null },
                     orderBy: { createdAt: "desc" },
                 },
                 tags: { include: { tag: true } },
                 images: true,
             },
             orderBy: { createdAt: "desc" },
+            skip,
+            take: limit,
         });
 
+        const total = await prisma.post.count({ where });
+
         const res = posts.map((v) => ({
-            ...v, //
+            ...v,
             images: v.images.map((x) => ({
-                ...x, //
+                ...x,
                 url: process.env.NEXT_PUBLIC_S3_PUBLIC_URL! + "/" + x.url,
             })),
         }));
 
-        return NextResponse.json(res);
+        return NextResponse.json({ posts: res, hasMore: skip + posts.length < total });
     } catch (e) {
         console.log(e);
         return NextResponse.json({ error: "error" }, { status: 500 });
@@ -252,4 +258,42 @@ export async function PATCH(req: NextRequest) {
     });
 
     return NextResponse.json({ success: true, post: updatedPost });
+}
+
+export async function PUT(req: NextRequest) {
+    // Cleanup orphaned images (pending status > 30 minutes)
+    try {
+        const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000);
+
+        const orphanedImages = await prisma.postImage.findMany({
+            where: {
+                status: "pending",
+                createdAt: { lt: thirtyMinutesAgo },
+            },
+        });
+
+        let deletedCount = 0;
+        for (const img of orphanedImages) {
+            try {
+                // Delete from S3
+                const key = img.url;
+                await s3.send(
+                    new DeleteObjectCommand({
+                        Bucket: process.env.S3_BUCKET!,
+                        Key: key,
+                    }),
+                );
+                // Delete from DB
+                await prisma.postImage.delete({ where: { id: img.id } });
+                deletedCount++;
+            } catch (error) {
+                console.error("Error deleting orphaned image:", error);
+            }
+        }
+
+        return NextResponse.json({ success: true, deletedCount });
+    } catch (error) {
+        console.error("Cleanup error:", error);
+        return NextResponse.json({ error: "Cleanup failed" }, { status: 500 });
+    }
 }
