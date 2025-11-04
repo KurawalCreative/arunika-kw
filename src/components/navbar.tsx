@@ -143,7 +143,7 @@ export default function NavbarArunika() {
                                 </Link>
                             </li>
                             <li>
-                                <Link href="#" className="transition hover:text-orange-500">
+                                <Link href={"/jelajahi-nusantara"} className="transition hover:text-orange-500">
                                     Peta Budaya
                                 </Link>
                             </li>
