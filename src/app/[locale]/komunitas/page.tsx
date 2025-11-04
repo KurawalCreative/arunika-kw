@@ -90,6 +90,18 @@ export default function HomePage() {
         }
     }, [searchParams]);
 
+    useEffect(() => {
+        const fetchTags = async () => {
+            try {
+                const tagsRes = await axios.get("/api/tags/popular");
+                setPopularTags(tagsRes.data.tags);
+            } catch (err) {
+                console.error("Failed to fetch tags:", err);
+            }
+        };
+        fetchTags();
+    }, []);
+
     const [posts, setPosts] = useState<Post[]>([]);
     const [loading, setLoading] = useState(true);
     const [open, setOpen] = useState(false);
@@ -107,6 +119,8 @@ export default function HomePage() {
     const [togglingLikes, setTogglingLikes] = useState<Record<string, boolean>>({});
     const [selectedPostForComments, setSelectedPostForComments] = useState<Post | null>(null);
     const [eventSource, setEventSource] = useState<EventSource | null>(null);
+    const [popularTags, setPopularTags] = useState<{ name: string; count: number }[]>([]);
+    const [selectedTag, setSelectedTag] = useState<string>("");
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
     const [searchTerm, setSearchTerm] = useState("");
     const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
@@ -220,6 +234,7 @@ export default function HomePage() {
                 page: pageNum.toString(),
                 limit: "10",
                 ...(debouncedSearchTerm && { search: debouncedSearchTerm }),
+                ...(selectedTag && { tag: selectedTag }),
             });
             const res = await axios.get<{ posts: Post[]; hasMore: boolean }>(`/api/komunitas?${params}`, {
                 signal: abortControllerRef.current.signal,
@@ -252,7 +267,7 @@ export default function HomePage() {
         if (!session) return;
         setPage(1);
         fetchPosts(1, false);
-    }, [debouncedSearchTerm]);
+    }, [debouncedSearchTerm, selectedTag]);
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -385,6 +400,15 @@ export default function HomePage() {
         }
     };
 
+    const handleTagSelect = (tagName: string) => {
+        if (selectedTag === tagName) {
+            setSelectedTag("");
+        } else {
+            setSelectedTag(tagName);
+        }
+        setPage(1);
+    };
+
     const handleAddTag = () => {
         if (tagInput.trim()) {
             setNewPost({ ...newPost, tags: [...newPost.tags, tagInput.trim()] });
@@ -404,7 +428,7 @@ export default function HomePage() {
 
     if (!session) {
         return (
-            <div className="flex h-[80vh] flex-col items-center justify-center text-center">
+            <div className="flex h-[60vh] flex-col items-center justify-center text-center">
                 <LogIn className="mb-4 h-12 w-12 text-gray-500" />
                 <h2 className="mb-2 text-2xl font-semibold">Kamu belum login</h2>
                 <p className="mb-4 text-gray-600 dark:text-gray-400">Silakan login menggunakan akun Google untuk melanjutkan.</p>
@@ -413,7 +437,8 @@ export default function HomePage() {
                     onClick={() =>
                         authClient.signIn.social({
                             provider: "google",
-                            callbackURL: "/komunitas",
+                            callbackURL: "/",
+                            disableRedirect: false,
                         })
                     }
                 >
@@ -428,8 +453,6 @@ export default function HomePage() {
         <div className="space-y-6">
             {/* Header */}
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <h2 className="text-2xl font-semibold">Beranda</h2>
-
                 {/* Search */}
                 <div className="relative max-w-md flex-1">
                     <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
@@ -490,12 +513,24 @@ export default function HomePage() {
                     </DialogContent>
                 </Dialog>
             </div>
+            {/* Filter Tags */}
+            <div className="flex flex-wrap items-center gap-2">
+                <span className="text-font-secondary text-sm font-medium dark:text-gray-300">Filter:</span>
+                <Button variant={selectedTag === "" ? "default" : "outline"} size="sm" onClick={() => handleTagSelect("")} className="h-8">
+                    Semua
+                </Button>
+                {popularTags.slice(0, 8).map((tag) => (
+                    <Button key={tag.name} variant={selectedTag === tag.name ? "default" : "outline"} size="sm" onClick={() => handleTagSelect(tag.name)} className="h-8">
+                        #{tag.name}
+                    </Button>
+                ))}
+            </div>
             {/* Daftar Post */}
             <div className="space-y-4">
                 {loading ? (
-                    <p className="text-center text-gray-500">Memuat postingan...</p>
+                    <p className="text-font-secondary text-center dark:text-gray-400">Memuat postingan...</p>
                 ) : posts.length === 0 ? (
-                    <p className="text-center text-gray-500">Tidak ada postingan.</p>
+                    <p className="text-font-secondary text-center dark:text-gray-400">Tidak ada postingan.</p>
                 ) : (
                     posts.map((post) => (
                         <PostItem
@@ -517,7 +552,7 @@ export default function HomePage() {
                         />
                     ))
                 )}
-                {loadingMore && <p className="text-center text-gray-500">Memuat lebih banyak...</p>}
+                {loadingMore && <p className="text-font-secondary text-center dark:text-gray-400">Memuat lebih banyak...</p>}
             </div>
 
             <CommentsDialog

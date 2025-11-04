@@ -41,8 +41,8 @@ const CommentItem = ({ comment, depth = 0, onReply, onDelete, session }: { comme
     const maxDepth = 1;
 
     return (
-        <div className={`${depth > 0 ? "ml-8 border-l-2 border-gray-200 pl-4" : ""}`}>
-            <div className="flex items-start gap-3 border-b pb-3">
+        <div className={`${depth > 0 ? "ml-8 border-l-2 border-gray-200 pl-4 dark:border-gray-600" : ""}`}>
+            <div className="flex items-start gap-3 border-b pb-3 dark:border-gray-700">
                 <Avatar className="size-8">
                     <AvatarImage src={comment.author.image} alt={comment.author.name} />
                     <AvatarFallback>{comment.author.name[0]}</AvatarFallback>
@@ -50,23 +50,23 @@ const CommentItem = ({ comment, depth = 0, onReply, onDelete, session }: { comme
                 <div className="flex-1">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                            <span className="text-sm font-semibold">{comment.author.name}</span>
-                            <span className="text-xs text-gray-500">{new Date(comment.createdAt).toLocaleString()}</span>
+                            <span className="text-font-primary dark:text-background text-sm font-semibold">{comment.author.name}</span>
+                            <span className="text-font-secondary text-xs dark:text-gray-400">{new Date(comment.createdAt).toLocaleString()}</span>
                         </div>
                         <div className="flex items-center gap-2">
                             {depth < maxDepth && (
-                                <button className="text-xs text-sky-600 hover:underline" onClick={() => onReply(comment)}>
+                                <button className="text-xs text-sky-600 hover:underline dark:text-sky-400" onClick={() => onReply(comment)}>
                                     Reply
                                 </button>
                             )}
                             {(comment.author.id === session?.user.id || (session?.user as any).role === "admin") && (
-                                <button className="text-xs text-red-600 hover:underline" onClick={() => onDelete(comment)}>
+                                <button className="text-xs text-red-600 hover:underline dark:text-red-400" onClick={() => onDelete(comment)}>
                                     Hapus
                                 </button>
                             )}
                         </div>
                     </div>
-                    <p className="mt-1 text-sm">{comment.content}</p>
+                    <p className="text-font-primary mt-1 text-sm dark:text-gray-300">{comment.content}</p>
                 </div>
             </div>
             {comment.replies && comment.replies.length > 0 && (
@@ -112,7 +112,7 @@ export default function CommentsDialog({ selectedPost, onClose, onCommentSubmit,
 
     return (
         <Dialog open={!!selectedPost} onOpenChange={(open) => !open && onClose()}>
-            <DialogContent className="flex h-[80vh] w-full max-w-4xl flex-col">
+            <DialogContent className="flex h-[80vh] w-full max-w-4xl flex-col dark:border-gray-700 dark:bg-gray-900">
                 <DialogHeader>
                     <DialogTitle>Komentar</DialogTitle>
                     <DialogDescription>Lihat dan tambahkan komentar untuk postingan ini</DialogDescription>
@@ -131,11 +131,11 @@ export default function CommentsDialog({ selectedPost, onClose, onCommentSubmit,
                     </div>
 
                     <div className="flex-1 overflow-auto p-4">
-                        <h3 className="mb-4 text-lg font-semibold">Komentar</h3>
+                        <h3 className="text-font-primary dark:text-background mb-4 text-lg font-semibold">Komentar</h3>
                         {!selectedPost ? (
-                            <p className="text-sm text-gray-500">Pilih postingan untuk melihat komentar.</p>
+                            <p className="text-font-secondary text-sm dark:text-gray-400">Pilih postingan untuk melihat komentar.</p>
                         ) : selectedPost.comments.length === 0 ? (
-                            <p className="text-sm text-gray-500">Belum ada komentar. Jadilah yang pertama!</p>
+                            <p className="text-font-secondary text-sm dark:text-gray-400">Belum ada komentar. Jadilah yang pertama!</p>
                         ) : (
                             <div className="space-y-4">
                                 {selectedPost.comments.map((c) => (

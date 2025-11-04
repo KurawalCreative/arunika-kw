@@ -47,11 +47,11 @@ export default function PostItem({ post, onLike, onCommentClick, onDelete, toggl
                             <AvatarFallback>{post.author.name[0]}</AvatarFallback>
                         </Avatar>
                         <div>
-                            <CardTitle className="flex items-center gap-2 text-lg font-semibold">
+                            <CardTitle className="text-font-primary dark:text-background flex items-center gap-2 text-lg font-semibold">
                                 {post.author.name}
-                                <span className={`rounded-full px-2 py-0.5 text-xs ${post.author.role === "admin" ? "bg-red-500/20 text-red-500" : "bg-green-500/20 text-green-500"}`}>{post.author.role}</span>
+                                <span className={`rounded-full px-2 py-0.5 text-xs ${post.author.role === "admin" ? "bg-red-500/20 text-red-400 dark:bg-red-500/30 dark:text-red-300" : "bg-green-500/20 text-green-400 dark:bg-green-500/30 dark:text-green-300"}`}>{post.author.role}</span>
                             </CardTitle>
-                            <p className="text-sm text-gray-500 dark:text-gray-400">{post.createdAt}</p>
+                            <p className="text-font-secondary text-sm dark:text-gray-400">{post.createdAt}</p>
                         </div>
                         <div className="ml-auto flex items-center gap-2">
                             {(post.authorId === session?.user.id || (session?.user as any).role === "admin") && (
@@ -73,7 +73,7 @@ export default function PostItem({ post, onLike, onCommentClick, onDelete, toggl
                 </CardHeader>
 
                 <CardContent>
-                    <p className="mb-4">{post.content}</p>
+                    <p className="text-font-primary dark:text-background mb-4">{post.content}</p>
 
                     {post.images && post.images.length > 0 && (
                         <div className="mb-4 grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3">
@@ -90,7 +90,7 @@ export default function PostItem({ post, onLike, onCommentClick, onDelete, toggl
                             <Heart className="h-4 w-4" />
                             <span>{post.likes.length}</span>
                         </button>
-                        <button onClick={() => onCommentClick(post)} className="flex items-center space-x-1 transition hover:text-sky-500">
+                        <button onClick={() => onCommentClick(post)} className="text-font-primary dark:text-background flex items-center space-x-1 transition hover:text-sky-500">
                             <MessageCircle className="h-4 w-4" />
                             <span>{post.comments.length}</span>
                         </button>

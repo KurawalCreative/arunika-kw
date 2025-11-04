@@ -105,6 +105,9 @@ export default function NavbarArunika() {
                         </motion.div>
                     </div>
 
+                    <Link href="/komunitas" className="text-gray-600 transition hover:text-orange-500 dark:text-gray-300">
+                        Komunitas
+                    </Link>
                     <Link href="#" className="text-gray-600 transition hover:text-orange-500 dark:text-gray-300">
                         Tentang
                     </Link>
@@ -210,6 +213,9 @@ export default function NavbarArunika() {
                             </div>
                         </details>
 
+                        <Link href="/komunitas" className="block py-2 text-gray-800 transition hover:text-orange-500 dark:text-gray-100">
+                            Komunitas
+                        </Link>
                         <Link href="#" className="block py-2 text-gray-800 transition hover:text-orange-500 dark:text-gray-100">
                             Tentang
                         </Link>

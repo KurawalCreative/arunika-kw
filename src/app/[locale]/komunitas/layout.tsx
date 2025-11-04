@@ -1,102 +1,216 @@
 "use client";
 
 import { ReactNode, useState, useEffect } from "react";
-import { Home, Users, Search, Hash, Moon, Sun, Menu } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Hash, TrendingUp, Users, MessageSquare, Calendar, Heart, MessageCircle, Clock } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { ModeToggle } from "@/components/mode-toggle";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 
-interface LayoutProps {
+interface KomunitasLayoutProps {
     children: ReactNode;
 }
 
-export default function MainLayout({ children }: LayoutProps) {
-    const [active, setActive] = useState("Home");
-    const [darkMode, setDarkMode] = useState(false);
-    const [menuOpen, setMenuOpen] = useState(false);
+interface TrendingPost {
+    id: string;
+    content: string;
+    author: {
+        id: string;
+        name: string;
+        image: string;
+    };
+    likesCount: number;
+    commentsCount: number;
+    score: number;
+    createdAt: string;
+}
+
+export default function KomunitasLayout({ children }: KomunitasLayoutProps) {
     const [popularTags, setPopularTags] = useState<{ name: string; count: number }[]>([]);
+    const [trendingPosts, setTrendingPosts] = useState<TrendingPost[]>([]);
+    const [stats, setStats] = useState({
+        totalPosts: 0,
+        totalUsers: 0,
+        totalComments: 0,
+        activeToday: 0,
+    });
     const router = useRouter();
 
     const handleTagClick = (tagName: string) => {
-        // Navigate to komunitas page with search parameter
         router.push(`/id/komunitas?search=${encodeURIComponent(tagName)}`);
     };
 
+    const handlePostClick = (postId: string) => {
+        router.push(`/id/komunitas#post-${postId}`);
+    };
+
     useEffect(() => {
-        const fetchPopularTags = async () => {
+        const fetchData = async () => {
             try {
-                const res = await axios.get("/api/tags/popular");
-                setPopularTags(res.data.tags);
+                // Fetch popular tags
+                const tagsRes = await axios.get("/api/tags/popular");
+                setPopularTags(tagsRes.data.tags);
+
+                // Fetch trending posts
+                const trendingRes = await axios.get("/api/komunitas/trending");
+                setTrendingPosts(trendingRes.data.posts);
+
+                // Fetch real community stats
+                const statsRes = await axios.get("/api/komunitas/stats");
+                setStats(statsRes.data);
             } catch (err) {
-                console.error("Failed to fetch popular tags:", err);
+                console.error("Failed to fetch data:", err);
+                // Fallback to default values if API fails
+                setStats({
+                    totalPosts: 0,
+                    totalUsers: 0,
+                    totalComments: 0,
+                    activeToday: 0,
+                });
             }
         };
-        fetchPopularTags();
+        fetchData();
     }, []);
 
     return (
-        <div className={`flex min-h-screen bg-gray-50 text-gray-900 transition-colors duration-300 dark:bg-gray-900 dark:text-gray-100`}>
-            {/* Sidebar Kiri */}
-            <aside className={`${menuOpen ? "translate-x-0" : "-translate-x-full"} fixed top-0 bottom-0 left-0 z-50 flex w-64 flex-col border-r bg-white p-4 transition-transform duration-300 lg:translate-x-0 dark:border-gray-700 dark:bg-gray-800`}>
-                <div className="mb-6 flex items-center justify-between">
-                    <h1 className="text-2xl font-bold">MyApp</h1>
-                    <ModeToggle />
+        <div className="bg-background text-foreground dark:bg-foreground dark:text-background min-h-screen pt-24 pb-12">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="grid grid-cols-1 gap-6 lg:grid-cols-4">
+                    {/* Konten Utama */}
+                    <div className="lg:col-span-3">{children}</div>
+
+                    {/* Sidebar */}
+                    <div className="space-y-6 lg:col-span-1">
+                        {/* Statistik Komunitas */}
+                        <Card className="dark:border-gray-700 dark:bg-gray-800">
+                            <CardHeader>
+                                <CardTitle className="text-font-primary dark:text-background flex items-center text-lg">
+                                    <TrendingUp className="mr-2 h-5 w-5" />
+                                    Statistik Komunitas
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                <div className="flex items-center justify-between">
+                                    <div className="text-font-secondary flex items-center text-sm dark:text-gray-300">
+                                        <MessageSquare className="mr-2 h-4 w-4" />
+                                        Total Post
+                                    </div>
+                                    <Badge variant="secondary">{stats.totalPosts.toLocaleString()}</Badge>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                    <div className="text-font-secondary flex items-center text-sm dark:text-gray-300">
+                                        <Users className="mr-2 h-4 w-4" />
+                                        Anggota
+                                    </div>
+                                    <Badge variant="secondary">{stats.totalUsers.toLocaleString()}</Badge>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                    <div className="text-font-secondary flex items-center text-sm dark:text-gray-300">
+                                        <MessageSquare className="mr-2 h-4 w-4" />
+                                        Komentar
+                                    </div>
+                                    <Badge variant="secondary">{stats.totalComments.toLocaleString()}</Badge>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                    <div className="text-font-secondary flex items-center text-sm dark:text-gray-300">
+                                        <Calendar className="mr-2 h-4 w-4" />
+                                        Aktif Hari Ini
+                                    </div>
+                                    <Badge variant="secondary">{stats.activeToday}</Badge>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        {/* Trending Posts */}
+                        <Card className="dark:border-gray-700 dark:bg-gray-800">
+                            <CardHeader>
+                                <CardTitle className="text-font-primary dark:text-background flex items-center text-lg">
+                                    <TrendingUp className="mr-2 h-5 w-5" />
+                                    Trending Posts
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="space-y-3">
+                                    {trendingPosts.length > 0 ? (
+                                        trendingPosts.map((post) => (
+                                            <div key={post.id} className="cursor-pointer rounded-lg border p-3 hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-700" onClick={() => handlePostClick(post.id)}>
+                                                <div className="flex items-start space-x-3">
+                                                    <Avatar className="h-8 w-8">
+                                                        <AvatarImage src={post.author.image} alt={post.author.name} />
+                                                        <AvatarFallback>{post.author.name.charAt(0)}</AvatarFallback>
+                                                    </Avatar>
+                                                    <div className="min-w-0 flex-1">
+                                                        <p className="text-font-primary dark:text-background text-sm font-medium">{post.author.name}</p>
+                                                        <p className="text-font-secondary line-clamp-2 text-sm dark:text-gray-300">{post.content}</p>
+                                                        <div className="text-font-secondary mt-2 flex items-center space-x-4 text-xs dark:text-gray-400">
+                                                            <div className="flex items-center">
+                                                                <Heart className="mr-1 h-3 w-3" />
+                                                                {post.likesCount}
+                                                            </div>
+                                                            <div className="flex items-center">
+                                                                <MessageCircle className="mr-1 h-3 w-3" />
+                                                                {post.commentsCount}
+                                                            </div>
+                                                            <div className="flex items-center">
+                                                                <Clock className="mr-1 h-3 w-3" />
+                                                                {new Date(post.createdAt).toLocaleDateString("id-ID")}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <div className="text-font-secondary text-center text-sm dark:text-gray-400">Memuat trending posts...</div>
+                                    )}
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        {/* Tag Populer */}
+                        <Card className="dark:border-gray-700 dark:bg-gray-800">
+                            <CardHeader>
+                                <CardTitle className="text-font-primary dark:text-background flex items-center text-lg">
+                                    <Hash className="mr-2 h-5 w-5" />
+                                    Tag Populer
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="space-y-2">
+                                    {popularTags.length > 0 ? (
+                                        popularTags.slice(0, 10).map((tag) => (
+                                            <div key={tag.name} className="flex cursor-pointer items-center justify-between rounded-md p-2 hover:bg-gray-100 dark:hover:bg-gray-700" onClick={() => handleTagClick(tag.name)}>
+                                                <span className="text-sm font-medium text-blue-600 dark:text-blue-400">#{tag.name}</span>
+                                                <Badge variant="outline" className="text-xs">
+                                                    {tag.count}
+                                                </Badge>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <div className="text-font-secondary text-center text-sm dark:text-gray-400">Memuat tag...</div>
+                                    )}
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        {/* Tips Komunitas */}
+                        <Card className="dark:border-gray-700 dark:bg-gray-800">
+                            <CardHeader>
+                                <CardTitle className="text-font-primary dark:text-background text-lg">💡 Tips Komunitas</CardTitle>
+                            </CardHeader>
+                            <CardContent className="text-font-secondary space-y-3 text-sm dark:text-gray-300">
+                                <div className="space-y-2">
+                                    <p>• Gunakan tag yang relevan untuk postingan Anda</p>
+                                    <p>• Bantu sesama anggota komunitas</p>
+                                    <p>• Jaga keramahan dan saling menghormati</p>
+                                    <p>• Laporkan konten yang tidak pantas</p>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div>
                 </div>
-
-                <nav className="flex flex-col space-y-2">
-                    <Button variant={active === "Home" ? "default" : "ghost"} className="justify-start" onClick={() => setActive("Home")}>
-                        <Home className="mr-2 h-5 w-5" /> Home
-                    </Button>
-                    <Button variant={active === "People" ? "default" : "ghost"} className="justify-start" onClick={() => setActive("People")}>
-                        <Users className="mr-2 h-5 w-5" /> People
-                    </Button>
-                    <Button variant={active === "Cari" ? "default" : "ghost"} className="justify-start" onClick={() => setActive("Cari")}>
-                        <Search className="mr-2 h-5 w-5" /> Cari Orang
-                    </Button>
-                </nav>
-
-                <div className="mt-auto border-t pt-4 dark:border-gray-700">
-                    <p className="text-sm text-gray-500 dark:text-gray-400">© 2025 MyApp</p>
-                </div>
-            </aside>
-
-            {/* Tombol toggle sidebar untuk mobile */}
-            <div className="fixed top-4 left-4 z-40 lg:hidden">
-                <Button size="icon" variant="ghost" onClick={() => setMenuOpen(!menuOpen)}>
-                    <Menu className="h-6 w-6" />
-                </Button>
             </div>
-
-            {/* Konten Tengah */}
-            <main className={`h-screen flex-1 overflow-y-auto p-6 transition-colors duration-300 lg:mr-72 lg:ml-64`} style={{ scrollBehavior: "smooth" }}>
-                <div className={darkMode ? "dark" : ""}>{children}</div>
-            </main>
-
-            {/* Sidebar Kanan */}
-            <aside className="fixed top-0 right-0 bottom-0 hidden w-72 overflow-y-auto border-l bg-white p-4 lg:block dark:border-gray-700 dark:bg-gray-800">
-                <Card className="dark:border-gray-700 dark:bg-gray-800">
-                    <CardHeader>
-                        <CardTitle className="flex items-center">
-                            <Hash className="mr-2 h-5 w-5" /> Tag Populer
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <ul className="space-y-2 text-blue-600 dark:text-blue-400">
-                            {popularTags.length > 0 ? (
-                                popularTags.slice(0, 10).map((tag) => (
-                                    <li key={tag.name} className="cursor-pointer hover:text-blue-800 dark:hover:text-blue-300" onClick={() => handleTagClick(tag.name)}>
-                                        #{tag.name} ({tag.count})
-                                    </li>
-                                ))
-                            ) : (
-                                <li className="text-gray-500 dark:text-gray-400">Memuat tag...</li>
-                            )}
-                        </ul>
-                    </CardContent>
-                </Card>
-            </aside>
         </div>
     );
 }

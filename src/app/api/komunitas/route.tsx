@@ -9,6 +9,7 @@ export async function GET(req: NextRequest) {
     try {
         const { searchParams } = new URL(req.url);
         const search = searchParams.get("search") || "";
+        const tag = searchParams.get("tag") || "";
         const page = parseInt(searchParams.get("page") || "1");
         const limit = parseInt(searchParams.get("limit") || "10");
         const skip = (page - 1) * limit;
@@ -16,6 +17,9 @@ export async function GET(req: NextRequest) {
         const where: any = {};
         if (search) {
             where.OR = [{ content: { contains: search, mode: "insensitive" } }, { author: { name: { contains: search, mode: "insensitive" } } }, { tags: { some: { tag: { name: { contains: search, mode: "insensitive" } } } } }];
+        }
+        if (tag) {
+            where.tags = { some: { tag: { name: tag } } };
         }
 
         const posts = await prisma.post.findMany({
