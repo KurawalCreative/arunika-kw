@@ -53,16 +53,16 @@ const HeroSection = () => {
             />
 
             {/* Pin map */}
-            <PinMapDesign src={pinmap1} className="bottom-[56%] left-[16%]" />
-            <PinMapDesign src={pinmap2} className="bottom-[35%] left-[34.5%]" />
+            <PinMapDesign src={pinmap1} className="bottom-[57%] left-[15.5%]" />
+            <PinMapDesign src={pinmap2} className="bottom-[36%] left-[34.5%]" />
             <SquarePinMap
               src={pinmapsquare}
-              className="bottom-[27.5%] left-[43%]"
+              className="bottom-[28.5%] left-[43%]"
             />
-            <PinMapDesign src={pinmap3} className="right-[38%] bottom-[52%]" />
+            <PinMapDesign src={pinmap3} className="right-[38%] bottom-[53%]" />
             <PinMapDesign src={pinmap6} className="right-[15%] bottom-[65%]" />
             <PinMapDesign src={pinmap5} className="right-[2%] bottom-[61%]" />
-            <PinMapDesign src={pinmap4} className="right-[5%] bottom-[51%]" />
+            <PinMapDesign src={pinmap4} className="right-[5%] bottom-[52%]" />
           </div>
         </motion.div>
 
