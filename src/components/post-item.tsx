@@ -24,7 +24,8 @@ interface Post {
     };
     createdAt: string;
     images?: Array<{ id: string; url: string }>;
-    likes: Array<{ id: string; userId?: string }>;
+    likesCount: number;
+    likedByUser?: boolean;
     comments?: Array<any>; // Optional - loaded on demand
     commentCount?: number; // Comment count for display
 }
@@ -161,8 +162,8 @@ export default function PostItem({ post, onLike, onCommentClick, onDelete, toggl
 
                     <div className="flex items-center space-x-6 text-sm">
                         <button onClick={() => onLike(post.id)} disabled={!!togglingLikes[post.id]} className={`flex items-center space-x-1 transition-all duration-200 hover:scale-110 active:scale-95 ${togglingLikes[post.id] ? "pointer-events-none animate-pulse opacity-50" : "hover:text-red-500"}`} aria-busy={!!togglingLikes[post.id]}>
-                            <Heart className={`h-4 w-4 transition-all duration-200 ${post.likes.some((like) => like.userId === userId) ? "scale-110 fill-red-500 text-red-500" : ""}`} />
-                            <span className={`transition-colors duration-200 ${post.likes.some((like) => like.userId === userId) ? "text-red-500" : ""}`}>{post.likes.length}</span>
+                            <Heart className={`h-4 w-4 transition-all duration-200 ${post.likedByUser ? "scale-110 fill-red-500 text-red-500" : ""}`} />
+                            <span className={`transition-colors duration-200 ${post.likedByUser ? "text-red-500" : ""}`}>{post.likesCount}</span>
                         </button>
                         <button onClick={() => onCommentClick(post)} className="text-font-primary dark:text-background flex items-center space-x-1 transition-all duration-200 hover:scale-110 hover:text-sky-500 active:scale-95">
                             <MessageCircle className={`h-4 w-4 transition-all duration-200 ${(post.commentCount || 0) > 0 ? "text-sky-500" : ""}`} />

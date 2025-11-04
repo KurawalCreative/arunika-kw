@@ -7,6 +7,9 @@ import s3 from "@/lib/s3";
 
 export async function GET(req: NextRequest) {
     try {
+        const session = (await getServerSession(authOptions as any)) as any;
+        const currentUserId = (session?.user as any)?.id as string | undefined;
+
         const { searchParams } = new URL(req.url);
         const search = searchParams.get("search") || "";
         const tag = searchParams.get("tag") || "";
@@ -26,15 +29,10 @@ export async function GET(req: NextRequest) {
             where,
             include: {
                 author: true,
-                likes: {
-                    include: {
-                        user: true,
-                    },
-                },
                 tags: { include: { tag: true } },
                 images: true,
                 _count: {
-                    select: { comments: true },
+                    select: { comments: true, likes: true },
                 },
             },
             orderBy: { createdAt: "desc" },
@@ -44,13 +42,30 @@ export async function GET(req: NextRequest) {
 
         const total = await prisma.post.count({ where });
 
+        // If user is logged in, fetch which posts they liked in one query
+        let likedSet = new Set<string>();
+        if (currentUserId && posts.length > 0) {
+            const liked = await prisma.like.findMany({
+                where: { userId: currentUserId, postId: { in: posts.map((p) => p.id) } },
+                select: { postId: true },
+            });
+            likedSet = new Set(liked.map((l) => l.postId));
+        }
+
         const res = posts.map((v) => ({
-            ...v,
-            likes: v.likes.map((like) => ({ id: like.id, userId: like.userId })),
+            id: v.id,
+            content: v.content,
+            authorId: v.authorId,
+            author: v.author,
+            createdAt: v.createdAt.toISOString(),
             images: v.images.map((x) => ({
                 ...x,
                 url: process.env.NEXT_PUBLIC_S3_PUBLIC_URL! + "/" + x.url,
             })),
+            tags: v.tags.map((t) => ({ id: t.id, tag: t.tag })),
+            likesCount: v._count?.likes || 0,
+            likedByUser: currentUserId ? likedSet.has(v.id) : false,
+            commentCount: v._count?.comments || 0,
         }));
 
         return NextResponse.json({ posts: res, hasMore: skip + posts.length < total });
@@ -98,26 +113,25 @@ export async function POST(req: NextRequest) {
         },
         include: {
             author: true,
-            likes: true,
-            comments: {
-                include: {
-                    author: true,
-                },
-            },
             tags: { include: { tag: true } },
             images: true,
+            _count: { select: { comments: true, likes: true } },
         },
     });
 
     return NextResponse.json({
         success: true,
         post: {
-            ...post,
-            likes: post.likes.map((like) => ({ id: like.id, userId: like.userId })),
-            images: post.images.map((x) => ({
-                ...x,
-                url: process.env.NEXT_PUBLIC_S3_PUBLIC_URL! + "/" + x.url,
-            })),
+            id: post.id,
+            content: post.content,
+            authorId: post.authorId,
+            author: post.author,
+            createdAt: post.createdAt.toISOString(),
+            images: post.images.map((x) => ({ ...x, url: process.env.NEXT_PUBLIC_S3_PUBLIC_URL! + "/" + x.url })),
+            tags: post.tags.map((t) => ({ id: t.id, tag: t.tag })),
+            likesCount: post._count?.likes || 0,
+            likedByUser: false,
+            commentCount: post._count?.comments || 0,
         },
     });
 }
@@ -254,22 +268,25 @@ export async function PATCH(req: NextRequest) {
         },
         include: {
             author: true,
-            likes: true,
-            comments: { include: { author: true } },
             tags: { include: { tag: true } },
             images: true,
+            _count: { select: { comments: true, likes: true } },
         },
     });
 
     return NextResponse.json({
         success: true,
         post: {
-            ...updatedPost,
-            likes: updatedPost.likes.map((like) => ({ id: like.id, userId: like.userId })),
-            images: updatedPost.images.map((x) => ({
-                ...x,
-                url: process.env.NEXT_PUBLIC_S3_PUBLIC_URL! + "/" + x.url,
-            })),
+            id: updatedPost.id,
+            content: updatedPost.content,
+            authorId: updatedPost.authorId,
+            author: updatedPost.author,
+            createdAt: updatedPost.createdAt.toISOString(),
+            images: updatedPost.images.map((x) => ({ ...x, url: process.env.NEXT_PUBLIC_S3_PUBLIC_URL! + "/" + x.url })),
+            tags: updatedPost.tags.map((t) => ({ id: t.id, tag: t.tag })),
+            likesCount: updatedPost._count?.likes || 0,
+            likedByUser: false,
+            commentCount: updatedPost._count?.comments || 0,
         },
     });
 }

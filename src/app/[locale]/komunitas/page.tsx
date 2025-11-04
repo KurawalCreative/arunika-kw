@@ -75,7 +75,8 @@ export interface Post {
     };
     createdAt: string;
     images?: Image[];
-    likes: Array<{ id: string; userId?: string }>;
+    likesCount: number;
+    likedByUser?: boolean;
     comments?: Comment[]; // Optional - loaded on demand
     commentCount?: number; // Comment count for display
 }
@@ -119,7 +120,6 @@ export default function HomePage() {
     const [uploadProgress, setUploadProgress] = useState<{ [key: string]: number }>({});
     const [togglingLikes, setTogglingLikes] = useState<Record<string, boolean>>({});
     const [selectedPostForComments, setSelectedPostForComments] = useState<Post | null>(null);
-    const [eventSource, setEventSource] = useState<EventSource | null>(null);
     const [popularTags, setPopularTags] = useState<{ name: string; count: number }[]>([]);
     const [selectedTag, setSelectedTag] = useState<string>("");
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -134,85 +134,29 @@ export default function HomePage() {
         if (!session) return;
         if (togglingLikes[id]) return; // prevent spam clicks
         const user = (session.user as any) || {};
-
-        const hasLiked = posts.some((p) => p.id === id && p.likes.some((l) => l.userId === user.id));
+        const hasLiked = posts.some((p) => p.id === id && p.likedByUser);
 
         setTogglingLikes((s) => ({ ...s, [id]: true }));
 
-        // Optimistic update. Use a temporary id to avoid colliding with real DB ids.
-        const tempLikeId = `temp-${user.id}-${Date.now()}`;
+        // optimistic count-only update
         setPosts((prev) =>
             prev.map((p) => {
                 if (p.id !== id) return p;
-                if (hasLiked) {
-                    // jika sudah like → hapus like
-                    return { ...p, likes: p.likes.filter((l) => l.userId !== user.id) };
-                }
-                // jika belum like → tambahkan like baru (optimistic)
-                return {
-                    ...p,
-                    likes: [
-                        ...p.likes,
-                        {
-                            id: tempLikeId,
-                            postId: id,
-                            userId: user.id,
-                            createdAt: new Date().toISOString(),
-                            user: {
-                                id: user.id,
-                                name: user.name || "",
-                                email: user.email || "",
-                                emailVerified: true,
-                                image: user.image || "",
-                                role: user?.role || "user",
-                                createdAt: new Date().toISOString(),
-                                updatedAt: new Date().toISOString(),
-                            },
-                        },
-                    ],
-                };
+                const nextCount = hasLiked ? Math.max(0, (p.likesCount || 0) - 1) : (p.likesCount || 0) + 1;
+                return { ...p, likesCount: nextCount, likedByUser: !hasLiked } as Post;
             }),
         );
 
         try {
-            await axios.post("/api/komunitas/like", { postId: id });
+            const res = await axios.post("/api/komunitas/like", { postId: id });
+            // sync with server count to avoid drift
+            if (res.data && typeof res.data.likesCount === "number") {
+                setPosts((prev) => prev.map((p) => (p.id === id ? { ...p, likesCount: res.data.likesCount, likedByUser: !!res.data.liked } : p)));
+            }
         } catch (error) {
             console.error("Gagal toggle like:", error);
-
-            // rollback: restore original state
-            setPosts((prev) =>
-                prev.map((p) => {
-                    if (p.id !== id) return p;
-                    if (hasLiked) {
-                        // originally liked, we removed it optimistically -> add it back if missing
-                        if (p.likes.some((l) => l.userId === user.id)) return p;
-                        return {
-                            ...p,
-                            likes: [
-                                ...p.likes,
-                                {
-                                    id: `temp-restore-${user.id}-${Date.now()}`,
-                                    postId: id,
-                                    userId: user.id,
-                                    createdAt: new Date().toISOString(),
-                                    user: {
-                                        id: user.id,
-                                        name: user.name || "",
-                                        email: user.email || "",
-                                        emailVerified: true,
-                                        image: user.image || "",
-                                        role: user?.role || "user",
-                                        createdAt: new Date().toISOString(),
-                                        updatedAt: new Date().toISOString(),
-                                    },
-                                },
-                            ],
-                        };
-                    }
-                    // originally not liked, we added a temp like -> remove any temp likes
-                    return { ...p, likes: p.likes.filter((l) => !(l.userId === user.id && String(l.id).startsWith("temp-"))) };
-                }),
-            );
+            // rollback if error
+            setPosts((prev) => prev.map((p) => (p.id === id ? { ...p, likedByUser: hasLiked, likesCount: hasLiked ? (p.likesCount || 0) + 1 : Math.max(0, (p.likesCount || 1) - 1) } : p)));
         } finally {
             setTogglingLikes((s) => {
                 const next = { ...s };
@@ -290,53 +234,7 @@ export default function HomePage() {
     }, [hasMore, loadingMore, loading, page]);
 
     // SSE for realtime comments and likes on selected post
-    useEffect(() => {
-        if (!selectedPostForComments) {
-            if (eventSource) {
-                eventSource.close();
-                setEventSource(null);
-            }
-            return;
-        }
-
-        const es = new EventSource(`/api/sse?postId=${selectedPostForComments.id}`);
-        setEventSource(es);
-
-        es.onmessage = (event) => {
-            const data = JSON.parse(event.data);
-            if (data.newComments && data.newComments.length > 0) {
-                // Update selectedPostForComments (for CommentsDialog)
-                setSelectedPostForComments((prev) => {
-                    if (!prev) return prev;
-                    // CommentsDialog handles its own state, just trigger a refresh if needed
-                    return prev;
-                });
-
-                // Update posts list comment count
-                setPosts((prev) =>
-                    prev.map((p) => {
-                        if (p.id === selectedPostForComments.id) {
-                            return { ...p, commentCount: (p.commentCount || 0) + data.newComments.length };
-                        }
-                        return p;
-                    }),
-                );
-            }
-
-            if (data.newLikes && data.newLikes.length > 0) {
-                // Update posts list
-                setPosts((prev) => prev.map((p) => (p.id === selectedPostForComments.id ? { ...p, likes: [...p.likes, ...data.newLikes] } : p)));
-            }
-        };
-
-        es.onerror = (error) => {
-            console.error("SSE Error:", error);
-        };
-
-        return () => {
-            es.close();
-        };
-    }, [selectedPostForComments]);
+    // SSE removed: comments/likes will be fetched on demand. Real-time updates are disabled to reduce load.
 
     const uploadImagesToS3 = async (files: File[]) => {
         const uploadedUrls: string[] = [];

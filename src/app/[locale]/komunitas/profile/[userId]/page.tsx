@@ -37,7 +37,8 @@ interface Post {
     };
     createdAt: string;
     images?: Array<{ id: string; url: string }>;
-    likes: Array<{ id: string; userId?: string }>;
+    likesCount: number;
+    likedByUser?: boolean;
     comments: Array<{
         id: string;
         content: string;
@@ -122,52 +123,26 @@ export default function ProfilePage() {
 
     const handleLike = async (id: string) => {
         if (!sessionUserId) return;
+        const hasLiked = posts.some((p) => p.id === id && p.likedByUser);
 
-        const hasLiked = posts.some((p) => p.id === id && p.likes.some((l) => l.userId === sessionUserId));
-
+        // optimistic update: count-only
         setPosts((prev) =>
             prev.map((p) => {
                 if (p.id !== id) return p;
-                if (hasLiked) {
-                    return { ...p, likes: p.likes.filter((l) => l.userId !== sessionUserId) };
-                }
-                return {
-                    ...p,
-                    likes: [
-                        ...p.likes,
-                        {
-                            id: `temp-${sessionUserId}-${Date.now()}`,
-                            userId: sessionUserId,
-                        },
-                    ],
-                };
+                const nextCount = hasLiked ? Math.max(0, (p.likesCount || 0) - 1) : (p.likesCount || 0) + 1;
+                return { ...p, likesCount: nextCount, likedByUser: !hasLiked } as any;
             }),
         );
 
         try {
-            await axios.post("/api/komunitas/like", { postId: id });
+            const res = await axios.post("/api/komunitas/like", { postId: id });
+            if (res.data && typeof res.data.likesCount === "number") {
+                setPosts((prev) => prev.map((p) => (p.id === id ? { ...p, likesCount: res.data.likesCount, likedByUser: !!res.data.liked } : p)));
+            }
         } catch (error) {
             console.error("Failed to toggle like:", error);
-            // Revert optimistic update
-            setPosts((prev) =>
-                prev.map((p) => {
-                    if (p.id !== id) return p;
-                    if (hasLiked) {
-                        if (p.likes.some((l) => l.userId === sessionUserId)) return p;
-                        return {
-                            ...p,
-                            likes: [
-                                ...p.likes,
-                                {
-                                    id: `temp-restore-${sessionUserId}-${Date.now()}`,
-                                    userId: sessionUserId,
-                                },
-                            ],
-                        };
-                    }
-                    return { ...p, likes: p.likes.filter((l) => !(l.userId === sessionUserId && String(l.id).startsWith("temp-"))) };
-                }),
-            );
+            // rollback
+            setPosts((prev) => prev.map((p) => (p.id === id ? { ...p, likedByUser: hasLiked, likesCount: hasLiked ? (p.likesCount || 0) + 1 : Math.max(0, (p.likesCount || 1) - 1) } : p)));
         }
     };
 

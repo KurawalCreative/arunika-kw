@@ -42,23 +42,28 @@ export async function POST(req: NextRequest) {
                 },
             });
 
+            const newCount = await prisma.like.count({ where: { postId } });
+
             return NextResponse.json({
                 success: true,
                 liked: false,
+                likesCount: newCount,
                 message: "Post unliked",
             });
         } else {
-            const like = await prisma.like.create({
+            await prisma.like.create({
                 data: {
                     userId: userId,
                     postId: postId,
                 },
             });
 
+            const newCount = await prisma.like.count({ where: { postId } });
+
             return NextResponse.json({
                 success: true,
                 liked: true,
-                like,
+                likesCount: newCount,
                 message: "Post liked",
             });
         }
