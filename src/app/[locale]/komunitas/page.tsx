@@ -413,8 +413,7 @@ export default function HomePage() {
                     onClick={() =>
                         authClient.signIn.social({
                             provider: "google",
-                            callbackURL: "/",
-                            disableRedirect: false,
+                            callbackURL: "/komunitas",
                         })
                     }
                 >
