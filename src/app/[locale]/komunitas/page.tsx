@@ -76,7 +76,8 @@ export interface Post {
     createdAt: string;
     images?: Image[];
     likes: Array<{ id: string; userId?: string }>;
-    comments: Comment[];
+    comments?: Comment[]; // Optional - loaded on demand
+    commentCount?: number; // Comment count for display
 }
 
 export default function HomePage() {
@@ -162,7 +163,7 @@ export default function HomePage() {
                                 email: session.user.email || "",
                                 emailVerified: true,
                                 image: session.user.image || "",
-                                role: (session.user as any).role || "user",
+                                role: (session.user as any)?.role || "user",
                                 createdAt: new Date().toISOString(),
                                 updatedAt: new Date().toISOString(),
                             },
@@ -199,7 +200,7 @@ export default function HomePage() {
                                         email: session.user.email || "",
                                         emailVerified: true,
                                         image: session.user.image || "",
-                                        role: (session.user as any).role || "user",
+                                        role: (session.user as any)?.role || "user",
                                         createdAt: new Date().toISOString(),
                                         updatedAt: new Date().toISOString(),
                                     },
@@ -303,26 +304,18 @@ export default function HomePage() {
         es.onmessage = (event) => {
             const data = JSON.parse(event.data);
             if (data.newComments && data.newComments.length > 0) {
-                // Filter out comments that are already in the local state
+                // Update selectedPostForComments (for CommentsDialog)
                 setSelectedPostForComments((prev) => {
                     if (!prev) return prev;
-                    const existingCommentIds = new Set(prev.comments.flatMap((c) => [c.id, ...(c.replies?.map((r) => r.id) || [])]));
-                    const newCommentsOnly = data.newComments.filter((c: any) => !existingCommentIds.has(c.id));
-                    if (newCommentsOnly.length === 0) return prev;
-                    return {
-                        ...prev,
-                        comments: [...prev.comments, ...newCommentsOnly],
-                    };
+                    // CommentsDialog handles its own state, just trigger a refresh if needed
+                    return prev;
                 });
 
-                // Update posts list with the same filtering
+                // Update posts list comment count
                 setPosts((prev) =>
                     prev.map((p) => {
                         if (p.id === selectedPostForComments.id) {
-                            const existingCommentIds = new Set(p.comments.flatMap((c) => [c.id, ...(c.replies?.map((r) => r.id) || [])]));
-                            const newCommentsOnly = data.newComments.filter((c: any) => !existingCommentIds.has(c.id));
-                            if (newCommentsOnly.length === 0) return p;
-                            return { ...p, comments: [...p.comments, ...newCommentsOnly] };
+                            return { ...p, commentCount: (p.commentCount || 0) + data.newComments.length };
                         }
                         return p;
                     }),
@@ -330,7 +323,6 @@ export default function HomePage() {
             }
 
             if (data.newLikes && data.newLikes.length > 0) {
-                // Update selectedPostForComments (if needed, but likes are on post)
                 // Update posts list
                 setPosts((prev) => prev.map((p) => (p.id === selectedPostForComments.id ? { ...p, likes: [...p.likes, ...data.newLikes] } : p)));
             }
@@ -559,71 +551,53 @@ export default function HomePage() {
                 selectedPost={selectedPostForComments}
                 onClose={() => setSelectedPostForComments(null)}
                 onCommentSubmit={(comment) => {
-                    // update local posts state: append comment to the right place
+                    // Update comment count in posts list
                     setPosts((prev) =>
                         prev.map((p) => {
                             if (p.id === selectedPostForComments?.id) {
-                                if (comment.parentId) {
-                                    // it's a reply, add to parent's replies
-                                    return {
-                                        ...p,
-                                        comments: p.comments.map((c) => (c.id === comment.parentId ? { ...c, replies: [...(c.replies || []), comment] } : c)),
-                                    };
-                                } else {
-                                    // it's a top-level comment
-                                    return { ...p, comments: [...(p.comments || []), comment] };
-                                }
+                                return { ...p, commentCount: (p.commentCount || 0) + 1 };
                             }
                             return p;
                         }),
                     );
-                    // update selectedPostForComments
-                    setSelectedPostForComments((prev) => {
-                        if (!prev) return prev;
-                        if (comment.parentId) {
-                            // add to parent's replies
-                            return {
-                                ...prev,
-                                comments: prev.comments.map((c) => (c.id === comment.parentId ? { ...c, replies: [...(c.replies || []), comment] } : c)),
-                            };
-                        } else {
-                            // add as top-level comment
-                            return { ...prev, comments: [...(prev.comments || []), comment] };
-                        }
-                    });
                 }}
-                onCommentDelete={(comment) => {
-                    // remove from selectedPostForComments and posts
-                    setSelectedPostForComments((prev) => {
-                        if (!prev) return prev;
-                        if (comment.parentId) {
-                            // remove from parent's replies
-                            return {
-                                ...prev,
-                                comments: prev.comments.map((pc) => (pc.id === comment.parentId ? { ...pc, replies: (pc.replies || []).filter((r) => r.id !== comment.id) } : pc)),
-                            };
-                        } else {
-                            // remove from top-level comments
-                            return { ...prev, comments: prev.comments.filter((x) => x.id !== comment.id) };
-                        }
-                    });
-                    setPosts((prev) =>
-                        prev.map((p) => {
-                            if (p.id === selectedPostForComments?.id) {
-                                if (comment.parentId) {
-                                    // remove from parent's replies
-                                    return {
-                                        ...p,
-                                        comments: p.comments.map((pc) => (pc.id === comment.parentId ? { ...pc, replies: (pc.replies || []).filter((r) => r.id !== comment.id) } : pc)),
-                                    };
-                                } else {
-                                    // remove from top-level comments
-                                    return { ...p, comments: p.comments.filter((x) => x.id !== comment.id) };
-                                }
+                onCommentDelete={async (comment) => {
+                    try {
+                        await axios.delete(`/api/komunitas/komentar?id=${encodeURIComponent(comment.id)}`);
+                        // remove from selectedPostForComments and posts
+                        setSelectedPostForComments((prev) => {
+                            if (!prev) return prev;
+                            if (comment.parentId) {
+                                // remove from parent's replies
+                                return {
+                                    ...prev,
+                                    comments: (prev.comments || []).map((pc) => (pc.id === comment.parentId ? { ...pc, replies: (pc.replies || []).filter((r) => r.id !== comment.id) } : pc)),
+                                };
+                            } else {
+                                // remove from top-level comments
+                                return { ...prev, comments: (prev.comments || []).filter((x) => x.id !== comment.id) };
                             }
-                            return p;
-                        }),
-                    );
+                        });
+                        setPosts((prev) =>
+                            prev.map((p) => {
+                                if (p.id === selectedPostForComments?.id) {
+                                    if (comment.parentId) {
+                                        // remove from parent's replies
+                                        return {
+                                            ...p,
+                                            comments: (p.comments || []).map((pc) => (pc.id === comment.parentId ? { ...pc, replies: (pc.replies || []).filter((r) => r.id !== comment.id) } : pc)),
+                                        };
+                                    } else {
+                                        // remove from top-level comments
+                                        return { ...p, comments: (p.comments || []).filter((x) => x.id !== comment.id) };
+                                    }
+                                }
+                                return p;
+                            }),
+                        );
+                    } catch (err) {
+                        console.error("Gagal hapus komentar", err);
+                    }
                 }}
                 session={session}
             />

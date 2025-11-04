@@ -3,6 +3,63 @@ import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 
+export async function GET(req: NextRequest) {
+    try {
+        const { searchParams } = new URL(req.url);
+        const postId = searchParams.get("postId");
+        const page = parseInt(searchParams.get("page") || "1");
+        const limit = parseInt(searchParams.get("limit") || "20");
+
+        if (!postId) {
+            return NextResponse.json({ error: "postId is required" }, { status: 400 });
+        }
+
+        const skip = (page - 1) * limit;
+
+        const comments = await prisma.comment.findMany({
+            where: {
+                postId,
+                parentId: null, // Only top-level comments
+            },
+            include: {
+                author: true,
+                targetUser: true,
+                replies: {
+                    include: {
+                        author: true,
+                        targetUser: true,
+                        replies: true, // nested replies
+                    },
+                    orderBy: { createdAt: "asc" },
+                },
+            },
+            orderBy: { createdAt: "desc" },
+            skip,
+            take: limit,
+        });
+
+        const totalComments = await prisma.comment.count({
+            where: {
+                postId,
+                parentId: null,
+            },
+        });
+
+        return NextResponse.json({
+            comments,
+            pagination: {
+                page,
+                limit,
+                total: totalComments,
+                hasMore: skip + comments.length < totalComments,
+            },
+        });
+    } catch (err) {
+        console.error(err);
+        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    }
+}
+
 export async function POST(req: NextRequest) {
     try {
         const session = await auth.api.getSession({ headers: await headers() });
@@ -62,7 +119,7 @@ export async function DELETE(req: NextRequest) {
         const comment = await prisma.comment.findUnique({ where: { id: commentId } });
         if (!comment) return NextResponse.json({ error: "Komentar tidak ditemukan" }, { status: 404 });
 
-        if (comment.authorId !== session.user.id && (session.user as any).role !== "admin") {
+        if (comment.authorId !== session.user.id && (session.user as any)?.role !== "admin") {
             return NextResponse.json({ error: "Tidak memiliki akses" }, { status: 403 });
         }
 

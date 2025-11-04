@@ -31,31 +31,11 @@ export async function GET(req: NextRequest) {
                         user: true,
                     },
                 },
-                comments: {
-                    include: {
-                        author: true,
-                        targetUser: true,
-                        replies: {
-                            include: {
-                                author: true,
-                                targetUser: true,
-                                replies: {
-                                    include: {
-                                        author: true,
-                                        targetUser: true,
-                                        replies: true,
-                                    },
-                                    orderBy: { createdAt: "asc" },
-                                },
-                            },
-                            orderBy: { createdAt: "asc" },
-                        },
-                    },
-                    where: { parentId: null },
-                    orderBy: { createdAt: "desc" },
-                },
                 tags: { include: { tag: true } },
                 images: true,
+                _count: {
+                    select: { comments: true },
+                },
             },
             orderBy: { createdAt: "desc" },
             skip,
@@ -66,6 +46,7 @@ export async function GET(req: NextRequest) {
 
         const res = posts.map((v) => ({
             ...v,
+            likes: v.likes.map((like) => ({ id: like.id, userId: like.userId })),
             images: v.images.map((x) => ({
                 ...x,
                 url: process.env.NEXT_PUBLIC_S3_PUBLIC_URL! + "/" + x.url,
@@ -125,7 +106,17 @@ export async function POST(req: NextRequest) {
         },
     });
 
-    return NextResponse.json({ success: true, post });
+    return NextResponse.json({
+        success: true,
+        post: {
+            ...post,
+            likes: post.likes.map((like) => ({ id: like.id, userId: like.userId })),
+            images: post.images.map((x) => ({
+                ...x,
+                url: process.env.NEXT_PUBLIC_S3_PUBLIC_URL! + "/" + x.url,
+            })),
+        },
+    });
 }
 
 export async function DELETE(req: NextRequest) {
@@ -148,7 +139,7 @@ export async function DELETE(req: NextRequest) {
         return NextResponse.json({ error: "Post tidak ditemukan" }, { status: 404 });
     }
 
-    if (post.authorId !== session.user.id && (session.user as any).role !== "admin") {
+    if (post.authorId !== session.user.id && (session.user as any)?.role !== "admin") {
         return NextResponse.json({ error: "Tidak memiliki akses" }, { status: 403 });
     }
 
@@ -261,7 +252,17 @@ export async function PATCH(req: NextRequest) {
         },
     });
 
-    return NextResponse.json({ success: true, post: updatedPost });
+    return NextResponse.json({
+        success: true,
+        post: {
+            ...updatedPost,
+            likes: updatedPost.likes.map((like) => ({ id: like.id, userId: like.userId })),
+            images: updatedPost.images.map((x) => ({
+                ...x,
+                url: process.env.NEXT_PUBLIC_S3_PUBLIC_URL! + "/" + x.url,
+            })),
+        },
+    });
 }
 
 export async function PUT(req: NextRequest) {

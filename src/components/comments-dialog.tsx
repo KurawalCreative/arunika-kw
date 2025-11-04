@@ -1,11 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { MoreHorizontal, Loader2 } from "lucide-react";
+import Link from "next/link";
 
 interface Comment {
     id: string;
@@ -26,7 +29,8 @@ interface Comment {
 
 interface Post {
     id: string;
-    comments: Comment[];
+    comments?: Comment[];
+    commentCount?: number;
 }
 
 interface CommentsDialogProps {
@@ -43,26 +47,35 @@ const CommentItem = ({ comment, depth = 0, onReply, onDelete, session }: { comme
     return (
         <div className={`${depth > 0 ? "ml-8 border-l-2 border-gray-200 pl-4 dark:border-gray-600" : ""}`}>
             <div className="flex items-start gap-3 border-b pb-3 dark:border-gray-700">
-                <Avatar className="size-8">
-                    <AvatarImage src={comment.author.image} alt={comment.author.name} />
-                    <AvatarFallback>{comment.author.name[0]}</AvatarFallback>
-                </Avatar>
+                <Link href={`/komunitas/profile/${comment.author.id}`} className="transition-opacity hover:opacity-80">
+                    <Avatar className="size-8">
+                        <AvatarImage src={comment.author.image} alt={comment.author.name} />
+                        <AvatarFallback>{comment.author.name[0]}</AvatarFallback>
+                    </Avatar>
+                </Link>
                 <div className="flex-1">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                            <span className="text-font-primary dark:text-background text-sm font-semibold">{comment.author.name}</span>
+                            <Link href={`/komunitas/profile/${comment.author.id}`} className="hover:underline">
+                                <span className="text-font-primary dark:text-background text-sm font-semibold">{comment.author.name}</span>
+                            </Link>
                             <span className="text-font-secondary text-xs dark:text-gray-400">{new Date(comment.createdAt).toLocaleString()}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                            {depth < maxDepth && (
-                                <button className="text-xs text-sky-600 hover:underline dark:text-sky-400" onClick={() => onReply(comment)}>
-                                    Reply
-                                </button>
-                            )}
-                            {(comment.author.id === session?.user.id || (session?.user as any).role === "admin") && (
-                                <button className="text-xs text-red-600 hover:underline dark:text-red-400" onClick={() => onDelete(comment)}>
-                                    Hapus
-                                </button>
+                            {(comment.author.id === session?.user.id || (session?.user as any)?.role === "admin") && (
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <button className="rounded p-1 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                            <MoreHorizontal className="h-4 w-4" />
+                                        </button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end">
+                                        {depth < maxDepth && <DropdownMenuItem onClick={() => onReply(comment)}>Reply</DropdownMenuItem>}
+                                        <DropdownMenuItem className="text-red-600 dark:text-red-400" onClick={() => onDelete(comment)}>
+                                            Hapus
+                                        </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
                             )}
                         </div>
                     </div>
@@ -85,6 +98,53 @@ export default function CommentsDialog({ selectedPost, onClose, onCommentSubmit,
     const [postingComment, setPostingComment] = useState(false);
     const [replyTargetUser, setReplyTargetUser] = useState<{ id: string; name: string } | null>(null);
     const [replyParentId, setReplyParentId] = useState<string | null>(null);
+    const [comments, setComments] = useState<Comment[]>([]);
+    const [loadingComments, setLoadingComments] = useState(false);
+
+    // Load comments when dialog opens
+    useEffect(() => {
+        if (selectedPost && !selectedPost.comments) {
+            loadComments();
+        } else if (selectedPost?.comments) {
+            setComments(selectedPost.comments);
+        } else {
+            setComments([]);
+        }
+    }, [selectedPost]);
+
+    const loadComments = async () => {
+        if (!selectedPost) return;
+
+        setLoadingComments(true);
+        try {
+            const response = await axios.get(`/api/komunitas/komentar?postId=${selectedPost.id}`);
+            setComments(response.data.comments || []);
+        } catch (error) {
+            console.error("Failed to load comments:", error);
+            setComments([]);
+        } finally {
+            setLoadingComments(false);
+        }
+    };
+
+    const handleCommentDelete = async (comment: Comment) => {
+        try {
+            await axios.delete(`/api/komunitas/komentar?id=${encodeURIComponent(comment.id)}`);
+
+            // Update local comments state
+            if (comment.parentId) {
+                // remove from parent's replies
+                setComments((prev) => prev.map((c) => (c.id === comment.parentId ? { ...c, replies: (c.replies || []).filter((r) => r.id !== comment.id) } : c)));
+            } else {
+                // remove from top-level comments
+                setComments((prev) => prev.filter((c) => c.id !== comment.id));
+            }
+
+            onCommentDelete(comment);
+        } catch (err) {
+            console.error("Gagal hapus komentar", err);
+        }
+    };
 
     const handleSubmit = async () => {
         if (!selectedPost || !commentInputValue.trim()) return;
@@ -98,6 +158,14 @@ export default function CommentsDialog({ selectedPost, onClose, onCommentSubmit,
             });
             if (res.data?.success) {
                 const comment = res.data.comment as Comment;
+                // Update local comments state
+                if (comment.parentId) {
+                    // it's a reply, add to parent's replies
+                    setComments((prev) => prev.map((c) => (c.id === comment.parentId ? { ...c, replies: [...(c.replies || []), comment] } : c)));
+                } else {
+                    // it's a top-level comment
+                    setComments((prev) => [comment, ...prev]);
+                }
                 onCommentSubmit(comment);
                 setCommentInputValue("");
                 setReplyTargetUser(null);
@@ -132,13 +200,18 @@ export default function CommentsDialog({ selectedPost, onClose, onCommentSubmit,
 
                     <div className="flex-1 overflow-auto p-4">
                         <h3 className="text-font-primary dark:text-background mb-4 text-lg font-semibold">Komentar</h3>
-                        {!selectedPost ? (
+                        {loadingComments ? (
+                            <div className="flex items-center justify-center py-8">
+                                <Loader2 className="h-6 w-6 animate-spin text-gray-500" />
+                                <span className="ml-2 text-gray-500">Memuat komentar...</span>
+                            </div>
+                        ) : !selectedPost ? (
                             <p className="text-font-secondary text-sm dark:text-gray-400">Pilih postingan untuk melihat komentar.</p>
-                        ) : selectedPost.comments.length === 0 ? (
+                        ) : comments.length === 0 ? (
                             <p className="text-font-secondary text-sm dark:text-gray-400">Belum ada komentar. Jadilah yang pertama!</p>
                         ) : (
                             <div className="space-y-4">
-                                {selectedPost.comments.map((c) => (
+                                {comments.map((c) => (
                                     <CommentItem
                                         key={c.id}
                                         comment={c}
@@ -147,7 +220,7 @@ export default function CommentsDialog({ selectedPost, onClose, onCommentSubmit,
                                             setReplyParentId(comment.id);
                                             setCommentInputValue(`@${comment.author.name} `);
                                         }}
-                                        onDelete={onCommentDelete}
+                                        onDelete={handleCommentDelete}
                                         session={session}
                                     />
                                 ))}
