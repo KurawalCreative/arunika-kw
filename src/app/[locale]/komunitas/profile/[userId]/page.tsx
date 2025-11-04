@@ -63,25 +63,31 @@ export default function ProfilePage() {
     const [following, setFollowing] = useState(false);
     const [togglingFollow, setTogglingFollow] = useState(false);
 
-    const userId = params.userId as string;
-    const isOwnProfile = session?.user.id === userId;
+    const profileUserId = params.userId as string;
+
+    // Safely read NextAuth runtime fields from session.user
+    const sessUser = (session?.user as any) || {};
+    const sessionUserId = sessUser.id as string | undefined;
+    const sessionUserRole = sessUser.role as string | undefined;
+
+    const isOwnProfile = sessionUserId === profileUserId;
 
     useEffect(() => {
-        if (!userId) return;
+        if (!profileUserId) return;
         fetchProfile();
-    }, [userId]);
+    }, [profileUserId]);
 
     const fetchProfile = async () => {
         try {
             setLoading(true);
-            const [profileRes, postsRes] = await Promise.all([axios.get(`/api/komunitas/profile/${userId}`), axios.get(`/api/komunitas/profile/${userId}/posts`)]);
+            const [profileRes, postsRes] = await Promise.all([axios.get(`/api/komunitas/profile/${profileUserId}`), axios.get(`/api/komunitas/profile/${profileUserId}/posts`)]);
 
             setProfile(profileRes.data.user);
             setPosts(postsRes.data.posts);
 
             // Check if current user is following this profile
-            if (session?.user.id && session.user.id !== userId) {
-                const followRes = await axios.get(`/api/komunitas/follow/check?followerId=${session.user.id}&followingId=${userId}`);
+            if (sessionUserId && sessionUserId !== profileUserId) {
+                const followRes = await axios.get(`/api/komunitas/follow/check?followerId=${sessionUserId}&followingId=${profileUserId}`);
                 setFollowing(followRes.data.isFollowing);
             }
         } catch (err) {
@@ -92,18 +98,18 @@ export default function ProfilePage() {
     };
 
     const handleFollow = async () => {
-        if (!session || togglingFollow) return;
+        if (!sessionUserId || togglingFollow) return;
 
         setTogglingFollow(true);
         try {
             if (following) {
                 await axios.delete(`/api/komunitas/follow`, {
-                    data: { followingId: userId },
+                    data: { followingId: profileUserId },
                 });
                 setFollowing(false);
                 setProfile((prev) => (prev ? { ...prev, _count: { ...prev._count, followers: prev._count.followers - 1 } } : null));
             } else {
-                await axios.post(`/api/komunitas/follow`, { followingId: userId });
+                await axios.post(`/api/komunitas/follow`, { followingId: profileUserId });
                 setFollowing(true);
                 setProfile((prev) => (prev ? { ...prev, _count: { ...prev._count, followers: prev._count.followers + 1 } } : null));
             }
@@ -115,23 +121,23 @@ export default function ProfilePage() {
     };
 
     const handleLike = async (id: string) => {
-        if (!session) return;
+        if (!sessionUserId) return;
 
-        const hasLiked = posts.some((p) => p.id === id && p.likes.some((l) => l.userId === session?.user.id));
+        const hasLiked = posts.some((p) => p.id === id && p.likes.some((l) => l.userId === sessionUserId));
 
         setPosts((prev) =>
             prev.map((p) => {
                 if (p.id !== id) return p;
                 if (hasLiked) {
-                    return { ...p, likes: p.likes.filter((l) => l.userId !== session.user.id) };
+                    return { ...p, likes: p.likes.filter((l) => l.userId !== sessionUserId) };
                 }
                 return {
                     ...p,
                     likes: [
                         ...p.likes,
                         {
-                            id: `temp-${session.user.id}-${Date.now()}`,
-                            userId: session.user.id!,
+                            id: `temp-${sessionUserId}-${Date.now()}`,
+                            userId: sessionUserId,
                         },
                     ],
                 };
@@ -147,19 +153,19 @@ export default function ProfilePage() {
                 prev.map((p) => {
                     if (p.id !== id) return p;
                     if (hasLiked) {
-                        if (p.likes.some((l) => l.userId === session.user.id)) return p;
+                        if (p.likes.some((l) => l.userId === sessionUserId)) return p;
                         return {
                             ...p,
                             likes: [
                                 ...p.likes,
                                 {
-                                    id: `temp-restore-${session.user.id}-${Date.now()}`,
-                                    userId: session.user.id!,
+                                    id: `temp-restore-${sessionUserId}-${Date.now()}`,
+                                    userId: sessionUserId,
                                 },
                             ],
                         };
                     }
-                    return { ...p, likes: p.likes.filter((l) => !(l.userId === session.user.id && String(l.id).startsWith("temp-"))) };
+                    return { ...p, likes: p.likes.filter((l) => !(l.userId === sessionUserId && String(l.id).startsWith("temp-"))) };
                 }),
             );
         }

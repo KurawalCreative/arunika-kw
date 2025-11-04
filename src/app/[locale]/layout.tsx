@@ -6,6 +6,8 @@ import "../globals.css";
 
 import { routing } from "@/i18n/routing";
 import { ThemeProvider } from "@/components/theme-provider";
+import NextAuthProvider from "@/components/next-auth-session-provider";
+import { getServerAuthSession } from "@/lib/auth";
 
 const manrope = Manrope({
     subsets: ["latin"],
@@ -34,7 +36,9 @@ export default async function RootLayout({
             <body className={`${manrope.className} dark:bg-foreground text-font-primary dark:text-background antialiased`}>
                 <NextIntlClientProvider>
                     <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
-                        {children}
+                        {/* Fetch server session and provide to client-side SessionProvider */}
+                        {/* getServerAuthSession will call NextAuth's getServerSession(authOptions) */}
+                        <NextAuthProvider session={await getServerAuthSession()}>{children}</NextAuthProvider>
                     </ThemeProvider>
                 </NextIntlClientProvider>
             </body>

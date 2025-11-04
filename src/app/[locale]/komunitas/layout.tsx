@@ -85,13 +85,14 @@ export default function KomunitasLayout({ children }: KomunitasLayoutProps) {
     }, []);
 
     useEffect(() => {
-        if (!session?.user.id) {
+        const userId = (session?.user as any)?.id;
+        if (!userId) {
             setUserProfile(null);
             return;
         }
         const fetchUserProfile = async () => {
             try {
-                const profileRes = await axios.get(`/api/komunitas/profile/${session.user.id}`);
+                const profileRes = await axios.get(`/api/komunitas/profile/${userId}`);
                 setUserProfile(profileRes.data.user);
             } catch (err) {
                 console.error("Failed to fetch user profile:", err);
@@ -99,7 +100,7 @@ export default function KomunitasLayout({ children }: KomunitasLayoutProps) {
             }
         };
         fetchUserProfile();
-    }, [session?.user.id]);
+    }, [(session?.user as any)?.id]);
 
     return (
         <>

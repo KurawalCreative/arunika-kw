@@ -1,13 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import { headers } from "next/headers";
 
 export async function POST(req: NextRequest) {
-    const session = await auth.api.getSession({ headers: await headers() });
+    const session = (await getServerSession(authOptions as any)) as any;
     if (!session) {
         return NextResponse.json({ error: "Belum login" }, { status: 401 });
     }
+    const userId = (session.user as any)?.id as string | undefined;
+    if (!userId) return NextResponse.json({ error: "Belum login" }, { status: 401 });
 
     try {
         const { postId } = await req.json();
@@ -27,7 +29,7 @@ export async function POST(req: NextRequest) {
         const existingLike = await prisma.like.findUnique({
             where: {
                 userId_postId: {
-                    userId: session.user.id,
+                    userId: userId,
                     postId: postId,
                 },
             },
@@ -48,7 +50,7 @@ export async function POST(req: NextRequest) {
         } else {
             const like = await prisma.like.create({
                 data: {
-                    userId: session.user.id,
+                    userId: userId,
                     postId: postId,
                 },
             });

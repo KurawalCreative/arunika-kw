@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { DeleteObjectCommand } from "@aws-sdk/client-s3";
-import { headers } from "next/headers";
 import s3 from "@/lib/s3";
 
 export async function GET(req: NextRequest) {
@@ -61,8 +61,11 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-    const session = await auth.api.getSession({ headers: await headers() });
+    const session = (await getServerSession(authOptions as any)) as any;
     if (!session) return NextResponse.json({ error: "Belum login" }, { status: 401 });
+    const userId = (session.user as any)?.id as string | undefined;
+    const userRole = (session.user as any)?.role as string | undefined;
+    if (!userId) return NextResponse.json({ error: "Belum login" }, { status: 401 });
 
     const body = (await req.json()) as {
         content: string;
@@ -83,7 +86,7 @@ export async function POST(req: NextRequest) {
     const post = await prisma.post.create({
         data: {
             content,
-            authorId: session.user.id,
+            authorId: userId,
             images: {
                 create: images.map((url) => ({ url: url.replace(process.env.NEXT_PUBLIC_S3_PUBLIC_URL! + "/", ""), status: "success" })),
             },
@@ -120,8 +123,11 @@ export async function POST(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
-    const session = await auth.api.getSession({ headers: await headers() });
+    const session = (await getServerSession(authOptions as any)) as any;
     if (!session) return NextResponse.json({ error: "Belum login" }, { status: 401 });
+    const userId = (session.user as any)?.id as string | undefined;
+    const userRole = (session.user as any)?.role as string | undefined;
+    if (!userId) return NextResponse.json({ error: "Belum login" }, { status: 401 });
 
     const { searchParams } = new URL(req.url);
     const postId = searchParams.get("id");
@@ -139,7 +145,7 @@ export async function DELETE(req: NextRequest) {
         return NextResponse.json({ error: "Post tidak ditemukan" }, { status: 404 });
     }
 
-    if (post.authorId !== session.user.id && (session.user as any)?.role !== "admin") {
+    if (post.authorId !== userId && userRole !== "admin") {
         return NextResponse.json({ error: "Tidak memiliki akses" }, { status: 403 });
     }
 
@@ -168,8 +174,11 @@ export async function DELETE(req: NextRequest) {
 }
 
 export async function PATCH(req: NextRequest) {
-    const session = await auth.api.getSession({ headers: await headers() });
+    const session = (await getServerSession(authOptions as any)) as any;
     if (!session) return NextResponse.json({ error: "Belum login" }, { status: 401 });
+    const userId = (session.user as any)?.id as string | undefined;
+    const userRole = (session.user as any)?.role as string | undefined;
+    if (!userId) return NextResponse.json({ error: "Belum login" }, { status: 401 });
 
     const body = (await req.json()) as {
         postId: string;
@@ -196,7 +205,7 @@ export async function PATCH(req: NextRequest) {
         return NextResponse.json({ error: "Post tidak ditemukan" }, { status: 404 });
     }
 
-    if (post.authorId !== session.user.id) {
+    if (post.authorId !== userId) {
         return NextResponse.json({ error: "Tidak memiliki akses" }, { status: 403 });
     }
 

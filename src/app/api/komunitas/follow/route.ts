@@ -1,12 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
-import { headers } from "next/headers";
-import { auth } from "@/lib/auth";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 
 export async function POST(req: NextRequest) {
     try {
-        const session = await auth.api.getSession({ headers: await headers() });
-        if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const session = (await getServerSession(authOptions as any)) as any;
+    if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const userId = (session.user as any)?.id as string | undefined;
+    if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
         const body = await req.json();
         const { followingId } = body;
@@ -15,7 +17,7 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: "followingId is required" }, { status: 400 });
         }
 
-        if (session.user.id === followingId) {
+        if (userId === followingId) {
             return NextResponse.json({ error: "Cannot follow yourself" }, { status: 400 });
         }
 
@@ -23,7 +25,7 @@ export async function POST(req: NextRequest) {
         const existingFollow = await prisma.follow.findUnique({
             where: {
                 followerId_followingId: {
-                    followerId: session.user.id,
+                    followerId: userId,
                     followingId,
                 },
             },
@@ -35,7 +37,7 @@ export async function POST(req: NextRequest) {
 
         const follow = await prisma.follow.create({
             data: {
-                followerId: session.user.id,
+                followerId: userId,
                 followingId,
             },
         });
@@ -49,8 +51,10 @@ export async function POST(req: NextRequest) {
 
 export async function DELETE(req: NextRequest) {
     try {
-        const session = await auth.api.getSession({ headers: await headers() });
-        if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const session = (await getServerSession(authOptions as any)) as any;
+    if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const userId = (session.user as any)?.id as string | undefined;
+    if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
         const body = await req.json();
         const { followingId } = body;
@@ -62,7 +66,7 @@ export async function DELETE(req: NextRequest) {
         const follow = await prisma.follow.findUnique({
             where: {
                 followerId_followingId: {
-                    followerId: session.user.id,
+                    followerId: userId,
                     followingId,
                 },
             },
@@ -85,8 +89,10 @@ export async function DELETE(req: NextRequest) {
 
 export async function GET(req: NextRequest) {
     try {
-        const session = await auth.api.getSession({ headers: await headers() });
-        if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const session = (await getServerSession(authOptions as any)) as any;
+    if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const userId = (session.user as any)?.id as string | undefined;
+    if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
         const { searchParams } = new URL(req.url);
         const followerId = searchParams.get("followerId");

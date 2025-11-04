@@ -133,19 +133,20 @@ export default function HomePage() {
     const handleLike = async (id: string) => {
         if (!session) return;
         if (togglingLikes[id]) return; // prevent spam clicks
+        const user = (session.user as any) || {};
 
-        const hasLiked = posts.some((p) => p.id === id && p.likes.some((l) => l.userId === session?.user.id));
+        const hasLiked = posts.some((p) => p.id === id && p.likes.some((l) => l.userId === user.id));
 
         setTogglingLikes((s) => ({ ...s, [id]: true }));
 
         // Optimistic update. Use a temporary id to avoid colliding with real DB ids.
-        const tempLikeId = `temp-${session.user.id}-${Date.now()}`;
+        const tempLikeId = `temp-${user.id}-${Date.now()}`;
         setPosts((prev) =>
             prev.map((p) => {
                 if (p.id !== id) return p;
                 if (hasLiked) {
                     // jika sudah like → hapus like
-                    return { ...p, likes: p.likes.filter((l) => l.userId !== session.user.id) };
+                    return { ...p, likes: p.likes.filter((l) => l.userId !== user.id) };
                 }
                 // jika belum like → tambahkan like baru (optimistic)
                 return {
@@ -155,15 +156,15 @@ export default function HomePage() {
                         {
                             id: tempLikeId,
                             postId: id,
-                            userId: session.user.id!,
+                            userId: user.id,
                             createdAt: new Date().toISOString(),
                             user: {
-                                id: session.user.id!,
-                                name: session.user.name || "",
-                                email: session.user.email || "",
+                                id: user.id,
+                                name: user.name || "",
+                                email: user.email || "",
                                 emailVerified: true,
-                                image: session.user.image || "",
-                                role: (session.user as any)?.role || "user",
+                                image: user.image || "",
+                                role: user?.role || "user",
                                 createdAt: new Date().toISOString(),
                                 updatedAt: new Date().toISOString(),
                             },
@@ -184,23 +185,23 @@ export default function HomePage() {
                     if (p.id !== id) return p;
                     if (hasLiked) {
                         // originally liked, we removed it optimistically -> add it back if missing
-                        if (p.likes.some((l) => l.userId === session.user.id)) return p;
+                        if (p.likes.some((l) => l.userId === user.id)) return p;
                         return {
                             ...p,
                             likes: [
                                 ...p.likes,
                                 {
-                                    id: `temp-restore-${session.user.id}-${Date.now()}`,
+                                    id: `temp-restore-${user.id}-${Date.now()}`,
                                     postId: id,
-                                    userId: session.user.id!,
+                                    userId: user.id,
                                     createdAt: new Date().toISOString(),
                                     user: {
-                                        id: session.user.id!,
-                                        name: session.user.name || "",
-                                        email: session.user.email || "",
+                                        id: user.id,
+                                        name: user.name || "",
+                                        email: user.email || "",
                                         emailVerified: true,
-                                        image: session.user.image || "",
-                                        role: (session.user as any)?.role || "user",
+                                        image: user.image || "",
+                                        role: user?.role || "user",
                                         createdAt: new Date().toISOString(),
                                         updatedAt: new Date().toISOString(),
                                     },
@@ -209,7 +210,7 @@ export default function HomePage() {
                         };
                     }
                     // originally not liked, we added a temp like -> remove any temp likes
-                    return { ...p, likes: p.likes.filter((l) => !(l.userId === session.user.id && String(l.id).startsWith("temp-"))) };
+                    return { ...p, likes: p.likes.filter((l) => !(l.userId === user.id && String(l.id).startsWith("temp-"))) };
                 }),
             );
         } finally {

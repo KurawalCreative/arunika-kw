@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { headers } from "next/headers";
-import { auth } from "@/lib/auth";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 
 export async function GET(req: NextRequest) {
@@ -62,8 +62,11 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
     try {
-        const session = await auth.api.getSession({ headers: await headers() });
+        const session = (await getServerSession(authOptions as any)) as any;
         if (!session) return NextResponse.json({ error: "Belum login" }, { status: 401 });
+        const userId = (session.user as any)?.id as string | undefined;
+        const userRole = (session.user as any)?.role as string | undefined;
+        if (!userId) return NextResponse.json({ error: "Belum login" }, { status: 401 });
 
         const body = (await req.json()) as { postId?: string; content?: string; targetUserId?: string | null; parentId?: string | null };
         const { postId, content, targetUserId, parentId } = body;
@@ -73,7 +76,7 @@ export async function POST(req: NextRequest) {
         const comment = await prisma.comment.create({
             data: {
                 content,
-                authorId: session.user.id,
+                authorId: userId,
                 postId,
                 parentId: parentId || null,
                 targetUserId: targetUserId || null,
@@ -101,8 +104,11 @@ export async function POST(req: NextRequest) {
 
 export async function DELETE(req: NextRequest) {
     try {
-        const session = await auth.api.getSession({ headers: await headers() });
+        const session = (await getServerSession(authOptions as any)) as any;
         if (!session) return NextResponse.json({ error: "Belum login" }, { status: 401 });
+        const userId = (session.user as any)?.id as string | undefined;
+        const userRole = (session.user as any)?.role as string | undefined;
+        if (!userId) return NextResponse.json({ error: "Belum login" }, { status: 401 });
 
         // Accept JSON body { commentId } or query param id
         const url = new URL(req.url);
@@ -119,7 +125,7 @@ export async function DELETE(req: NextRequest) {
         const comment = await prisma.comment.findUnique({ where: { id: commentId } });
         if (!comment) return NextResponse.json({ error: "Komentar tidak ditemukan" }, { status: 404 });
 
-        if (comment.authorId !== session.user.id && (session.user as any)?.role !== "admin") {
+        if (comment.authorId !== userId && userRole !== "admin") {
             return NextResponse.json({ error: "Tidak memiliki akses" }, { status: 403 });
         }
 
