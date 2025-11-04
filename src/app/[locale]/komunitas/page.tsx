@@ -2,28 +2,16 @@
 
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Heart, MessageCircle, Plus, LogIn, Loader2, MoreHorizontal, Search } from "lucide-react";
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { Plus, LogIn, Loader2, Search } from "lucide-react";
 import Image from "next/image";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
 import { useSearchParams } from "next/navigation";
+import PostItem from "@/components/post-item";
+import CommentsDialog from "@/components/comments-dialog";
 import { authClient } from "@/lib/auth-client";
-
-export interface Post {
-    id: string;
-    content: string;
-    authorId: string;
-    author: User;
-    createdAt: string;
-    images?: Image[];
-    likes: Array<{ id: string; userId?: string }>;
-    comments: Comment[];
-    tags: PostTag[];
-}
 
 export interface User {
     id: string;
@@ -39,9 +27,6 @@ export interface User {
 export interface Image {
     id: string;
     url: string;
-    postId: string;
-    status: string;
-    createdAt: string;
 }
 
 export interface Tag {
@@ -68,75 +53,31 @@ export interface Comment {
     postId?: string;
     parentId?: string;
     targetUserId?: string;
-    author: User;
-    post?: Post;
-    parent?: Comment;
+    author: {
+        id: string;
+        name: string;
+        image: string;
+    };
     replies?: Comment[];
-    targetUser?: User;
     createdAt: string;
     updatedAt: string;
 }
 
-const CommentItem = ({ comment, depth = 0, onReply, onDelete }: { comment: Comment; depth?: number; onReply: (comment: Comment) => void; onDelete: (comment: Comment) => void }) => {
-    const { data: session } = authClient.useSession();
-    const maxDepth = 1; // limit nesting depth to 1 level only
-
-    return (
-        <div className={`${depth > 0 ? "ml-8 border-l-2 border-gray-200 pl-4" : ""}`}>
-            <div className="flex items-start gap-3 border-b pb-3">
-                <Image
-                    src={
-                        comment.author.image ||
-                        "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTYiIGN5PSIxNiIgcj0iMTYiIGZpbGw9IiNFNUU3RUIiLz4KPHBhdGggZD0iTTE2IDE2QzE3LjEwNDYgMTYgMTggMTUuMTA0NiAxOCAxNEMxOCAxMi44OTU0IDE3LjEwNDYgMTIgMTYgMTJDMTQuODk1NCAxMiAxNCAxMi44OTU0IDE0IDE0QzE0IDE1LjEwNDYgMTQuODk1NCAxNiAxNiAxNloiIGZpbGw9IiM5Q0EzQUYiLz4KPC9zdmc+Cg=="
-                    }
-                    alt={comment.author.name}
-                    width={32}
-                    height={32}
-                    className="rounded-full"
-                />
-                <div className="flex-1">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                            <span className="text-sm font-semibold">{comment.author.name}</span>
-                            <span className="text-xs text-gray-500">{new Date(comment.createdAt).toLocaleString()}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            {depth < maxDepth && (
-                                <button className="text-xs text-sky-600 hover:underline" onClick={() => onReply(comment)}>
-                                    Reply
-                                </button>
-                            )}
-                            {(comment.author.id === session?.user.id || (session?.user as any).role === "admin") && (
-                                <DropdownMenu>
-                                    <DropdownMenuTrigger asChild>
-                                        <button className="rounded p-1 hover:bg-gray-100 dark:hover:bg-gray-800">
-                                            <MoreHorizontal className="h-3 w-3" />
-                                        </button>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent>
-                                        <DropdownMenuItem className="text-destructive" onSelect={() => onDelete(comment)}>
-                                            Hapus
-                                        </DropdownMenuItem>
-                                    </DropdownMenuContent>
-                                </DropdownMenu>
-                            )}
-                        </div>
-                    </div>
-                    <p className="mt-1 text-sm">{comment.content}</p>
-                    {comment.targetUser && <div className="mt-1 text-xs text-gray-500">in reply to {comment.targetUser.name}</div>}
-                </div>
-            </div>
-            {/* Render replies */}
-            {comment.replies && comment.replies.length > 0 && (
-                <div className="mt-2 space-y-2">
-                    {comment.replies.map((reply) => (
-                        <CommentItem key={reply.id} comment={reply} depth={depth + 1} onReply={onReply} onDelete={onDelete} />
-                    ))}
-                </div>
-            )}
-        </div>
-    );
-};
+export interface Post {
+    id: string;
+    content: string;
+    authorId: string;
+    author: {
+        id: string;
+        name: string;
+        image: string;
+        role: string;
+    };
+    createdAt: string;
+    images?: Image[];
+    likes: Array<{ id: string; userId?: string }>;
+    comments: Comment[];
+}
 
 export default function HomePage() {
     const { data: session, isPending } = authClient.useSession();
@@ -165,10 +106,7 @@ export default function HomePage() {
     const [uploadProgress, setUploadProgress] = useState<{ [key: string]: number }>({});
     const [togglingLikes, setTogglingLikes] = useState<Record<string, boolean>>({});
     const [selectedPostForComments, setSelectedPostForComments] = useState<Post | null>(null);
-    const [commentInputValue, setCommentInputValue] = useState("");
-    const [postingComment, setPostingComment] = useState(false);
-    const [replyTargetUser, setReplyTargetUser] = useState<{ id: string; name: string } | null>(null);
-    const [replyParentId, setReplyParentId] = useState<string | null>(null);
+    const [eventSource, setEventSource] = useState<EventSource | null>(null);
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
     const [searchTerm, setSearchTerm] = useState("");
     const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
@@ -210,7 +148,7 @@ export default function HomePage() {
                                 email: session.user.email || "",
                                 emailVerified: true,
                                 image: session.user.image || "",
-                                role: (session.user as any).role || "",
+                                role: (session.user as any).role || "user",
                                 createdAt: new Date().toISOString(),
                                 updatedAt: new Date().toISOString(),
                             },
@@ -247,7 +185,7 @@ export default function HomePage() {
                                         email: session.user.email || "",
                                         emailVerified: true,
                                         image: session.user.image || "",
-                                        role: (session.user as any).role || "",
+                                        role: (session.user as any).role || "user",
                                         createdAt: new Date().toISOString(),
                                         updatedAt: new Date().toISOString(),
                                     },
@@ -266,16 +204,6 @@ export default function HomePage() {
                 return next;
             });
         }
-    };
-
-    const [commentTexts, setCommentTexts] = useState<{ [key: string]: string }>({});
-    const handleCommentChange = (id: string, value: string) => {
-        setCommentTexts({ ...commentTexts, [id]: value });
-    };
-    const handleAddComment = (id: string) => {
-        if (!commentTexts[id]) return;
-        // setPosts((prev) => prev.map((p) => (p.id === id ? { ...p, comments: (p.comments || 0) + 1 } : p)));
-        setCommentTexts({ ...commentTexts, [id]: "" });
     };
 
     const fetchPosts = async (pageNum: number = 1, append: boolean = false) => {
@@ -343,6 +271,64 @@ export default function HomePage() {
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
     }, [hasMore, loadingMore, loading, page]);
+
+    // SSE for realtime comments and likes on selected post
+    useEffect(() => {
+        if (!selectedPostForComments) {
+            if (eventSource) {
+                eventSource.close();
+                setEventSource(null);
+            }
+            return;
+        }
+
+        const es = new EventSource(`/api/sse?postId=${selectedPostForComments.id}`);
+        setEventSource(es);
+
+        es.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            if (data.newComments && data.newComments.length > 0) {
+                // Filter out comments that are already in the local state
+                setSelectedPostForComments((prev) => {
+                    if (!prev) return prev;
+                    const existingCommentIds = new Set(prev.comments.flatMap((c) => [c.id, ...(c.replies?.map((r) => r.id) || [])]));
+                    const newCommentsOnly = data.newComments.filter((c: any) => !existingCommentIds.has(c.id));
+                    if (newCommentsOnly.length === 0) return prev;
+                    return {
+                        ...prev,
+                        comments: [...prev.comments, ...newCommentsOnly],
+                    };
+                });
+
+                // Update posts list with the same filtering
+                setPosts((prev) =>
+                    prev.map((p) => {
+                        if (p.id === selectedPostForComments.id) {
+                            const existingCommentIds = new Set(p.comments.flatMap((c) => [c.id, ...(c.replies?.map((r) => r.id) || [])]));
+                            const newCommentsOnly = data.newComments.filter((c: any) => !existingCommentIds.has(c.id));
+                            if (newCommentsOnly.length === 0) return p;
+                            return { ...p, comments: [...p.comments, ...newCommentsOnly] };
+                        }
+                        return p;
+                    }),
+                );
+            }
+
+            if (data.newLikes && data.newLikes.length > 0) {
+                // Update selectedPostForComments (if needed, but likes are on post)
+                // Update posts list
+                setPosts((prev) => prev.map((p) => (p.id === selectedPostForComments.id ? { ...p, likes: [...p.likes, ...data.newLikes] } : p)));
+            }
+        };
+
+        es.onerror = (error) => {
+            console.error("SSE Error:", error);
+        };
+
+        return () => {
+            es.close();
+        };
+    }, [selectedPostForComments]);
 
     const uploadImagesToS3 = async (files: File[]) => {
         const uploadedUrls: string[] = [];
@@ -512,249 +498,101 @@ export default function HomePage() {
                 ) : posts.length === 0 ? (
                     <p className="text-center text-gray-500">Tidak ada postingan.</p>
                 ) : (
-                    posts.map((post, i) => (
-                        <Card key={i} className="transition-all hover:shadow-md dark:border-gray-700 dark:bg-gray-800">
-                            <CardHeader>
-                                <div className="flex items-center space-x-3">
-                                    <Image
-                                        src={
-                                            post.author.image ||
-                                            "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiNFNUU3RUIiLz4KPHBhdGggZD0iTTIwIDIwQzIyLjc2MTQgMjAgMjUgMTcuNzYxNCAyNSAxNUMyNSAxMi4yMzg2IDIyLjc2MTQgMTAgMjAgMTBDMTcuMjM4NiAxMCAxNSAxMi4yMzg2IDE1IDE1QzE1IDE3Ljc2MTQgMTcgMjAgMjBaIiBmaWxsPSIjOUNBM0FGIi8+Cjwvc3ZnPgo="
-                                        }
-                                        alt={post.author.name}
-                                        width={40}
-                                        height={40}
-                                        className="rounded-full"
-                                    />
-                                    <div>
-                                        <CardTitle className="flex items-center gap-2 text-lg font-semibold">
-                                            {post.author.name}
-                                            <span className={`rounded-full px-2 py-0.5 text-xs ${post.author.role === "admin" ? "bg-red-500/20 text-red-500" : "bg-green-500/20 text-green-500"}`}>{post.author.role}</span>
-                                        </CardTitle>
-                                        <p className="text-sm text-gray-500 dark:text-gray-400">{post.createdAt}</p>
-                                    </div>
-                                    <div className="ml-auto flex items-center gap-2">
-                                        {(post.authorId === session?.user.id || (session?.user as any).role === "admin") && (
-                                            <DropdownMenu>
-                                                <DropdownMenuTrigger asChild>
-                                                    <button className="rounded p-1 hover:bg-gray-100 dark:hover:bg-gray-800">
-                                                        <MoreHorizontal className="h-4 w-4" />
-                                                    </button>
-                                                </DropdownMenuTrigger>
-                                                <DropdownMenuContent>
-                                                    <DropdownMenuItem
-                                                        className="text-destructive"
-                                                        onSelect={async () => {
-                                                            try {
-                                                                await axios.delete(`/api/komunitas?id=${encodeURIComponent(post.id)}`);
-                                                                setPosts((prev) => prev.filter((p) => p.id !== post.id));
-                                                                if (selectedPostForComments?.id === post.id) setSelectedPostForComments(null);
-                                                            } catch (err) {
-                                                                console.error("Gagal hapus post", err);
-                                                            }
-                                                        }}
-                                                    >
-                                                        Hapus
-                                                    </DropdownMenuItem>
-                                                </DropdownMenuContent>
-                                            </DropdownMenu>
-                                        )}
-                                    </div>
-                                </div>
-                            </CardHeader>
-
-                            <CardContent>
-                                <p className="mb-4">{post.content}</p>
-
-                                {post.images && post.images.length > 0 && (
-                                    <div className="mb-4 grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3">
-                                        {post.images.map((v, index) => (
-                                            <div key={v.id} className="relative aspect-video cursor-pointer overflow-hidden rounded-xl transition-opacity hover:opacity-90" onClick={() => setSelectedImage(v.url)}>
-                                                <Image src={v.url} alt={`Post image ${v.id}`} fill className="object-cover" sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw" priority={index === 0} loading={index < 3 ? "eager" : "lazy"} />
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-
-                                <div className="flex items-center space-x-6 text-sm">
-                                    <button onClick={() => handleLike(post.id)} disabled={!!togglingLikes[post.id]} className={`flex items-center space-x-1 transition ${togglingLikes[post.id] ? "pointer-events-none opacity-50" : "hover:text-red-500"}`} aria-busy={!!togglingLikes[post.id]}>
-                                        <Heart className="h-4 w-4" />
-                                        <span>{post.likes.length}</span>
-                                    </button>
-                                    <button
-                                        onClick={() => {
-                                            setSelectedPostForComments(post);
-                                            setCommentInputValue("");
-                                            setReplyTargetUser(null);
-                                            setReplyParentId(null);
-                                        }}
-                                        className={`flex items-center space-x-1 transition hover:text-sky-500`}
-                                    >
-                                        <MessageCircle className="h-4 w-4" />
-                                        <span>{post.comments.length}</span>
-                                    </button>
-                                </div>
-                            </CardContent>
-                        </Card>
+                    posts.map((post) => (
+                        <PostItem
+                            key={post.id}
+                            post={post}
+                            onLike={handleLike}
+                            onCommentClick={(post) => setSelectedPostForComments(post)}
+                            onDelete={async (id) => {
+                                try {
+                                    await axios.delete(`/api/komunitas?id=${encodeURIComponent(id)}`);
+                                    setPosts((prev) => prev.filter((p) => p.id !== id));
+                                    if (selectedPostForComments?.id === id) setSelectedPostForComments(null);
+                                } catch (err) {
+                                    console.error("Gagal hapus post", err);
+                                }
+                            }}
+                            togglingLikes={togglingLikes}
+                            session={session}
+                        />
                     ))
                 )}
                 {loadingMore && <p className="text-center text-gray-500">Memuat lebih banyak...</p>}
-            </div>{" "}
-            {/* Comments dialog (different layout) */}
-            <Dialog
-                open={!!selectedPostForComments}
-                onOpenChange={(open) => {
-                    if (!open) setSelectedPostForComments(null);
-                }}
-            >
-                <DialogContent className="flex h-[80vh] w-full max-w-4xl flex-col">
-                    <DialogHeader>
-                        <DialogTitle>Komentar</DialogTitle>
-                    </DialogHeader>
-                    <div className="flex flex-1 flex-col gap-4 overflow-hidden">
-                        {/* Composer */}
-                        <div className="shrink-0 border-b p-4">
-                            <Textarea value={commentInputValue} onChange={(e) => setCommentInputValue(e.target.value)} placeholder="Tulis komentar di sini..." className="dark:border-gray-700 dark:bg-gray-800" />
-                            <div className="mt-2 flex gap-2">
-                                <Button
-                                    className="flex-1"
-                                    onClick={async () => {
-                                        if (!selectedPostForComments || !commentInputValue.trim()) return;
-                                        setPostingComment(true);
-                                        try {
-                                            const res = await axios.post("/api/komunitas/komentar", { postId: selectedPostForComments.id, content: commentInputValue.trim(), targetUserId: replyTargetUser?.id ?? null, parentId: replyParentId });
-                                            if (res.data?.success) {
-                                                const comment = res.data.comment as Comment;
-                                                // update local posts state: append comment to the right place
-                                                setPosts((prev) =>
-                                                    prev.map((p) => {
-                                                        if (p.id === selectedPostForComments.id) {
-                                                            if (comment.parentId) {
-                                                                // it's a reply, add to parent's replies
-                                                                return {
-                                                                    ...p,
-                                                                    comments: p.comments.map((c) => (c.id === comment.parentId ? { ...c, replies: [...(c.replies || []), comment] } : c)),
-                                                                };
-                                                            } else {
-                                                                // it's a top-level comment
-                                                                return { ...p, comments: [...(p.comments || []), comment] };
-                                                            }
-                                                        }
-                                                        return p;
-                                                    }),
-                                                );
-                                                // update selectedPostForComments
-                                                setSelectedPostForComments((prev) => {
-                                                    if (!prev) return prev;
-                                                    if (comment.parentId) {
-                                                        // add to parent's replies
-                                                        return {
-                                                            ...prev,
-                                                            comments: prev.comments.map((c) => (c.id === comment.parentId ? { ...c, replies: [...(c.replies || []), comment] } : c)),
-                                                        };
-                                                    } else {
-                                                        // add as top-level comment
-                                                        return { ...prev, comments: [...(prev.comments || []), comment] };
-                                                    }
-                                                });
-                                                setCommentInputValue("");
-                                                setReplyTargetUser(null);
-                                                setReplyParentId(null);
-                                            }
-                                        } catch (err) {
-                                            console.error("Gagal kirim komentar", err);
-                                        } finally {
-                                            setPostingComment(false);
-                                        }
-                                    }}
-                                    disabled={postingComment}
-                                >
-                                    {postingComment ? "Mengirim..." : "Kirim Komentar"}
-                                </Button>
-                                <Button variant="ghost" onClick={() => setSelectedPostForComments(null)}>
-                                    Tutup
-                                </Button>
-                            </div>
-                        </div>
+            </div>
 
-                        {/* Comments list */}
-                        <div className="flex-1 overflow-auto p-4">
-                            <h3 className="mb-4 text-lg font-semibold">Komentar</h3>
-                            {!selectedPostForComments ? (
-                                <p className="text-sm text-gray-500">Pilih postingan untuk melihat komentar.</p>
-                            ) : selectedPostForComments.comments.length === 0 ? (
-                                <p className="text-sm text-gray-500">Belum ada komentar. Jadilah yang pertama!</p>
-                            ) : (
-                                <div className="space-y-4">
-                                    {selectedPostForComments.comments.map((c) => (
-                                        <CommentItem
-                                            key={c.id}
-                                            comment={c}
-                                            onReply={(comment) => {
-                                                setReplyTargetUser({ id: comment.author.id, name: comment.author.name });
-                                                setReplyParentId(comment.id);
-                                                setCommentInputValue(`@${comment.author.name} `);
-                                            }}
-                                            onDelete={async (comment) => {
-                                                try {
-                                                    await axios.delete("/api/komunitas/komentar", { data: { commentId: comment.id } });
-                                                    // remove from selectedPostForComments and posts
-                                                    setSelectedPostForComments((prev) => {
-                                                        if (!prev) return prev;
-                                                        if (comment.parentId) {
-                                                            // remove from parent's replies
-                                                            return {
-                                                                ...prev,
-                                                                comments: prev.comments.map((pc) => (pc.id === comment.parentId ? { ...pc, replies: (pc.replies || []).filter((r) => r.id !== comment.id) } : pc)),
-                                                            };
-                                                        } else {
-                                                            // remove from top-level comments
-                                                            return { ...prev, comments: prev.comments.filter((x) => x.id !== comment.id) };
-                                                        }
-                                                    });
-                                                    setPosts((prev) =>
-                                                        prev.map((p) => {
-                                                            if (p.id === selectedPostForComments?.id) {
-                                                                if (comment.parentId) {
-                                                                    // remove from parent's replies
-                                                                    return {
-                                                                        ...p,
-                                                                        comments: p.comments.map((pc) => (pc.id === comment.parentId ? { ...pc, replies: (pc.replies || []).filter((r) => r.id !== comment.id) } : pc)),
-                                                                    };
-                                                                } else {
-                                                                    // remove from top-level comments
-                                                                    return { ...p, comments: p.comments.filter((x) => x.id !== comment.id) };
-                                                                }
-                                                            }
-                                                            return p;
-                                                        }),
-                                                    );
-                                                } catch (err) {
-                                                    console.error("Gagal hapus komentar", err);
-                                                }
-                                            }}
-                                        />
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                </DialogContent>
-            </Dialog>
-            {/* Image dialog */}
-            <Dialog
-                open={!!selectedImage}
-                onOpenChange={(open) => {
-                    if (!open) setSelectedImage(null);
+            <CommentsDialog
+                selectedPost={selectedPostForComments}
+                onClose={() => setSelectedPostForComments(null)}
+                onCommentSubmit={(comment) => {
+                    // update local posts state: append comment to the right place
+                    setPosts((prev) =>
+                        prev.map((p) => {
+                            if (p.id === selectedPostForComments?.id) {
+                                if (comment.parentId) {
+                                    // it's a reply, add to parent's replies
+                                    return {
+                                        ...p,
+                                        comments: p.comments.map((c) => (c.id === comment.parentId ? { ...c, replies: [...(c.replies || []), comment] } : c)),
+                                    };
+                                } else {
+                                    // it's a top-level comment
+                                    return { ...p, comments: [...(p.comments || []), comment] };
+                                }
+                            }
+                            return p;
+                        }),
+                    );
+                    // update selectedPostForComments
+                    setSelectedPostForComments((prev) => {
+                        if (!prev) return prev;
+                        if (comment.parentId) {
+                            // add to parent's replies
+                            return {
+                                ...prev,
+                                comments: prev.comments.map((c) => (c.id === comment.parentId ? { ...c, replies: [...(c.replies || []), comment] } : c)),
+                            };
+                        } else {
+                            // add as top-level comment
+                            return { ...prev, comments: [...(prev.comments || []), comment] };
+                        }
+                    });
                 }}
-            >
-                <DialogContent className="max-h-[90vh] max-w-4xl overflow-auto">
-                    <DialogHeader>
-                        <DialogTitle>Gambar</DialogTitle>
-                    </DialogHeader>
-                    {selectedImage && <Image src={selectedImage} alt="Full image" width={800} height={600} className="h-auto w-full rounded-lg" />}
-                </DialogContent>
-            </Dialog>
+                onCommentDelete={(comment) => {
+                    // remove from selectedPostForComments and posts
+                    setSelectedPostForComments((prev) => {
+                        if (!prev) return prev;
+                        if (comment.parentId) {
+                            // remove from parent's replies
+                            return {
+                                ...prev,
+                                comments: prev.comments.map((pc) => (pc.id === comment.parentId ? { ...pc, replies: (pc.replies || []).filter((r) => r.id !== comment.id) } : pc)),
+                            };
+                        } else {
+                            // remove from top-level comments
+                            return { ...prev, comments: prev.comments.filter((x) => x.id !== comment.id) };
+                        }
+                    });
+                    setPosts((prev) =>
+                        prev.map((p) => {
+                            if (p.id === selectedPostForComments?.id) {
+                                if (comment.parentId) {
+                                    // remove from parent's replies
+                                    return {
+                                        ...p,
+                                        comments: p.comments.map((pc) => (pc.id === comment.parentId ? { ...pc, replies: (pc.replies || []).filter((r) => r.id !== comment.id) } : pc)),
+                                    };
+                                } else {
+                                    // remove from top-level comments
+                                    return { ...p, comments: p.comments.filter((x) => x.id !== comment.id) };
+                                }
+                            }
+                            return p;
+                        }),
+                    );
+                }}
+                session={session}
+            />
         </div>
     );
 }

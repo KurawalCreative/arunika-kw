@@ -91,7 +91,6 @@ model User {
     followers     Follow[]  @relation("followers")
     following     Follow[]  @relation("following")
 
-    // relasi tambahan: komentar yang ditujukan ke user ini
     receivedComments Comment[] @relation("UserComments")
 
     @@unique([email])
