@@ -99,7 +99,7 @@ export async function toggleLike(postId: string) {
 
 export async function getComments(postId: string) {
     const comments = await prisma.comment.findMany({
-        where: { postId, parentId: null },
+        where: { postId, parent: null },
         include: { author: true, replies: { include: { author: true } } },
         orderBy: { createdAt: "desc" },
     });

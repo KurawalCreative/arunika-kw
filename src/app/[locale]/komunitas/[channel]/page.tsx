@@ -1,6 +1,7 @@
 "use client";
 
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Channel, Post, PostImage, User } from "@/generated/prisma/client";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -9,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { MinimalTiptap } from "@/components/ui/shadcn-io/minimal-tiptap";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { XIcon, Heart, MoreVertical, Loader2, ChevronDown, ChevronUp, Search, Upload, Send } from "lucide-react";
+import { XIcon, Heart, MoreVertical, Loader2, ChevronDown, ChevronUp, Search, Upload, Send, Trash2, MessageCircle } from "lucide-react";
 import axios, { AxiosProgressEvent } from "axios";
 import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -24,6 +25,7 @@ export default function page() {
     const [previews, setPreviews] = useState<string[]>([]);
     const [uploadProgress, setUploadProgress] = useState<number[]>([]);
     const [isOpen, setIsOpen] = useState(false);
+    const [isUploading, setIsUploading] = useState(false);
     const [posts, setPosts] = useState<(Post & { author: User; images: PostImage[]; _count: { likes: number; comments: number }; isLikedByUser: boolean })[]>([]);
     const [expandedComments, setExpandedComments] = useState<string[]>([]);
     const [comments, setComments] = useState<Record<string, any[]>>({});
@@ -31,12 +33,16 @@ export default function page() {
     const [replyingTo, setReplyingTo] = useState<string | null>(null);
     const [replyInput, setReplyInput] = useState<Record<string, string>>({});
     const [openMenu, setOpenMenu] = useState<string | null>(null);
+    const [openReplyMenu, setOpenReplyMenu] = useState<string | null>(null);
     const [loadingLike, setLoadingLike] = useState<string[]>([]);
     const [loadingComment, setLoadingComment] = useState<string[]>([]);
     const [loadingReply, setLoadingReply] = useState<string[]>([]);
     const [deletingPost, setDeletingPost] = useState<string[]>([]);
     const [deletingComment, setDeletingComment] = useState<string[]>([]);
+    const [deletingReply, setDeletingReply] = useState<string[]>([]);
     const [searchQuery, setSearchQuery] = useState("");
+    const [loadingComments, setLoadingComments] = useState<string[]>([]);
+    const [isSearching, setIsSearching] = useState(false);
 
     useEffect(() => {
         setLoadingPage(true);
@@ -52,6 +58,7 @@ export default function page() {
     }, [previews]);
 
     const handleSearch = async () => {
+        setIsSearching(true);
         if (!searchQuery.trim()) {
             const data = await getPost(params.channel);
             setPosts(data || []);
@@ -59,6 +66,7 @@ export default function page() {
             const data = await searchPosts(params.channel, searchQuery);
             setPosts(data || []);
         }
+        setIsSearching(false);
     };
 
     const onFilesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -80,6 +88,7 @@ export default function page() {
     };
 
     const handleUpload = async () => {
+        setIsUploading(true);
         var images = [];
 
         let i = -1;
@@ -122,7 +131,12 @@ export default function page() {
         }
 
         await storePost(content, images, params.channel);
+        setIsUploading(false);
         setIsOpen(false);
+        setContent("");
+        setFiles([]);
+        setPreviews([]);
+        setUploadProgress([]);
     };
 
     const handleToggleComments = async (postId: string) => {
@@ -131,8 +145,10 @@ export default function page() {
         } else {
             setExpandedComments((prev) => [...prev, postId]);
             if (!comments[postId]) {
+                setLoadingComments((prev) => [...prev, postId]);
                 const data = await getComments(postId);
                 setComments((prev) => ({ ...prev, [postId]: data }));
+                setLoadingComments((prev) => prev.filter((id) => id !== postId));
             }
         }
     };
@@ -188,6 +204,7 @@ export default function page() {
     };
 
     const handleDeleteReply = async (replyId: string, commentId: string, postId: string) => {
+        setDeletingReply((prev) => [...prev, replyId]);
         const success = await deleteReply(replyId);
         if (success) {
             setComments((prev) => ({
@@ -200,7 +217,15 @@ export default function page() {
                         return c;
                     }) || [],
             }));
+
+            setPosts((prev) => {
+                const copy = [...prev];
+                const post = copy.find((p) => p.id === postId);
+                if (post) post._count.comments = Math.max(0, post._count.comments - 1);
+                return copy;
+            });
         }
+        setDeletingReply((prev) => prev.filter((id) => id !== replyId));
     };
 
     const handleDeletePost = async (postId: string) => {
@@ -256,137 +281,150 @@ export default function page() {
 
     if (loadingPage) {
         return (
-            <div className="flex w-full items-center justify-center py-12">
-                <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+            <div className="flex w-full items-center justify-center py-20">
+                <Loader2 className="h-8 w-8 animate-spin text-blue-400" />
             </div>
         );
     }
 
     return (
-        <div className="flex w-full flex-1 flex-col">
+        <div className="w-full space-y-6">
             {/* Header */}
-            <div className="sticky top-0 z-10 border-b bg-white">
-                <div className="flex items-center justify-between px-6 py-4">
-                    <div>
-                        <h1 className="text-xl font-bold text-gray-900">{channel?.name}</h1>
-                        <p className="text-sm text-gray-500">{channel?.description}</p>
+            <div className="rounded-lg border border-gray-200 bg-white p-6 backdrop-blur-sm transition-colors dark:border-slate-700 dark:bg-slate-800/50">
+                <div className="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+                    <div className="min-w-0 flex-1">
+                        <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl dark:text-white">#{channel?.name}</h1>
+                        <p className="mt-1 text-gray-600 dark:text-slate-400">{channel?.description}</p>
                     </div>
-                    <Button onClick={() => setIsOpen(true)} size="sm" className="gap-2">
+                    <Button onClick={() => setIsOpen(true)} className="w-full gap-2 bg-blue-600 hover:bg-blue-700 sm:w-auto">
                         <Upload className="h-4 w-4" />
                         Buat Post
                     </Button>
                 </div>
 
                 {/* Search Bar */}
-                <div className="border-t bg-gray-50 px-6 py-3">
-                    <div className="flex gap-2">
-                        <div className="relative flex-1">
-                            <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
-                            <Input placeholder="Cari postingan..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} onKeyPress={(e) => e.key === "Enter" && handleSearch()} className="pl-10" />
-                        </div>
-                        <Button onClick={handleSearch} size="sm">
-                            Cari
-                        </Button>
+                <div className="flex flex-col gap-2 sm:flex-row">
+                    <div className="relative flex-1">
+                        <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400 dark:text-slate-500" />
+                        <Input placeholder="Cari postingan..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} onKeyPress={(e) => e.key === "Enter" && handleSearch()} className="border-gray-200 bg-gray-50 pl-10 text-gray-900 placeholder-gray-500 dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:placeholder-slate-500" />
                     </div>
+                    <Button onClick={handleSearch} disabled={isSearching} variant="outline" className="border-gray-200 text-gray-700 transition-colors hover:bg-gray-100 disabled:opacity-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800">
+                        {isSearching ? (
+                            <>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                Mencari...
+                            </>
+                        ) : (
+                            "Cari"
+                        )}
+                    </Button>
                 </div>
             </div>
 
             {/* Upload Dialog */}
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
-                <DialogContent className="max-h-[80vh] p-6">
-                    {/* scrollable area */}
+                <DialogContent className="border-gray-200 bg-white transition-colors dark:border-slate-700 dark:bg-slate-900">
                     <div className="max-h-[60vh] space-y-4 overflow-auto">
                         <DialogHeader>
-                            <DialogTitle>Buat postingan baru di {channel?.name}</DialogTitle>
-                            <DialogDescription>Bagikan tulisan, foto, atau video dengan komunitas. Setelah siap, tekan "Kirim" untuk memulai proses unggah.</DialogDescription>
+                            <DialogTitle className="text-gray-900 dark:text-white">Buat postingan di #{channel?.name}</DialogTitle>
+                            <DialogDescription className="text-gray-600 dark:text-slate-400">Bagikan pemikiran Anda dengan komunitas</DialogDescription>
                         </DialogHeader>
 
-                        <div className="space-y-2">
-                            <Label>Tulis konten</Label>
-                            <MinimalTiptap
-                                // content={"content"}
-                                onChange={setContent}
-                                placeholder="Tulis sesuatu di sini..."
-                                className="mb-4 min-h-[200px]"
-                            />
+                        <div className="space-y-4">
+                            <div>
+                                <Label className="text-gray-700 dark:text-slate-300">Konten</Label>
+                                <MinimalTiptap onChange={setContent} placeholder="Tulis sesuatu..." className="mt-2 min-h-[150px]" />
+                            </div>
 
-                            <Label>Unggah foto / video (boleh multiple)</Label>
-                            <Input type="file" accept="image/*,video/*" multiple onChange={onFilesChange} className="mt-1" />
+                            <div>
+                                <Label className="text-gray-700 dark:text-slate-300">Media</Label>
+                                <Input type="file" accept="image/*,video/*" multiple onChange={onFilesChange} className="mt-2 border-gray-200 bg-gray-50 text-gray-900 dark:border-slate-700 dark:bg-slate-800 dark:text-white" />
+                            </div>
 
                             {previews.length > 0 && (
-                                <div className="mt-3 grid grid-cols-3 gap-2">
-                                    {previews.map((url, idx) => {
-                                        const file = files[idx];
-                                        const isVideo = file?.type.startsWith("video");
-                                        return (
-                                            <div key={url} className="relative overflow-hidden rounded-md border">
-                                                {isVideo ? <video src={url} controls className="relative h-28 w-full object-cover" /> : <img src={url} alt={`preview-${idx}`} className="relative h-28 w-full object-cover" />}
-                                                <button type="button" onClick={() => removePreview(idx)} aria-label={`Hapus preview ${idx + 1}`} className="absolute top-1 right-1 z-10 rounded-md bg-red-500 p-1">
-                                                    <XIcon className="h-5 w-5 text-white" />
-                                                </button>
-                                                {/* progress overlay */}
-                                                {typeof uploadProgress[idx] === "number" && uploadProgress[idx] > 0 && uploadProgress[idx] < 100 && (
-                                                    <div className="absolute inset-x-0 bottom-0 flex items-center justify-between bg-black/40 px-2 py-1 text-xs text-white">
-                                                        <div className="mr-2 h-1 flex-1 overflow-hidden rounded bg-white/30">
-                                                            <div className="h-1 bg-green-400" style={{ width: `${uploadProgress[idx]}%` }} />
-                                                        </div>
-                                                        <div className="w-12 text-right">{uploadProgress[idx]}%</div>
-                                                    </div>
-                                                )}
-                                                {uploadProgress[idx] === 100 && <div className="absolute inset-x-0 bottom-0 flex items-center justify-center bg-black/40 px-2 py-1 text-xs text-white">Terunggah</div>}
-                                            </div>
-                                        );
-                                    })}
+                                <div className="grid grid-cols-3 gap-2">
+                                    {previews.map((url, idx) => (
+                                        <div key={url} className="group relative">
+                                            {files[idx]?.type.startsWith("video") ? <video src={url} className="h-24 w-full rounded-lg object-cover" /> : <img src={url} alt={`preview-${idx}`} className="h-24 w-full rounded-lg object-cover" />}
+                                            <button onClick={() => removePreview(idx)} className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/50 opacity-0 transition-opacity group-hover:opacity-100">
+                                                <XIcon className="h-5 w-5 text-white" />
+                                            </button>
+                                        </div>
+                                    ))}
                                 </div>
                             )}
                         </div>
                     </div>
 
-                    {/* sticky footer so tombol tetap terlihat */}
                     <DialogFooter>
-                        <Button onClick={handleUpload}>Kirim</Button>
+                        <Button onClick={handleUpload} disabled={isUploading} className="w-full bg-blue-600 transition-colors hover:bg-blue-700 disabled:opacity-50">
+                            {isUploading ? (
+                                <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    Mengunggah...
+                                </>
+                            ) : (
+                                "Posting"
+                            )}
+                        </Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
 
             {/* Posts List */}
-            <div className="flex-1 bg-white">
-                {posts.length === 0 ? (
-                    <div className="flex h-64 flex-col items-center justify-center text-gray-500">
-                        <p className="text-lg">Belum ada postingan</p>
-                        <p className="text-sm">Jadilah yang pertama berbagi!</p>
-                    </div>
-                ) : (
-                    posts.map((post, i) => (
-                        <div key={post.id} className="border-b p-6 transition-colors hover:bg-gray-50">
+            {posts.length === 0 ? (
+                <div className="flex flex-col items-center justify-center rounded-lg border border-gray-200 bg-white py-20 text-gray-500 transition-colors dark:border-slate-700 dark:bg-slate-800/50 dark:text-slate-400">
+                    <MessageCircle className="mb-4 h-12 w-12 opacity-50" />
+                    <p className="text-lg text-gray-700 dark:text-slate-300">Belum ada postingan</p>
+                    <p className="text-sm">Jadilah yang pertama berbagi</p>
+                </div>
+            ) : (
+                <div className="space-y-4">
+                    {posts.map((post, i) => (
+                        <div key={post.id} className="rounded-lg border border-gray-200 bg-white p-4 transition-all hover:border-blue-200 hover:shadow-sm sm:p-6 dark:border-slate-700 dark:bg-slate-800/50 dark:hover:border-slate-600 dark:hover:shadow-none">
                             {/* Header */}
-                            <div className="mb-3 flex items-center justify-between">
-                                <div className="flex items-center gap-3">
-                                    <Image width={40} height={40} src={post.author.image || ""} alt={post.author.name || ""} className="h-10 w-10 rounded-full" />
-                                    <div className="flex flex-col">
-                                        <span className="font-semibold text-gray-900">{post.author.name}</span>
-                                        <span className="text-xs text-gray-500">{new Date(post.createdAt).toLocaleString()}</span>
+                            <div className="mb-4 flex items-center justify-between">
+                                <div className="flex min-w-0 items-center gap-3">
+                                    <Image width={40} height={40} src={post.author.image || ""} alt={post.author.name || ""} className="h-10 w-10 shrink-0 rounded-full" />
+                                    <div className="min-w-0 flex-1">
+                                        <p className="truncate font-semibold text-gray-900 dark:text-white">{post.author.name}</p>
+                                        <p className="text-xs text-gray-500 dark:text-slate-400">{new Date(post.createdAt).toLocaleString()}</p>
                                     </div>
                                 </div>
 
-                                <div className="relative">
-                                    <button onClick={() => setOpenMenu(openMenu === post.id ? null : post.id)} className="rounded p-1 hover:bg-gray-200">
-                                        <MoreVertical size={18} />
-                                    </button>
-                                    {openMenu === post.id && (
-                                        <div className="absolute right-0 z-10 mt-1 w-32 rounded border bg-white shadow-lg">
-                                            <button onClick={() => handleDeletePost(post.id)} className="w-full px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50 disabled:opacity-50" disabled={deletingPost.includes(post.id)}>
-                                                Hapus
-                                            </button>
-                                        </div>
-                                    )}
-                                </div>
+                                <DropdownMenu open={openMenu === post.id} onOpenChange={(open) => setOpenMenu(open ? post.id : null)}>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 disabled:opacity-50 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-white" disabled={deletingPost.includes(post.id)}>
+                                            <MoreVertical className="h-4 w-4" />
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end">
+                                        <DropdownMenuItem onClick={() => handleDeletePost(post.id)} className="text-red-600 transition-colors focus:bg-red-50 focus:text-red-600 dark:focus:bg-red-500/10" disabled={deletingPost.includes(post.id)}>
+                                            {deletingPost.includes(post.id) ? (
+                                                <>
+                                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                    Menghapus...
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <Trash2 className="mr-2 h-4 w-4" />
+                                                    Hapus
+                                                </>
+                                            )}
+                                        </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
                             </div>
 
                             {/* Content */}
-                            <div dangerouslySetInnerHTML={{ __html: post.content }} className="mb-4 text-gray-900" />
+                            <div
+                                dangerouslySetInnerHTML={{
+                                    __html: post.content,
+                                }}
+                                className="prose dark:prose-invert prose-p:mb-2 prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-strong:text-gray-900 dark:prose-strong:text-white mb-4 max-w-none text-gray-700 dark:text-slate-300"
+                            />
 
-                            {/* Images / Video: detect extension and render video tag when needed */}
+                            {/* Images / Video */}
                             {post.images.length > 0 && (
                                 <div className="mb-4 grid grid-cols-2 gap-2 sm:grid-cols-3">
                                     {post.images.map((image, idx) => {
@@ -399,95 +437,154 @@ export default function page() {
                             )}
 
                             {/* Actions */}
-                            <div className="flex items-center gap-6 border-t pt-3">
-                                <button onClick={() => handleLike(post.id, i)} disabled={loadingLike.includes(post.id)} className="flex items-center gap-2 rounded-lg px-3 py-1.5 transition-colors hover:bg-red-50 disabled:opacity-50">
-                                    {loadingLike.includes(post.id) ? <Loader2 className="h-4 w-4 animate-spin" /> : <Heart key={i} className={`h-4 w-4 ${post.isLikedByUser ? "fill-red-500 text-red-500" : "text-gray-600"}`} />}
-                                    <span className={post.isLikedByUser ? "font-semibold text-red-500" : "text-gray-600"}>{post._count.likes}</span>
+                            <div className="mb-4 flex flex-wrap items-center gap-4 border-t border-gray-200 pt-4 dark:border-slate-700">
+                                <button onClick={() => handleLike(post.id, i)} disabled={loadingLike.includes(post.id)} className="flex items-center gap-2 rounded-lg px-3 py-1.5 text-gray-600 transition-colors hover:bg-red-50 hover:text-red-600 disabled:opacity-50 dark:text-slate-400 dark:hover:bg-red-500/10 dark:hover:text-red-400">
+                                    {loadingLike.includes(post.id) ? <Loader2 className="h-4 w-4 animate-spin" /> : <Heart className={`h-4 w-4 ${post.isLikedByUser ? "fill-red-500 text-red-500" : ""}`} />}
+                                    <span className={post.isLikedByUser ? "font-semibold text-red-500" : ""}>{post._count.likes}</span>
                                 </button>
 
-                                <button onClick={() => handleToggleComments(post.id)} className="flex items-center gap-2 rounded-lg px-3 py-1.5 text-gray-600 transition-colors hover:bg-blue-50">
+                                <button onClick={() => handleToggleComments(post.id)} className="flex items-center gap-2 rounded-lg px-3 py-1.5 text-gray-600 transition-colors hover:bg-blue-50 hover:text-blue-600 dark:text-slate-400 dark:hover:bg-blue-500/10 dark:hover:text-blue-400">
                                     {expandedComments.includes(post.id) ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-                                    <span>{post._count.comments} Komentar</span>
+                                    <span>{post._count.comments}</span>
                                 </button>
                             </div>
 
                             {/* Comments Section */}
                             {expandedComments.includes(post.id) && (
-                                <div className="mt-4 space-y-3 border-t pt-4">
-                                    {/* Add Comment Form */}
-                                    <div className="flex gap-2">
-                                        <Input placeholder="Tulis komentar..." value={commentInput[post.id] || ""} onChange={(e) => setCommentInput((prev) => ({ ...prev, [post.id]: e.target.value }))} disabled={loadingComment.includes(post.id)} />
-                                        <Button onClick={() => handlePostComment(post.id)} size="sm" disabled={loadingComment.includes(post.id)}>
-                                            {loadingComment.includes(post.id) ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-                                        </Button>
-                                    </div>
+                                <div className="space-y-4 border-t border-gray-200 pt-4 dark:border-slate-700">
+                                    {loadingComments.includes(post.id) ? (
+                                        <div className="flex items-center justify-center py-8">
+                                            <Loader2 className="h-6 w-6 animate-spin text-blue-400" />
+                                        </div>
+                                    ) : (
+                                        <>
+                                            {/* Add Comment Form */}
+                                            <div className="flex flex-col gap-2 sm:flex-row">
+                                                <Input
+                                                    placeholder="Tulis komentar..."
+                                                    value={commentInput[post.id] || ""}
+                                                    onChange={(e) =>
+                                                        setCommentInput((prev) => ({
+                                                            ...prev,
+                                                            [post.id]: e.target.value,
+                                                        }))
+                                                    }
+                                                    disabled={loadingComment.includes(post.id)}
+                                                    className="border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-500 transition-colors dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:placeholder-slate-500"
+                                                />
+                                                <Button onClick={() => handlePostComment(post.id)} size="sm" disabled={loadingComment.includes(post.id)} className="bg-blue-600 hover:bg-blue-700">
+                                                    {loadingComment.includes(post.id) ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                                                </Button>
+                                            </div>
 
-                                    {/* Comments List */}
-                                    <div className="space-y-3">
-                                        {comments[post.id]?.map((comment) => (
-                                            <div key={comment.id} className="space-y-2 rounded-lg bg-gray-50 p-3">
-                                                {/* Parent Comment */}
-                                                <div className="flex gap-3">
-                                                    <Avatar className="h-8 w-8">
-                                                        <AvatarImage src={comment.author.image} />
-                                                        <AvatarFallback>{comment.author.name[0]}</AvatarFallback>
-                                                    </Avatar>
-                                                    <div className="flex-1">
-                                                        <p className="text-sm font-semibold">{comment.author.name}</p>
-                                                        <p className="text-sm text-gray-700">{comment.content}</p>
-                                                        <button onClick={() => setReplyingTo(replyingTo === comment.id ? null : comment.id)} className="mt-1 text-xs text-blue-600 hover:underline">
-                                                            Balas
-                                                        </button>
-                                                    </div>
-                                                    <div className="relative">
-                                                        <Button onClick={() => setOpenMenu(openMenu === comment.id ? null : comment.id)} variant="ghost" size="icon" className="h-7 w-7">
-                                                            <MoreVertical className="h-3 w-3" />
-                                                        </Button>
-                                                        {openMenu === comment.id && (
-                                                            <div className="absolute right-0 z-10 mt-1 w-24 rounded border bg-white shadow-lg">
-                                                                <button onClick={() => handleDeleteComment(comment.id, post.id)} className="w-full px-3 py-1.5 text-left text-xs text-red-600 hover:bg-red-50">
-                                                                    Hapus
+                                            {/* Comments List */}
+                                            <div className="space-y-3">
+                                                {comments[post.id]?.map((comment) => (
+                                                    <div key={comment.id} className="space-y-2 rounded-lg bg-gray-50 p-3 transition-colors dark:bg-slate-900/50">
+                                                        {/* Parent Comment */}
+                                                        <div className="flex gap-3">
+                                                            <Avatar className="h-8 w-8 shrink-0">
+                                                                <AvatarImage src={comment.author.image} />
+                                                                <AvatarFallback className="bg-gray-200 text-gray-900 dark:bg-slate-700 dark:text-white">{comment.author.name[0]}</AvatarFallback>
+                                                            </Avatar>
+                                                            <div className="min-w-0 flex-1">
+                                                                <p className="text-sm font-semibold text-gray-900 dark:text-white">{comment.author.name}</p>
+                                                                <p className="text-sm break-words text-gray-700 dark:text-slate-300">{comment.content}</p>
+                                                                <button onClick={() => setReplyingTo(replyingTo === comment.id ? null : comment.id)} className="mt-1 text-xs text-blue-600 transition-colors hover:underline dark:text-blue-400">
+                                                                    Balas
                                                                 </button>
                                                             </div>
-                                                        )}
-                                                    </div>
-                                                </div>
-
-                                                {/* Reply Form */}
-                                                {replyingTo === comment.id && (
-                                                    <div className="ml-11 flex gap-2">
-                                                        <Input placeholder="Tulis balasan..." value={replyInput[comment.id] || ""} onChange={(e) => setReplyInput((prev) => ({ ...prev, [comment.id]: e.target.value }))} disabled={loadingReply.includes(comment.id)} className="text-xs" />
-                                                        <Button onClick={() => handleCreateReply(comment.id, post.id)} size="sm" disabled={loadingReply.includes(comment.id)}>
-                                                            {loadingReply.includes(comment.id) ? <Loader2 className="h-3 w-3 animate-spin" /> : <Send className="h-3 w-3" />}
-                                                        </Button>
-                                                    </div>
-                                                )}
-
-                                                {/* Replies List */}
-                                                {comment.replies?.map((reply: any) => (
-                                                    <div key={reply.id} className="ml-11 flex gap-2 rounded-lg bg-blue-50 p-2">
-                                                        <Avatar className="h-6 w-6">
-                                                            <AvatarImage src={reply.author.image} />
-                                                            <AvatarFallback>{reply.author.name[0]}</AvatarFallback>
-                                                        </Avatar>
-                                                        <div className="flex-1">
-                                                            <p className="text-xs font-semibold">{reply.author.name}</p>
-                                                            <p className="text-xs text-gray-700">{reply.content}</p>
+                                                            <DropdownMenu open={openMenu === comment.id} onOpenChange={(open) => setOpenMenu(open ? comment.id : null)}>
+                                                                <DropdownMenuTrigger asChild>
+                                                                    <Button variant="ghost" size="icon" className="h-6 w-6 text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 disabled:opacity-50 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white" disabled={deletingComment.includes(comment.id)}>
+                                                                        <MoreVertical className="h-3 w-3" />
+                                                                    </Button>
+                                                                </DropdownMenuTrigger>
+                                                                <DropdownMenuContent align="end">
+                                                                    <DropdownMenuItem onClick={() => handleDeleteComment(comment.id, post.id)} className="text-red-600 transition-colors focus:bg-red-50 focus:text-red-600 dark:focus:bg-red-500/10" disabled={deletingComment.includes(comment.id)}>
+                                                                        {deletingComment.includes(comment.id) ? (
+                                                                            <>
+                                                                                <Loader2 className="mr-2 h-3 w-3 animate-spin" />
+                                                                                Menghapus...
+                                                                            </>
+                                                                        ) : (
+                                                                            <>
+                                                                                <Trash2 className="mr-2 h-3 w-3" />
+                                                                                Hapus
+                                                                            </>
+                                                                        )}
+                                                                    </DropdownMenuItem>
+                                                                </DropdownMenuContent>
+                                                            </DropdownMenu>
                                                         </div>
-                                                        <Button onClick={() => handleDeleteReply(reply.id, comment.id, post.id)} variant="ghost" size="icon" className="h-6 w-6">
-                                                            <XIcon className="h-3 w-3" />
-                                                        </Button>
+
+                                                        {/* Reply Form */}
+                                                        {replyingTo === comment.id && (
+                                                            <div className="ml-6 flex flex-col gap-2 sm:ml-11 sm:flex-row">
+                                                                <Input
+                                                                    placeholder="Tulis balasan..."
+                                                                    value={replyInput[comment.id] || ""}
+                                                                    onChange={(e) =>
+                                                                        setReplyInput((prev) => ({
+                                                                            ...prev,
+                                                                            [comment.id]: e.target.value,
+                                                                        }))
+                                                                    }
+                                                                    disabled={loadingReply.includes(comment.id)}
+                                                                    className="border-gray-200 bg-gray-50 text-xs text-gray-900 placeholder-gray-500 transition-colors dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:placeholder-slate-500"
+                                                                />
+                                                                <Button onClick={() => handleCreateReply(comment.id, post.id)} size="sm" disabled={loadingReply.includes(comment.id)} className="bg-blue-600 hover:bg-blue-700">
+                                                                    {loadingReply.includes(comment.id) ? <Loader2 className="h-3 w-3 animate-spin" /> : <Send className="h-3 w-3" />}
+                                                                </Button>
+                                                            </div>
+                                                        )}
+
+                                                        {/* Replies List */}
+                                                        {comment.replies?.map((reply: any) => (
+                                                            <div key={reply.id} className="ml-6 flex gap-2 rounded-lg bg-gray-100 p-2 transition-colors sm:ml-11 dark:bg-slate-800/50">
+                                                                <Avatar className="h-6 w-6 shrink-0">
+                                                                    <AvatarImage src={reply.author.image} />
+                                                                    <AvatarFallback className="bg-gray-200 text-xs text-gray-900 dark:bg-slate-700 dark:text-white">{reply.author.name[0]}</AvatarFallback>
+                                                                </Avatar>
+                                                                <div className="min-w-0 flex-1">
+                                                                    <p className="text-xs font-semibold text-gray-900 dark:text-white">{reply.author.name}</p>
+                                                                    <p className="text-xs break-words text-gray-700 dark:text-slate-300">{reply.content}</p>
+                                                                </div>
+                                                                <DropdownMenu open={openReplyMenu === reply.id} onOpenChange={(open) => setOpenReplyMenu(open ? reply.id : null)}>
+                                                                    <DropdownMenuTrigger asChild>
+                                                                        <Button variant="ghost" size="icon" className="h-5 w-5 text-gray-600 transition-colors hover:bg-gray-200 hover:text-gray-900 disabled:opacity-50 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-white" disabled={deletingReply.includes(reply.id)}>
+                                                                            <MoreVertical className="h-3 w-3" />
+                                                                        </Button>
+                                                                    </DropdownMenuTrigger>
+                                                                    <DropdownMenuContent align="end">
+                                                                        <DropdownMenuItem onClick={() => handleDeleteReply(reply.id, comment.id, post.id)} className="text-red-600 transition-colors focus:bg-red-50 focus:text-red-600 dark:focus:bg-red-500/10" disabled={deletingReply.includes(reply.id)}>
+                                                                            {deletingReply.includes(reply.id) ? (
+                                                                                <>
+                                                                                    <Loader2 className="mr-2 h-3 w-3 animate-spin" />
+                                                                                    Menghapus...
+                                                                                </>
+                                                                            ) : (
+                                                                                <>
+                                                                                    <Trash2 className="mr-2 h-3 w-3" />
+                                                                                    Hapus
+                                                                                </>
+                                                                            )}
+                                                                        </DropdownMenuItem>
+                                                                    </DropdownMenuContent>
+                                                                </DropdownMenu>
+                                                            </div>
+                                                        ))}
                                                     </div>
                                                 ))}
                                             </div>
-                                        ))}
-                                    </div>
+                                        </>
+                                    )}
                                 </div>
                             )}
                         </div>
-                    ))
-                )}
-            </div>
+                    ))}
+                </div>
+            )}
         </div>
     );
 }

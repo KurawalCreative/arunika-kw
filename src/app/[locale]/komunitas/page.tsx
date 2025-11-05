@@ -1,513 +1,192 @@
 "use client";
 
-import React from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { ArrowRight, Users, MessageCircle, Zap, LogIn, ChevronRight, Hash } from "lucide-react";
+import { getChannels } from "./actions";
+import { Channel } from "@/generated/prisma/client";
+import { Link } from "@/i18n/navigation";
 
 export default function page() {
-    return <div>page</div>;
+    const { data: session, status } = useSession();
+    const router = useRouter();
+    const [channels, setChannels] = useState<Channel[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        getChannels().then((data) => {
+            setChannels(data);
+            setLoading(false);
+        });
+    }, []);
+
+    if (status === "loading" || loading) {
+        return (
+            <div className="flex h-screen items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+                <div className="text-center">
+                    <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-4 border-blue-500 border-t-transparent"></div>
+                    <p className="text-slate-300">Memuat...</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (!session) {
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+                {/* Header */}
+                <div className="sticky top-0 z-50 border-b border-slate-700 bg-slate-900/50 backdrop-blur-sm">
+                    <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+                        <div className="flex items-center gap-3">
+                            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-purple-600">
+                                <Hash className="h-6 w-6 text-white" />
+                            </div>
+                            <span className="text-xl font-bold text-white">Arunika</span>
+                        </div>
+                        <Button onClick={() => router.push("/api/auth/signin")} className="bg-blue-600 hover:bg-blue-700">
+                            <LogIn className="mr-2 h-4 w-4" />
+                            Masuk
+                        </Button>
+                    </div>
+                </div>
+
+                {/* Hero */}
+                <div className="mx-auto max-w-7xl px-6 py-20">
+                    <div className="mb-16 text-center">
+                        <div className="mb-4 inline-block">
+                            <Badge className="border-blue-500/30 bg-blue-500/20 px-4 py-1.5 text-blue-300">Bergabunglah dengan komunitas</Badge>
+                        </div>
+                        <h1 className="mb-6 text-5xl leading-tight font-bold text-white">
+                            Terhubung, Berbagi,
+                            <span className="block bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">dan Berkembang Bersama</span>
+                        </h1>
+                        <p className="mx-auto mb-8 max-w-2xl text-xl text-slate-300">Bergabunglah dengan ribuan anggota komunitas yang saling berbagi pengetahuan dan pengalaman</p>
+                        <Button size="lg" onClick={() => router.push("/api/auth/signin")} className="h-12 bg-gradient-to-r from-blue-600 to-purple-600 px-8 hover:from-blue-700 hover:to-purple-700">
+                            Mulai Sekarang
+                            <ArrowRight className="ml-2 h-4 w-4" />
+                        </Button>
+                    </div>
+
+                    {/* Features */}
+                    <div className="mb-20 grid gap-6 md:grid-cols-3">
+                        <Card className="border-slate-700 bg-slate-800/50 transition-colors hover:border-blue-500/50">
+                            <CardHeader>
+                                <Users className="mb-2 h-8 w-8 text-blue-400" />
+                                <CardTitle className="text-white">Komunitas Aktif</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <p className="text-slate-300">Terhubung dengan ribuan pengguna yang berpikiran sama</p>
+                            </CardContent>
+                        </Card>
+
+                        <Card className="border-slate-700 bg-slate-800/50 transition-colors hover:border-purple-500/50">
+                            <CardHeader>
+                                <MessageCircle className="mb-2 h-8 w-8 text-purple-400" />
+                                <CardTitle className="text-white">Diskusi Interaktif</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <p className="text-slate-300">Bagikan ide dan dapatkan feedback dari komunitas</p>
+                            </CardContent>
+                        </Card>
+
+                        <Card className="border-slate-700 bg-slate-800/50 transition-colors hover:border-pink-500/50">
+                            <CardHeader>
+                                <Zap className="mb-2 h-8 w-8 text-pink-400" />
+                                <CardTitle className="text-white">Berkembang Bersama</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <p className="text-slate-300">Pelajari hal baru dari anggota komunitas lainnya</p>
+                            </CardContent>
+                        </Card>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+            {/* Header */}
+            <div className="sticky top-0 z-50 border-b border-slate-700 bg-slate-900/50 backdrop-blur-sm">
+                <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+                    <div className="flex items-center gap-3">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-purple-600">
+                            <Hash className="h-6 w-6 text-white" />
+                        </div>
+                        <span className="text-xl font-bold text-white">Arunika</span>
+                    </div>
+                    <div className="flex items-center gap-4">
+                        <Avatar className="h-8 w-8">
+                            <AvatarImage src={session.user?.image || ""} />
+                            <AvatarFallback className="bg-slate-700">{session.user?.name?.[0]}</AvatarFallback>
+                        </Avatar>
+                        <span className="text-slate-300">{session.user?.name}</span>
+                    </div>
+                </div>
+            </div>
+
+            {/* Main Content */}
+            <div className="mx-auto max-w-7xl px-6 py-16">
+                {/* Section Header */}
+                <div className="mb-12">
+                    <h1 className="mb-2 text-4xl font-bold text-white">Jelajahi Komunitas</h1>
+                    <p className="text-slate-400">Pilih topik yang ingin Anda ikuti dan mulai berbagi</p>
+                </div>
+
+                {/* Channels Grid */}
+                {channels.length === 0 ? (
+                    <div className="py-16 text-center">
+                        <p className="text-slate-400">Belum ada channel tersedia</p>
+                    </div>
+                ) : (
+                    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                        {channels.map((channel) => (
+                            <Link key={channel.id} href={`/komunitas/${channel.slug}`}>
+                                <Card className="group h-full cursor-pointer border-slate-700 bg-slate-800/50 transition-all duration-300 hover:border-blue-500/50 hover:bg-slate-800/80">
+                                    <CardHeader>
+                                        <div className="mb-3 flex items-start justify-between">
+                                            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500/20 to-purple-600/20 transition-colors group-hover:from-blue-500/30 group-hover:to-purple-600/30">
+                                                <Hash className="h-6 w-6 text-blue-400" />
+                                            </div>
+                                            <ChevronRight className="h-5 w-5 text-slate-600 transition-colors group-hover:text-blue-400" />
+                                        </div>
+                                        <CardTitle className="text-xl text-white transition-colors group-hover:text-blue-400">{channel.name}</CardTitle>
+                                        <CardDescription className="mt-2 text-slate-400">{channel.description || "Channel diskusi komunitas"}</CardDescription>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <Badge className="border-blue-500/30 bg-blue-500/20 text-blue-300">Bergabunglah</Badge>
+                                    </CardContent>
+                                </Card>
+                            </Link>
+                        ))}
+                    </div>
+                )}
+
+                {/* Stats */}
+                <div className="mt-20 grid gap-6 border-t border-slate-700 pt-12 md:grid-cols-4">
+                    <div className="text-center">
+                        <div className="mb-2 text-4xl font-bold text-blue-400">{channels.length}</div>
+                        <p className="text-slate-400">Channel Aktif</p>
+                    </div>
+                    <div className="text-center">
+                        <div className="mb-2 text-4xl font-bold text-purple-400">1000+</div>
+                        <p className="text-slate-400">Anggota</p>
+                    </div>
+                    <div className="text-center">
+                        <div className="mb-2 text-4xl font-bold text-pink-400">5000+</div>
+                        <p className="text-slate-400">Postingan</p>
+                    </div>
+                    <div className="text-center">
+                        <div className="mb-2 text-4xl font-bold text-green-400">24/7</div>
+                        <p className="text-slate-400">Dukungan</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
 }
-
-// "use client";
-
-// import { useState, useEffect, useRef } from "react";
-// import axios from "axios";
-// import { Plus, LogIn, Loader2, Search } from "lucide-react";
-// import Image from "next/image";
-// import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-// import { Input } from "@/components/ui/input";
-// import { Textarea } from "@/components/ui/textarea";
-// import { Button } from "@/components/ui/button";
-// import { useSearchParams } from "next/navigation";
-// import PostItem from "@/components/post-item";
-// import CommentsDialog from "@/components/comments-dialog";
-// import { authClient } from "@/lib/auth-client";
-
-// export interface User {
-//     id: string;
-//     name: string;
-//     email: string;
-//     emailVerified: boolean;
-//     image: string;
-//     role: string;
-//     createdAt: string;
-//     updatedAt: string;
-// }
-
-// export interface Image {
-//     id: string;
-//     url: string;
-// }
-
-// export interface Tag {
-//     id: string;
-//     name: string;
-//     posts: PostTag[];
-//     createdAt: string;
-//     updatedAt: string;
-// }
-
-// export interface PostTag {
-//     id: string;
-//     postId: string;
-//     tagId: string;
-//     post?: Post; // relasi ke Post (optional supaya nggak circular import)
-//     tag?: Tag;
-//     createdAt: string;
-// }
-
-// export interface Comment {
-//     id: string;
-//     content: string;
-//     authorId: string;
-//     postId?: string;
-//     parentId?: string;
-//     targetUserId?: string;
-//     author: {
-//         id: string;
-//         name: string;
-//         image: string;
-//     };
-//     replies?: Comment[];
-//     createdAt: string;
-//     updatedAt: string;
-// }
-
-// export interface Post {
-//     id: string;
-//     content: string;
-//     authorId: string;
-//     author: {
-//         id: string;
-//         name: string;
-//         image: string;
-//         role: string;
-//     };
-//     createdAt: string;
-//     images?: Image[];
-//     likesCount: number;
-//     likedByUser?: boolean;
-//     comments?: Comment[]; // Optional - loaded on demand
-//     commentCount?: number; // Comment count for display
-// }
-
-// export default function HomePage() {
-//     const { data: session, isPending } = authClient.useSession();
-//     const searchParams = useSearchParams();
-
-//     useEffect(() => {
-//         const searchQuery = searchParams.get("search");
-//         if (searchQuery) {
-//             setSearchTerm(searchQuery);
-//         }
-//     }, [searchParams]);
-
-//     useEffect(() => {
-//         const fetchTags = async () => {
-//             try {
-//                 const tagsRes = await axios.get("/api/tags/popular");
-//                 setPopularTags(tagsRes.data.tags);
-//             } catch (err) {
-//                 console.error("Failed to fetch tags:", err);
-//             }
-//         };
-//         fetchTags();
-//     }, []);
-
-//     const [posts, setPosts] = useState<Post[]>([]);
-//     const [loading, setLoading] = useState(true);
-//     const [open, setOpen] = useState(false);
-//     const [creatingPost, setCreatingPost] = useState(false);
-
-//     const [newPost, setNewPost] = useState({
-//         content: "",
-//         images: [] as File[],
-//         imageUrls: [] as string[],
-//         tags: [] as string[],
-//     });
-
-//     const [tagInput, setTagInput] = useState("");
-//     const [uploadProgress, setUploadProgress] = useState<{ [key: string]: number }>({});
-//     const [togglingLikes, setTogglingLikes] = useState<Record<string, boolean>>({});
-//     const [selectedPostForComments, setSelectedPostForComments] = useState<Post | null>(null);
-//     const [popularTags, setPopularTags] = useState<{ name: string; count: number }[]>([]);
-//     const [selectedTag, setSelectedTag] = useState<string>("");
-//     const [selectedImage, setSelectedImage] = useState<string | null>(null);
-//     const [searchTerm, setSearchTerm] = useState("");
-//     const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
-//     const abortControllerRef = useRef<AbortController | null>(null);
-//     const [page, setPage] = useState(1);
-//     const [hasMore, setHasMore] = useState(true);
-//     const [loadingMore, setLoadingMore] = useState(false);
-
-//     const handleLike = async (id: string) => {
-//         if (!session) return;
-//         if (togglingLikes[id]) return; // prevent spam clicks
-//         const user = (session.user as any) || {};
-//         const hasLiked = posts.some((p) => p.id === id && p.likedByUser);
-
-//         setTogglingLikes((s) => ({ ...s, [id]: true }));
-
-//         // optimistic count-only update
-//         setPosts((prev) =>
-//             prev.map((p) => {
-//                 if (p.id !== id) return p;
-//                 const nextCount = hasLiked ? Math.max(0, (p.likesCount || 0) - 1) : (p.likesCount || 0) + 1;
-//                 return { ...p, likesCount: nextCount, likedByUser: !hasLiked } as Post;
-//             }),
-//         );
-
-//         try {
-//             const res = await axios.post("/api/komunitas/like", { postId: id });
-//             // sync with server count to avoid drift
-//             if (res.data && typeof res.data.likesCount === "number") {
-//                 setPosts((prev) => prev.map((p) => (p.id === id ? { ...p, likesCount: res.data.likesCount, likedByUser: !!res.data.liked } : p)));
-//             }
-//         } catch (error) {
-//             console.error("Gagal toggle like:", error);
-//             // rollback if error
-//             setPosts((prev) => prev.map((p) => (p.id === id ? { ...p, likedByUser: hasLiked, likesCount: hasLiked ? (p.likesCount || 0) + 1 : Math.max(0, (p.likesCount || 1) - 1) } : p)));
-//         } finally {
-//             setTogglingLikes((s) => {
-//                 const next = { ...s };
-//                 delete next[id];
-//                 return next;
-//             });
-//         }
-//     };
-
-//     const fetchPosts = async (pageNum: number = 1, append: boolean = false) => {
-//         // Cancel previous request
-//         if (abortControllerRef.current) {
-//             abortControllerRef.current.abort();
-//         }
-//         abortControllerRef.current = new AbortController();
-
-//         try {
-//             if (!append) setLoading(true);
-//             else setLoadingMore(true);
-//             const params = new URLSearchParams({
-//                 page: pageNum.toString(),
-//                 limit: "10",
-//                 ...(debouncedSearchTerm && { search: debouncedSearchTerm }),
-//                 ...(selectedTag && { tag: selectedTag }),
-//             });
-//             const res = await axios.get<{ posts: Post[]; hasMore: boolean }>(`/api/komunitas?${params}`, {
-//                 signal: abortControllerRef.current.signal,
-//             });
-//             if (append) {
-//                 setPosts((prev) => [...prev, ...res.data.posts]);
-//             } else {
-//                 setPosts(res.data.posts);
-//             }
-//             setHasMore(res.data.hasMore);
-//             setPage(pageNum);
-//         } catch (err) {
-//             if (axios.isCancel(err)) {
-//                 console.log("Request canceled");
-//             } else {
-//                 console.error(err);
-//             }
-//         } finally {
-//             setLoading(false);
-//             setLoadingMore(false);
-//         }
-//     };
-
-//     useEffect(() => {
-//         if (!session) return;
-//         fetchPosts(1, false);
-//     }, [session]);
-
-//     useEffect(() => {
-//         if (!session) return;
-//         setPage(1);
-//         fetchPosts(1, false);
-//     }, [debouncedSearchTerm, selectedTag]);
-
-//     useEffect(() => {
-//         const timer = setTimeout(() => {
-//             setDebouncedSearchTerm(searchTerm);
-//         }, 500); // 500ms delay
-
-//         return () => clearTimeout(timer);
-//     }, [searchTerm]);
-
-//     useEffect(() => {
-//         const handleScroll = () => {
-//             if (window.innerHeight + document.documentElement.scrollTop >= document.documentElement.offsetHeight - 100 && hasMore && !loadingMore && !loading) {
-//                 fetchPosts(page + 1, true);
-//             }
-//         };
-//         window.addEventListener("scroll", handleScroll);
-//         return () => window.removeEventListener("scroll", handleScroll);
-//     }, [hasMore, loadingMore, loading, page]);
-
-//     // SSE for realtime comments and likes on selected post
-//     // SSE removed: comments/likes will be fetched on demand. Real-time updates are disabled to reduce load.
-
-//     const uploadImagesToS3 = async (files: File[]) => {
-//         const uploadedUrls: string[] = [];
-//         for await (const file of files) {
-//             try {
-//                 const presign = await axios.post(`/api/komunitas/upload`, { fileName: file.name, fileType: file.type });
-//                 const { uploadUrl, fileUrl } = presign.data;
-
-//                 await axios.put(uploadUrl, file, {
-//                     headers: { "Content-Type": file.type },
-//                     onUploadProgress: (e) => {
-//                         const progress = Math.round((e.loaded * 100) / (e.total || 1));
-//                         setUploadProgress((prev) => ({ ...prev, [file.name]: progress }));
-//                     },
-//                 });
-
-//                 uploadedUrls.push(fileUrl);
-//             } catch (err) {
-//                 console.error("Gagal upload:", err);
-//             }
-//         }
-//         return uploadedUrls;
-//     };
-
-//     const handleTambahPost = async () => {
-//         if (!newPost.content.trim() || !session) return;
-
-//         setCreatingPost(true);
-
-//         try {
-//             let uploadedUrls: string[] = [];
-//             if (newPost.images.length > 0) {
-//                 uploadedUrls = await uploadImagesToS3(newPost.images);
-//             }
-
-//             const payload = {
-//                 content: newPost.content,
-//                 tags: newPost.tags,
-//                 images: uploadedUrls,
-//             };
-
-//             const res = await axios.post("/api/komunitas", payload);
-//             if (res.data?.success) {
-//                 const p = res.data.post;
-//                 setPosts((prev) => [p, ...prev]);
-//                 setNewPost({ content: "", images: [], imageUrls: [], tags: [] });
-//                 setTagInput("");
-//                 setOpen(false);
-//             }
-//         } catch (err) {
-//             console.error(err);
-//         } finally {
-//             setCreatingPost(false);
-//         }
-//     };
-
-//     const handleTagSelect = (tagName: string) => {
-//         if (selectedTag === tagName) {
-//             setSelectedTag("");
-//         } else {
-//             setSelectedTag(tagName);
-//         }
-//         setPage(1);
-//     };
-
-//     const handleAddTag = () => {
-//         if (tagInput.trim()) {
-//             setNewPost({ ...newPost, tags: [...newPost.tags, tagInput.trim()] });
-//             setTagInput("");
-//         }
-//     };
-
-//     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-//         if (e.target.files && e.target.files.length > 0) {
-//             setNewPost({ ...newPost, images: Array.from(e.target.files) });
-//         }
-//     };
-
-//     if (isPending) {
-//         return <div className="flex h-96 items-center justify-center text-gray-500 dark:text-gray-300">Memeriksa sesi login...</div>;
-//     }
-
-//     if (!session) {
-//         return (
-//             <div className="flex h-[60vh] flex-col items-center justify-center text-center">
-//                 <LogIn className="mb-4 h-12 w-12 text-gray-500" />
-//                 <h2 className="mb-2 text-2xl font-semibold">Kamu belum login</h2>
-//                 <p className="mb-4 text-gray-600 dark:text-gray-400">Silakan login menggunakan akun Google untuk melanjutkan.</p>
-//                 <Button
-//                     className="flex items-center gap-2"
-//                     onClick={() =>
-//                         authClient.signIn.social({
-//                             provider: "google",
-//                             callbackURL: "/",
-//                             disableRedirect: false,
-//                         })
-//                     }
-//                 >
-//                     <Image src="https://www.svgrepo.com/show/355037/google.svg" width={18} height={18} alt="Google" />
-//                     Login dengan Google
-//                 </Button>
-//             </div>
-//         );
-//     }
-
-//     return (
-//         <div className="space-y-6">
-//             {/* Header */}
-//             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-//                 {/* Search */}
-//                 <div className="relative max-w-md flex-1">
-//                     <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
-//                     <Input type="text" placeholder="Cari postingan..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-10 dark:border-gray-700 dark:bg-gray-800" />
-//                 </div>
-
-//                 {/* Modal Tambah Postingan */}
-//                 <Dialog open={open} onOpenChange={setOpen}>
-//                     <DialogTrigger asChild>
-//                         <Button className="flex w-full items-center gap-2 sm:w-auto">
-//                             <Plus className="h-4 w-4" />
-//                             Tambah Postingan
-//                         </Button>
-//                     </DialogTrigger>
-//                     <DialogContent className="dark:border-gray-700 dark:bg-gray-900">
-//                         <DialogHeader>
-//                             <DialogTitle>Tambah Postingan Baru</DialogTitle>
-//                         </DialogHeader>
-
-//                         <div className="space-y-3">
-//                             <Textarea placeholder="Apa yang kamu pikirkan?" value={newPost.content} onChange={(e) => setNewPost({ ...newPost, content: e.target.value })} className="dark:border-gray-700 dark:bg-gray-800" />
-//                             <Input type="file" accept="image/*" multiple onChange={handleImageChange} className="dark:border-gray-700 dark:bg-gray-800" />
-
-//                             {/* preview + progress */}
-//                             {newPost.images.length > 0 && (
-//                                 <div className="mt-2 flex flex-wrap gap-3">
-//                                     {newPost.images.map((file, idx) => (
-//                                         <div key={idx} className="relative">
-//                                             <Image src={URL.createObjectURL(file)} alt={`preview-${idx}`} width={80} height={80} className="rounded-md border object-cover dark:border-gray-700" />
-//                                             {uploadProgress[file.name] && (
-//                                                 <div className="absolute bottom-0 left-0 h-2 w-full rounded-b-md bg-gray-700/70">
-//                                                     <div className="h-2 rounded-b-md bg-blue-500 transition-all duration-200" style={{ width: `${uploadProgress[file.name]}%` }}></div>
-//                                                 </div>
-//                                             )}
-//                                         </div>
-//                                     ))}
-//                                 </div>
-//                             )}
-
-//                             <div className="flex gap-2">
-//                                 <Input type="text" placeholder="Tambah tag" value={tagInput} onChange={(e) => setTagInput(e.target.value)} className="dark:border-gray-700 dark:bg-gray-800" />
-//                                 <Button onClick={handleAddTag}>Tambah</Button>
-//                             </div>
-
-//                             <div className="flex flex-wrap gap-2">
-//                                 {newPost.tags.map((tag) => (
-//                                     <span key={tag} className="rounded-full bg-blue-200 px-2 py-1 text-sm dark:bg-blue-800">
-//                                         {tag}
-//                                     </span>
-//                                 ))}
-//                             </div>
-
-//                             <Button onClick={handleTambahPost} className="w-full" disabled={creatingPost}>
-//                                 {creatingPost ? <Loader2 className="mr-2 inline h-4 w-4 animate-spin" /> : null}
-//                                 Kirim Postingan
-//                             </Button>
-//                         </div>
-//                     </DialogContent>
-//                 </Dialog>
-//             </div>
-//             {/* Filter Tags */}
-//             <div className="flex flex-wrap items-center gap-2">
-//                 <span className="text-font-secondary text-sm font-medium dark:text-gray-300">Filter:</span>
-//                 <Button variant={selectedTag === "" ? "default" : "outline"} size="sm" onClick={() => handleTagSelect("")} className="h-8">
-//                     Semua
-//                 </Button>
-//                 {popularTags.slice(0, 8).map((tag) => (
-//                     <Button key={tag.name} variant={selectedTag === tag.name ? "default" : "outline"} size="sm" onClick={() => handleTagSelect(tag.name)} className="h-8">
-//                         #{tag.name}
-//                     </Button>
-//                 ))}
-//             </div>
-//             {/* Daftar Post */}
-//             <div className="space-y-4">
-//                 {loading ? (
-//                     <p className="text-font-secondary text-center dark:text-gray-400">Memuat postingan...</p>
-//                 ) : posts.length === 0 ? (
-//                     <p className="text-font-secondary text-center dark:text-gray-400">Tidak ada postingan.</p>
-//                 ) : (
-//                     posts.map((post) => (
-//                         <PostItem
-//                             key={post.id}
-//                             post={post}
-//                             onLike={handleLike}
-//                             onCommentClick={(post) => setSelectedPostForComments(post)}
-//                             onDelete={async (id) => {
-//                                 try {
-//                                     await axios.delete(`/api/komunitas?id=${encodeURIComponent(id)}`);
-//                                     setPosts((prev) => prev.filter((p) => p.id !== id));
-//                                     if (selectedPostForComments?.id === id) setSelectedPostForComments(null);
-//                                 } catch (err) {
-//                                     console.error("Gagal hapus post", err);
-//                                 }
-//                             }}
-//                             togglingLikes={togglingLikes}
-//                             session={session}
-//                         />
-//                     ))
-//                 )}
-//                 {loadingMore && <p className="text-font-secondary text-center dark:text-gray-400">Memuat lebih banyak...</p>}
-//             </div>
-
-//             <CommentsDialog
-//                 selectedPost={selectedPostForComments}
-//                 onClose={() => setSelectedPostForComments(null)}
-//                 onCommentSubmit={(comment) => {
-//                     // Update comment count in posts list
-//                     setPosts((prev) =>
-//                         prev.map((p) => {
-//                             if (p.id === selectedPostForComments?.id) {
-//                                 return { ...p, commentCount: (p.commentCount || 0) + 1 };
-//                             }
-//                             return p;
-//                         }),
-//                     );
-//                 }}
-//                 onCommentDelete={async (comment) => {
-//                     try {
-//                         await axios.delete(`/api/komunitas/komentar?id=${encodeURIComponent(comment.id)}`);
-//                         // remove from selectedPostForComments and posts
-//                         setSelectedPostForComments((prev) => {
-//                             if (!prev) return prev;
-//                             if (comment.parentId) {
-//                                 // remove from parent's replies
-//                                 return {
-//                                     ...prev,
-//                                     comments: (prev.comments || []).map((pc) => (pc.id === comment.parentId ? { ...pc, replies: (pc.replies || []).filter((r) => r.id !== comment.id) } : pc)),
-//                                 };
-//                             } else {
-//                                 // remove from top-level comments
-//                                 return { ...prev, comments: (prev.comments || []).filter((x) => x.id !== comment.id) };
-//                             }
-//                         });
-//                         setPosts((prev) =>
-//                             prev.map((p) => {
-//                                 if (p.id === selectedPostForComments?.id) {
-//                                     if (comment.parentId) {
-//                                         // remove from parent's replies
-//                                         return {
-//                                             ...p,
-//                                             comments: (p.comments || []).map((pc) => (pc.id === comment.parentId ? { ...pc, replies: (pc.replies || []).filter((r) => r.id !== comment.id) } : pc)),
-//                                         };
-//                                     } else {
-//                                         // remove from top-level comments
-//                                         return { ...p, comments: (p.comments || []).filter((x) => x.id !== comment.id) };
-//                                     }
-//                                 }
-//                                 return p;
-//                             }),
-//                         );
-//                     } catch (err) {
-//                         console.error("Gagal hapus komentar", err);
-//                     }
-//                 }}
-//                 session={session}
-//             />
-//         </div>
-//     );
-// }
