@@ -8,7 +8,7 @@ import { useParams, useRouter } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { LogOut, LogIn, Loader2, Hash, Search, Menu, X } from "lucide-react";
+import { LogOut, LogIn, Loader2, Hash, Search, Menu, X, Users } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ModeToggle } from "@/components/mode-toggle";
 
@@ -25,6 +25,57 @@ export default function KomunitasLayout({ children }: { children: ReactNode }) {
     }, []);
 
     const filteredChannels = channels.filter((c) => c.name?.toLowerCase().includes(searchQuery.toLowerCase()));
+
+    // Jika belum login, tampilkan login prompt
+    if (status === "unauthenticated") {
+        return (
+            <div className="min-h-screen bg-white transition-colors dark:bg-slate-950">
+                {/* Top Navbar */}
+                <nav className="sticky top-0 z-50 border-b border-gray-200 bg-white/50 backdrop-blur-sm transition-colors dark:border-slate-700 dark:bg-slate-900/50">
+                    <div className="flex items-center justify-between px-4 py-4 sm:px-6">
+                        <Link href="/komunitas" className="flex items-center gap-2">
+                            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-purple-600">
+                                <Hash className="h-5 w-5 text-white" />
+                            </div>
+                            <span className="hidden text-lg font-bold text-gray-900 sm:inline dark:text-white">Arunika</span>
+                        </Link>
+
+                        <div className="flex items-center gap-3">
+                            <ModeToggle />
+                            <Button onClick={() => router.push("/api/auth/signin")} size="sm" className="bg-blue-600 hover:bg-blue-700">
+                                <LogIn className="mr-2 h-4 w-4" />
+                                <span className="hidden sm:inline">Login</span>
+                            </Button>
+                        </div>
+                    </div>
+                </nav>
+
+                {/* Login Prompt */}
+                <main className="flex min-h-[calc(100vh-60px)] flex-col items-center justify-center">
+                    <div className="max-w-md text-center">
+                        <div className="mb-6 flex justify-center">
+                            <Users className="h-16 w-16 text-gray-300 dark:text-slate-600" />
+                        </div>
+                        <h1 className="mb-3 text-2xl font-bold text-gray-900 dark:text-white">Bergabunglah dengan Komunitas</h1>
+                        <p className="mb-6 text-gray-600 dark:text-slate-400">Silakan login untuk melihat dan berpartisipasi dalam diskusi komunitas</p>
+                        <Button onClick={() => router.push("/api/auth/signin")} size="lg" className="w-full bg-blue-600 hover:bg-blue-700">
+                            <LogIn className="mr-2 h-4 w-4" />
+                            Login Sekarang
+                        </Button>
+                    </div>
+                </main>
+            </div>
+        );
+    }
+
+    // Jika masih loading
+    if (status === "loading") {
+        return (
+            <div className="flex min-h-screen items-center justify-center bg-white transition-colors dark:bg-slate-950">
+                <Loader2 className="h-8 w-8 animate-spin text-blue-400" />
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-white transition-colors dark:bg-slate-950">
@@ -45,9 +96,7 @@ export default function KomunitasLayout({ children }: { children: ReactNode }) {
 
                     <div className="flex items-center gap-3">
                         <ModeToggle />
-                        {status === "loading" ? (
-                            <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
-                        ) : session ? (
+                        {session ? (
                             <div className="flex items-center gap-2">
                                 <Avatar className="h-8 w-8">
                                     <AvatarImage src={session.user?.image || ""} />

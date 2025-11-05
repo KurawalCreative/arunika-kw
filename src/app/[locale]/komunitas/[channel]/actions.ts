@@ -141,7 +141,18 @@ export async function deleteComment(commentId: string) {
         select: { authorId: true },
     });
 
-    if (!comment || comment.authorId !== session.user.id) return false;
+    if (!comment) return false;
+
+    // User hanya bisa delete jika mereka author atau admin
+    const user = await prisma.user.findUnique({
+        where: { id: session.user.id },
+        select: { role: true },
+    });
+
+    const isAuthor = comment.authorId === session.user.id;
+    const isAdmin = user?.role === "admin";
+
+    if (!isAuthor && !isAdmin) return false;
 
     // delete replies dulu baru parent comment
     await prisma.comment.deleteMany({
@@ -188,7 +199,18 @@ export async function deleteReply(replyId: string) {
         select: { authorId: true },
     });
 
-    if (!reply || reply.authorId !== session.user.id) return false;
+    if (!reply) return false;
+
+    // User hanya bisa delete jika mereka author atau admin
+    const user = await prisma.user.findUnique({
+        where: { id: session.user.id },
+        select: { role: true },
+    });
+
+    const isAuthor = reply.authorId === session.user.id;
+    const isAdmin = user?.role === "admin";
+
+    if (!isAuthor && !isAdmin) return false;
 
     await prisma.comment.delete({
         where: { id: replyId },
@@ -206,7 +228,18 @@ export async function deletePost(postId: string) {
         select: { authorId: true },
     });
 
-    if (!post || post.authorId !== session.user.id) return false;
+    if (!post) return false;
+
+    // User hanya bisa delete jika mereka author atau admin
+    const user = await prisma.user.findUnique({
+        where: { id: session.user.id },
+        select: { role: true },
+    });
+
+    const isAuthor = post.authorId === session.user.id;
+    const isAdmin = user?.role === "admin";
+
+    if (!isAuthor && !isAdmin) return false;
 
     // Delete all replies first (comments yang punya parentId)
     await prisma.comment.deleteMany({

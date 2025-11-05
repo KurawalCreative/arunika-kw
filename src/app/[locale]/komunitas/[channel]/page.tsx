@@ -5,6 +5,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Channel, Post, PostImage, User } from "@/generated/prisma/client";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 import { getChannelBySlug, getPost, getPresignedUrl, storePost, toggleLike, getComments, createComment, deleteComment, createReply, deleteReply, deletePost, searchPosts, getUserLikedPosts } from "./actions";
 import { Button } from "@/components/ui/button";
 import { MinimalTiptap } from "@/components/ui/shadcn-io/minimal-tiptap";
@@ -17,6 +18,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default function page() {
     const params = useParams<{ channel: string }>();
+    const { data: session } = useSession();
     const [channel, setChannel] = useState<Channel | null>(null);
     const [loadingPage, setLoadingPage] = useState(true);
 
@@ -424,28 +426,30 @@ export default function page() {
                                     </div>
                                 </div>
 
-                                <DropdownMenu open={openMenu === post.id} onOpenChange={(open) => setOpenMenu(open ? post.id : null)}>
-                                    <DropdownMenuTrigger asChild>
-                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 disabled:opacity-50 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-white" disabled={deletingPost.includes(post.id)}>
-                                            <MoreVertical className="h-4 w-4" />
-                                        </Button>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="end">
-                                        <DropdownMenuItem onClick={() => handleDeletePost(post.id)} className="text-red-600 transition-colors focus:bg-red-50 focus:text-red-600 dark:focus:bg-red-500/10" disabled={deletingPost.includes(post.id)}>
-                                            {deletingPost.includes(post.id) ? (
-                                                <>
-                                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                                    Menghapus...
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <Trash2 className="mr-2 h-4 w-4" />
-                                                    Hapus
-                                                </>
-                                            )}
-                                        </DropdownMenuItem>
-                                    </DropdownMenuContent>
-                                </DropdownMenu>
+                                {(session?.user as any)?.id === post.author.id && (
+                                    <DropdownMenu open={openMenu === post.id} onOpenChange={(open) => setOpenMenu(open ? post.id : null)}>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 disabled:opacity-50 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-white" disabled={deletingPost.includes(post.id)}>
+                                                <MoreVertical className="h-4 w-4" />
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end">
+                                            <DropdownMenuItem onClick={() => handleDeletePost(post.id)} className="text-red-600 transition-colors focus:bg-red-50 focus:text-red-600 dark:focus:bg-red-500/10" disabled={deletingPost.includes(post.id)}>
+                                                {deletingPost.includes(post.id) ? (
+                                                    <>
+                                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                        Menghapus...
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <Trash2 className="mr-2 h-4 w-4" />
+                                                        Hapus
+                                                    </>
+                                                )}
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                )}
                             </div>
 
                             {/* Content */}
@@ -539,28 +543,30 @@ export default function page() {
                                                                     Balas
                                                                 </button>
                                                             </div>
-                                                            <DropdownMenu open={openMenu === comment.id} onOpenChange={(open) => setOpenMenu(open ? comment.id : null)}>
-                                                                <DropdownMenuTrigger asChild>
-                                                                    <Button variant="ghost" size="icon" className="h-6 w-6 text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 disabled:opacity-50 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white" disabled={deletingComment.includes(comment.id)}>
-                                                                        <MoreVertical className="h-3 w-3" />
-                                                                    </Button>
-                                                                </DropdownMenuTrigger>
-                                                                <DropdownMenuContent align="end">
-                                                                    <DropdownMenuItem onClick={() => handleDeleteComment(comment.id, post.id)} className="text-red-600 transition-colors focus:bg-red-50 focus:text-red-600 dark:focus:bg-red-500/10" disabled={deletingComment.includes(comment.id)}>
-                                                                        {deletingComment.includes(comment.id) ? (
-                                                                            <>
-                                                                                <Loader2 className="mr-2 h-3 w-3 animate-spin" />
-                                                                                Menghapus...
-                                                                            </>
-                                                                        ) : (
-                                                                            <>
-                                                                                <Trash2 className="mr-2 h-3 w-3" />
-                                                                                Hapus
-                                                                            </>
-                                                                        )}
-                                                                    </DropdownMenuItem>
-                                                                </DropdownMenuContent>
-                                                            </DropdownMenu>
+                                                            {(session?.user as any)?.id === comment.author.id && (
+                                                                <DropdownMenu open={openMenu === comment.id} onOpenChange={(open) => setOpenMenu(open ? comment.id : null)}>
+                                                                    <DropdownMenuTrigger asChild>
+                                                                        <Button variant="ghost" size="icon" className="h-6 w-6 text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 disabled:opacity-50 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white" disabled={deletingComment.includes(comment.id)}>
+                                                                            <MoreVertical className="h-3 w-3" />
+                                                                        </Button>
+                                                                    </DropdownMenuTrigger>
+                                                                    <DropdownMenuContent align="end">
+                                                                        <DropdownMenuItem onClick={() => handleDeleteComment(comment.id, post.id)} className="text-red-600 transition-colors focus:bg-red-50 focus:text-red-600 dark:focus:bg-red-500/10" disabled={deletingComment.includes(comment.id)}>
+                                                                            {deletingComment.includes(comment.id) ? (
+                                                                                <>
+                                                                                    <Loader2 className="mr-2 h-3 w-3 animate-spin" />
+                                                                                    Menghapus...
+                                                                                </>
+                                                                            ) : (
+                                                                                <>
+                                                                                    <Trash2 className="mr-2 h-3 w-3" />
+                                                                                    Hapus
+                                                                                </>
+                                                                            )}
+                                                                        </DropdownMenuItem>
+                                                                    </DropdownMenuContent>
+                                                                </DropdownMenu>
+                                                            )}
                                                         </div>
 
                                                         {/* Reply Form */}
@@ -595,28 +601,30 @@ export default function page() {
                                                                     <p className="text-xs font-semibold text-gray-900 dark:text-white">{reply.author.name}</p>
                                                                     <p className="text-xs break-words text-gray-700 dark:text-slate-300">{reply.content}</p>
                                                                 </div>
-                                                                <DropdownMenu open={openReplyMenu === reply.id} onOpenChange={(open) => setOpenReplyMenu(open ? reply.id : null)}>
-                                                                    <DropdownMenuTrigger asChild>
-                                                                        <Button variant="ghost" size="icon" className="h-5 w-5 text-gray-600 transition-colors hover:bg-gray-200 hover:text-gray-900 disabled:opacity-50 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-white" disabled={deletingReply.includes(reply.id)}>
-                                                                            <MoreVertical className="h-3 w-3" />
-                                                                        </Button>
-                                                                    </DropdownMenuTrigger>
-                                                                    <DropdownMenuContent align="end">
-                                                                        <DropdownMenuItem onClick={() => handleDeleteReply(reply.id, comment.id, post.id)} className="text-red-600 transition-colors focus:bg-red-50 focus:text-red-600 dark:focus:bg-red-500/10" disabled={deletingReply.includes(reply.id)}>
-                                                                            {deletingReply.includes(reply.id) ? (
-                                                                                <>
-                                                                                    <Loader2 className="mr-2 h-3 w-3 animate-spin" />
-                                                                                    Menghapus...
-                                                                                </>
-                                                                            ) : (
-                                                                                <>
-                                                                                    <Trash2 className="mr-2 h-3 w-3" />
-                                                                                    Hapus
-                                                                                </>
-                                                                            )}
-                                                                        </DropdownMenuItem>
-                                                                    </DropdownMenuContent>
-                                                                </DropdownMenu>
+                                                                {(session?.user as any)?.id === reply.author.id && (
+                                                                    <DropdownMenu open={openReplyMenu === reply.id} onOpenChange={(open) => setOpenReplyMenu(open ? reply.id : null)}>
+                                                                        <DropdownMenuTrigger asChild>
+                                                                            <Button variant="ghost" size="icon" className="h-5 w-5 text-gray-600 transition-colors hover:bg-gray-200 hover:text-gray-900 disabled:opacity-50 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-white" disabled={deletingReply.includes(reply.id)}>
+                                                                                <MoreVertical className="h-3 w-3" />
+                                                                            </Button>
+                                                                        </DropdownMenuTrigger>
+                                                                        <DropdownMenuContent align="end">
+                                                                            <DropdownMenuItem onClick={() => handleDeleteReply(reply.id, comment.id, post.id)} className="text-red-600 transition-colors focus:bg-red-50 focus:text-red-600 dark:focus:bg-red-500/10" disabled={deletingReply.includes(reply.id)}>
+                                                                                {deletingReply.includes(reply.id) ? (
+                                                                                    <>
+                                                                                        <Loader2 className="mr-2 h-3 w-3 animate-spin" />
+                                                                                        Menghapus...
+                                                                                    </>
+                                                                                ) : (
+                                                                                    <>
+                                                                                        <Trash2 className="mr-2 h-3 w-3" />
+                                                                                        Hapus
+                                                                                    </>
+                                                                                )}
+                                                                            </DropdownMenuItem>
+                                                                        </DropdownMenuContent>
+                                                                    </DropdownMenu>
+                                                                )}
                                                             </div>
                                                         ))}
                                                     </div>
