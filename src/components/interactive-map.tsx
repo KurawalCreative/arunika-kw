@@ -1,17 +1,21 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import maplibregl, { Map, Popup, StyleSpecification } from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
-import { ZoomIn, ZoomOut, Maximize2 } from 'lucide-react'
-import { FeatureCollection } from 'geojson';
-
+import { FeatureCollection } from 'geojson'
 import indonesia from '@/assets/coordinates/id.json'
+import { useTheme } from 'next-themes'
+import * as turf from '@turf/turf'
 
-const InteractiveMap = () => {
-  const mapContainer = useRef<HTMLDivElement>(null)
+type InteractiveMapProps = {
+  selectedProvince?: string | null
+}
+
+const InteractiveMap = ({ selectedProvince }: InteractiveMapProps) => {
+  const mapContainer = useRef<HTMLDivElement>(null) 
   const mapRef = useRef<Map | null>(null)
-  const [hoveredProvinceId, setHoveredProvinceId] = useState<number | null>(null)
+  const { theme } = useTheme()
 
   useEffect(() => {
     if (mapRef.current || !mapContainer.current) return
@@ -33,10 +37,10 @@ const InteractiveMap = () => {
       },
       layers: [
         {
-          id: 'ocean-bg',
+          id: 'background',
           type: 'background',
           paint: {
-            'background-color': '#b3e5fc', // biru laut lembut
+            'background-color': theme === 'dark' ? '#111827' : '#ffffff',
           },
         },
         {
@@ -47,7 +51,7 @@ const InteractiveMap = () => {
             'raster-saturation': -0.8,
             'raster-brightness-min': 0.3,
             'raster-brightness-max': 0.6,
-            'raster-opacity': 0.6,
+            'raster-opacity': 0,
           },
         },
       ],
@@ -57,8 +61,13 @@ const InteractiveMap = () => {
       container: mapContainer.current,
       style: baseStyle,
       center: [118, -2],
-      zoom: 4.5,
+      zoom: 4.28,
       maxBounds: bounds,
+      dragPan: false,
+      scrollZoom: false,
+      boxZoom: false,
+      doubleClickZoom: false,
+      touchZoomRotate: false,
     })
 
     mapRef.current = map
@@ -87,14 +96,14 @@ const InteractiveMap = () => {
           color: getColor(f.properties.NAME_1 || f.properties.name || 'Tanpa Nama'),
         },
       }))
+
       const coloredData: FeatureCollection = {
-        type: 'FeatureCollection',  // literal string
-        features: features,         // array GeoJSON Feature
-      };
+        type: 'FeatureCollection',
+        features,
+      }
 
       map.addSource('indonesia', { type: 'geojson', data: coloredData })
 
-      // Layer utama (warna dasar)
       map.addLayer({
         id: 'indo-fill',
         type: 'fill',
@@ -105,7 +114,6 @@ const InteractiveMap = () => {
         },
       })
 
-      // Layer highlight untuk hover
       map.addLayer({
         id: 'indo-highlight',
         type: 'fill',
@@ -115,10 +123,9 @@ const InteractiveMap = () => {
           'fill-color': '#ffffff',
           'fill-opacity': 0.5,
         },
-        filter: ['==', 'NAME_1', ''], // kosong awalnya
+        filter: ['==', 'NAME_1', ''],
       })
 
-      // Outline
       map.addLayer({
         id: 'indo-outline',
         type: 'line',
@@ -129,7 +136,22 @@ const InteractiveMap = () => {
         },
       })
 
-      // Popup elegan
+      map.addLayer({
+        id: 'indo-labels',
+        type: 'symbol',
+        source: 'indonesia',
+        layout: {
+          'text-field': ['get', 'NAME_1'],
+          'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
+          'text-size': 12,
+        },
+        paint: {
+          'text-color': theme === 'dark' ? '#f9fafb' : '#111827',
+          'text-halo-color': theme === 'dark' ? '#111827' : '#ffffff',
+          'text-halo-width': 1.2,
+        },
+      })
+
       const popup = new Popup({
         closeButton: false,
         closeOnClick: false,
@@ -137,36 +159,21 @@ const InteractiveMap = () => {
       })
 
       map.on('mousemove', 'indo-fill', (e) => {
+        map.getCanvas().style.cursor = 'pointer'
         if (!e.features?.length) return
 
         const feature = e.features[0]
         const name = feature.properties?.NAME_1 || feature.properties?.name || 'Tanpa Nama'
-
-        // Highlight provinsi
         map.setFilter('indo-highlight', ['==', 'NAME_1', name])
 
-        // Tampilkan popup
-        const coordinates = e.lngLat
         popup
-          .setLngLat(coordinates)
-          .setHTML(`
-            <div style="
-              font-weight:600;
-              font-size:15px;
-              color:#222;
-              background:white;
-              padding:6px 10px;
-              border-radius:8px;
-              box-shadow:0 3px 10px rgba(0,0,0,0.15);
-              transition:all 0.3s ease;
-            ">
-              ${name}
-            </div>
-          `)
+          .setLngLat(e.lngLat)
+          .setHTML(`<div style="font-weight:600;font-size:15px;color:#222;">${name}</div>`)
           .addTo(map)
       })
 
       map.on('mouseleave', 'indo-fill', () => {
+        map.getCanvas().style.cursor = ''
         map.setFilter('indo-highlight', ['==', 'NAME_1', ''])
         popup.remove()
       })
@@ -178,41 +185,52 @@ const InteractiveMap = () => {
     }
   }, [])
 
-  const handleZoomIn = () => mapRef.current?.zoomIn({ duration: 300 })
-  const handleZoomOut = () => mapRef.current?.zoomOut({ duration: 300 })
-  const handleResetView = () => {
-    mapRef.current?.flyTo({ center: [118, -2], zoom: 4.5, duration: 1000 })
-  }
+  // 🔹 Update warna saat theme berubah
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map) return
+
+    const bgColor = theme === 'dark' ? '#111827' : '#ffffff'
+    try {
+      map.setPaintProperty('background', 'background-color', bgColor)
+    } catch {}
+
+    try {
+      const textColor = theme === 'dark' ? '#f9fafb' : '#111827'
+      const haloColor = theme === 'dark' ? '#111827' : '#ffffff'
+      map.setPaintProperty('indo-labels', 'text-color', textColor)
+      map.setPaintProperty('indo-labels', 'text-halo-color', haloColor)
+    } catch {}
+  }, [theme])
+
+  // 🔹 Fokus ke provinsi tertentu (opsional jika dipilih)
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map || !selectedProvince) return
+
+    const source: any = map.getSource('indonesia') as any
+    if (!source?._data) return
+
+    const feature = source._data.features.find(
+      (f: any) => f.properties.NAME_1?.toLowerCase() === selectedProvince.toLowerCase()
+    )
+
+    if (feature) {
+      const [minLng, minLat, maxLng, maxLat] = turf.bbox(feature)
+      map.fitBounds(
+        [
+          [minLng, minLat],
+          [maxLng, maxLat],
+        ],
+        { padding: 40, duration: 1000 }
+      )
+    }
+  }, [selectedProvince])
 
   return (
-    <div className="flex justify-center items-center py-10">
-      <div className="relative w-full max-w-7xl h-[500px] rounded-2xl overflow-hidden shadow-lg">
-        <div ref={mapContainer} className="w-full h-full rounded-2xl" />
-
-        {/* Kontrol tombol custom */}
-        <div className="absolute bottom-4 left-4 z-10 flex flex-col gap-2">
-          <button
-            onClick={handleZoomIn}
-            className="p-3 bg-white rounded-lg shadow-md hover:bg-gray-100 transition-all hover:scale-105"
-            title="Zoom In"
-          >
-            <ZoomIn className="text-gray-700" size={20} />
-          </button>
-          <button
-            onClick={handleZoomOut}
-            className="p-3 bg-white rounded-lg shadow-md hover:bg-gray-100 transition-all hover:scale-105"
-            title="Zoom Out"
-          >
-            <ZoomOut className="text-gray-700" size={20} />
-          </button>
-          <button
-            onClick={handleResetView}
-            className="p-3 bg-white rounded-lg shadow-md hover:bg-gray-100 transition-all hover:scale-105"
-            title="Reset View"
-          >
-            <Maximize2 className="text-gray-700" size={20} />
-          </button>
-        </div>
+    <div className="flex justify-center items-center py-5">
+      <div className="relative w-full max-w-7xl h-[500px] overflow-hidden">
+        <div ref={mapContainer} className="w-full h-full" />
       </div>
     </div>
   )
