@@ -1,5 +1,5 @@
 import { GetServerSidePropsContext } from "next";
-import { getServerSession, NextAuthOptions } from "next-auth";
+import { getServerSession, NextAuthOptions, Session } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import prisma from "./prisma";
@@ -10,6 +10,7 @@ export const authOptions: NextAuthOptions = {
         GoogleProvider({
             clientId: process.env.GOOGLE_CLIENT_ID!,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+            allowDangerousEmailAccountLinking: true,
         }),
     ],
     callbacks: {
@@ -23,6 +24,6 @@ export const authOptions: NextAuthOptions = {
     },
 };
 
-export async function getServerAuthSession() {
+export async function getServerAuthSession<Session>() {
     return await getServerSession(authOptions as any);
 }
