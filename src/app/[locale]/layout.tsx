@@ -6,6 +6,7 @@ import "../globals.css";
 
 import { routing } from "@/i18n/routing";
 import { ThemeProvider } from "@/components/theme-provider";
+import RaniChatCompanion from "@/components/rani-chat-companion";
 
 const manrope = Manrope({
     subsets: ["latin"],
@@ -35,6 +36,7 @@ export default async function RootLayout({
                 <NextIntlClientProvider>
                     <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
                         {children}
+                        <RaniChatCompanion />
                     </ThemeProvider>
                 </NextIntlClientProvider>
             </body>
