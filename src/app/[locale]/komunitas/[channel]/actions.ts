@@ -32,27 +32,38 @@ export async function getPresignedUrl(fileName: string, type: string) {
     return { url, key, publicUrl };
 }
 
-export async function getPost(slug: string) {
+export async function getPost(slug: string, page: number = 1, limit: number = 10) {
     const session = (await getServerAuthSession()) as any;
-    if (!session?.user) return [];
+    if (!session?.user) return { posts: [], total: 0 };
 
     const userId = session?.user?.id;
+    const skip = (page - 1) * limit;
 
-    const posts = await prisma.post.findMany({
-        where: { channel: { slug } },
-        include: {
-            author: true,
-            images: true,
-            _count: { select: { comments: true, likes: true } },
-            likes: { where: { userId }, select: { id: true } },
-        },
-        orderBy: { createdAt: "desc" },
-    });
+    const [posts, total] = await Promise.all([
+        prisma.post.findMany({
+            where: { channel: { slug } },
+            include: {
+                author: true,
+                images: true,
+                _count: { select: { comments: true, likes: true } },
+                likes: { where: { userId }, select: { id: true } },
+            },
+            orderBy: { createdAt: "desc" },
+            skip,
+            take: limit,
+        }),
+        prisma.post.count({
+            where: { channel: { slug } },
+        }),
+    ]);
 
-    return posts.map((post) => ({
-        ...post,
-        isLikedByUser: post.likes.length > 0,
-    }));
+    return {
+        posts: posts.map((post) => ({
+            ...post,
+            isLikedByUser: post.likes.length > 0,
+        })),
+        total,
+    };
 }
 
 export async function storePost(content: string, images: string[], slug: string) {
@@ -197,6 +208,23 @@ export async function deletePost(postId: string) {
 
     if (!post || post.authorId !== session.user.id) return false;
 
+    // Delete all replies first (comments yang punya parentId)
+    await prisma.comment.deleteMany({
+        where: {
+            postId,
+            parentId: { not: null },
+        },
+    });
+
+    // Then delete all parent comments (comments yang parentId-nya null)
+    await prisma.comment.deleteMany({
+        where: {
+            postId,
+            parentId: null,
+        },
+    });
+
+    // Finally delete the post
     await prisma.post.delete({
         where: { id: postId },
     });
@@ -204,31 +232,44 @@ export async function deletePost(postId: string) {
     return true;
 }
 
-export async function searchPosts(slug: string, query: string) {
+export async function searchPosts(slug: string, query: string, page: number = 1, limit: number = 10) {
     const session = (await getServerAuthSession()) as any;
-    if (!session?.user) return [];
+    if (!session?.user) return { posts: [], total: 0 };
 
     const userId = session?.user?.id;
+    const skip = (page - 1) * limit;
 
-    const posts = await prisma.post.findMany({
-        where: {
-            channel: { slug },
-            content: { contains: query, mode: "insensitive" },
-        },
-        include: {
-            author: true,
-            images: true,
-            _count: { select: { comments: true, likes: true } },
-            likes: { where: { userId } },
-        },
-        orderBy: { createdAt: "desc" },
-        take: 20,
-    });
+    const [posts, total] = await Promise.all([
+        prisma.post.findMany({
+            where: {
+                channel: { slug },
+                content: { contains: query, mode: "insensitive" },
+            },
+            include: {
+                author: true,
+                images: true,
+                _count: { select: { comments: true, likes: true } },
+                likes: { where: { userId } },
+            },
+            orderBy: { createdAt: "desc" },
+            skip,
+            take: limit,
+        }),
+        prisma.post.count({
+            where: {
+                channel: { slug },
+                content: { contains: query, mode: "insensitive" },
+            },
+        }),
+    ]);
 
-    return posts.map((post) => ({
-        ...post,
-        isLikedByUser: post.likes.length > 0,
-    }));
+    return {
+        posts: posts.map((post) => ({
+            ...post,
+            isLikedByUser: post.likes.length > 0,
+        })),
+        total,
+    };
 }
 
 export async function getUserLikedPosts(slug: string) {

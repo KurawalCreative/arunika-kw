@@ -8,7 +8,7 @@ import { useParams, useRouter } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { LogOut, LogIn, Loader2, Bell, Hash, Search, Menu, X } from "lucide-react";
+import { LogOut, LogIn, Loader2, Hash, Search, Menu, X } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ModeToggle } from "@/components/mode-toggle";
 
@@ -45,9 +45,6 @@ export default function KomunitasLayout({ children }: { children: ReactNode }) {
 
                     <div className="flex items-center gap-3">
                         <ModeToggle />
-                        <Button variant="ghost" size="icon" className="text-gray-700 hover:bg-gray-100 dark:text-slate-300 dark:hover:bg-slate-800">
-                            <Bell className="h-5 w-5" />
-                        </Button>
                         {status === "loading" ? (
                             <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
                         ) : session ? (
@@ -109,18 +106,18 @@ export default function KomunitasLayout({ children }: { children: ReactNode }) {
 
                 {/* Content Area */}
                 <main className="flex-1">
-                    <div className="mx-auto w-full max-w-4xl px-4 py-6 sm:px-6 lg:px-8">{children}</div>
+                    <div className="w-full px-4 py-6 sm:px-6 lg:px-8">{children}</div>
                 </main>
 
                 {/* Right Sidebar - Info (Hidden on smaller screens) */}
-                <aside className="hidden w-80 border-l border-gray-200 bg-white p-6 backdrop-blur-sm xl:block dark:border-slate-700 dark:bg-slate-900/50">
+                {/* <aside className="hidden w-80 border-l border-gray-200 bg-white p-6 backdrop-blur-sm xl:block dark:border-slate-700 dark:bg-slate-900/50">
                     <h3 className="mb-4 text-lg font-bold text-gray-900 dark:text-white">Trending</h3>
                     <div className="space-y-3">
                         <div className="cursor-pointer rounded-lg border border-gray-200 bg-gray-50 p-3 transition-colors hover:border-gray-300 dark:border-slate-700 dark:bg-slate-800/50 dark:hover:border-slate-600">
                             <p className="text-sm text-gray-600 dark:text-slate-300">Segera hadir...</p>
                         </div>
                     </div>
-                </aside>
+                </aside> */}
             </div>
         </div>
     );

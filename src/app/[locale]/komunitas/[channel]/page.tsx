@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { MinimalTiptap } from "@/components/ui/shadcn-io/minimal-tiptap";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { XIcon, Heart, MoreVertical, Loader2, ChevronDown, ChevronUp, Search, Upload, Send, Trash2, MessageCircle } from "lucide-react";
+import { XIcon, Heart, MoreVertical, Loader2, Search, Upload, Send, Trash2, MessageCircle } from "lucide-react";
 import axios, { AxiosProgressEvent } from "axios";
 import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -43,13 +43,23 @@ export default function page() {
     const [searchQuery, setSearchQuery] = useState("");
     const [loadingComments, setLoadingComments] = useState<string[]>([]);
     const [isSearching, setIsSearching] = useState(false);
+    const [selectedImage, setSelectedImage] = useState<string | null>(null);
+    const [imagePreviewOpen, setImagePreviewOpen] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPosts, setTotalPosts] = useState(0);
+    const [isLoadingMore, setIsLoadingMore] = useState(false);
+    const POSTS_PER_PAGE = 10;
 
     useEffect(() => {
         setLoadingPage(true);
+        setCurrentPage(1);
+        setPosts([]);
         Promise.all([
-            getChannelBySlug(params.channel).then(setChannel), //
-            getPost(params.channel).then((r) => setPosts(r || [])),
-            // getUserLikedPosts(params.channel).then((ids) => setLikedPosts(new Set(ids))),
+            getChannelBySlug(params.channel).then(setChannel),
+            getPost(params.channel, 1, POSTS_PER_PAGE).then((r) => {
+                setPosts(r.posts || []);
+                setTotalPosts(r.total || 0);
+            }),
         ]).finally(() => setLoadingPage(false));
     }, [params.channel]);
 
@@ -59,12 +69,16 @@ export default function page() {
 
     const handleSearch = async () => {
         setIsSearching(true);
+        setCurrentPage(1);
+        setPosts([]);
         if (!searchQuery.trim()) {
-            const data = await getPost(params.channel);
-            setPosts(data || []);
+            const data = await getPost(params.channel, 1, POSTS_PER_PAGE);
+            setPosts(data.posts || []);
+            setTotalPosts(data.total || 0);
         } else {
-            const data = await searchPosts(params.channel, searchQuery);
-            setPosts(data || []);
+            const data = await searchPosts(params.channel, searchQuery, 1, POSTS_PER_PAGE);
+            setPosts(data.posts || []);
+            setTotalPosts(data.total || 0);
         }
         setIsSearching(false);
     };
@@ -131,6 +145,13 @@ export default function page() {
         }
 
         await storePost(content, images, params.channel);
+
+        // Refresh posts setelah upload berhasil - reset ke page 1
+        setCurrentPage(1);
+        const data = await getPost(params.channel, 1, POSTS_PER_PAGE);
+        setPosts(data.posts || []);
+        setTotalPosts(data.total || 0);
+
         setIsUploading(false);
         setIsOpen(false);
         setContent("");
@@ -287,6 +308,17 @@ export default function page() {
         );
     }
 
+    const handleLoadMore = async () => {
+        setIsLoadingMore(true);
+        const nextPage = currentPage + 1;
+        const data = await getPost(params.channel, nextPage, POSTS_PER_PAGE);
+        setPosts((prev) => [...prev, ...data.posts]);
+        setCurrentPage(nextPage);
+        setIsLoadingMore(false);
+    };
+
+    const hasMorePosts = posts.length < totalPosts;
+
     return (
         <div className="w-full space-y-6">
             {/* Header */}
@@ -431,7 +463,20 @@ export default function page() {
                                         const url = `${process.env.NEXT_PUBLIC_S3_PUBLIC_URL}/${image.url}`;
                                         const ext = image.url.split(".").pop()?.toLowerCase() || "";
                                         const isVideo = ["mp4", "webm", "ogg"].includes(ext);
-                                        return isVideo ? <video key={idx} src={url} controls className="h-40 w-full rounded-lg object-cover" /> : <Image key={idx} width={300} height={300} src={url} alt="" className="h-40 w-full rounded-lg object-cover" />;
+                                        return isVideo ? (
+                                            <video key={idx} src={url} controls className="h-40 w-full rounded-lg object-cover" />
+                                        ) : (
+                                            <button
+                                                key={idx}
+                                                onClick={() => {
+                                                    setSelectedImage(url);
+                                                    setImagePreviewOpen(true);
+                                                }}
+                                                className="group relative h-40 w-full cursor-pointer overflow-hidden rounded-lg transition-opacity hover:opacity-75"
+                                            >
+                                                <Image src={url} alt="Post image" fill sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw" className="object-cover transition-transform duration-300 group-hover:scale-105" />
+                                            </button>
+                                        );
                                     })}
                                 </div>
                             )}
@@ -444,7 +489,7 @@ export default function page() {
                                 </button>
 
                                 <button onClick={() => handleToggleComments(post.id)} className="flex items-center gap-2 rounded-lg px-3 py-1.5 text-gray-600 transition-colors hover:bg-blue-50 hover:text-blue-600 dark:text-slate-400 dark:hover:bg-blue-500/10 dark:hover:text-blue-400">
-                                    {expandedComments.includes(post.id) ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                                    <MessageCircle className="h-4 w-4" />
                                     <span>{post._count.comments}</span>
                                 </button>
                             </div>
@@ -585,6 +630,34 @@ export default function page() {
                     ))}
                 </div>
             )}
+
+            {/* Load More Button */}
+            {hasMorePosts && (
+                <div className="flex justify-center">
+                    <Button onClick={handleLoadMore} disabled={isLoadingMore} variant="outline" className="border-gray-200 text-gray-700 transition-colors hover:bg-gray-100 disabled:opacity-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800">
+                        {isLoadingMore ? (
+                            <>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                Memuat...
+                            </>
+                        ) : (
+                            "Muat Lebih Banyak"
+                        )}
+                    </Button>
+                </div>
+            )}
+
+            {/* Image Preview Dialog */}
+            <Dialog open={imagePreviewOpen} onOpenChange={setImagePreviewOpen}>
+                <DialogContent className="max-w-2xl border-gray-200 bg-white p-0 dark:border-slate-700 dark:bg-slate-900">
+                    <DialogTitle className="sr-only">Image Preview</DialogTitle>
+                    {selectedImage && (
+                        <div className="relative flex w-full items-center justify-center bg-black">
+                            <Image src={selectedImage} alt="Preview" width={1200} height={800} sizes="90vw" className="h-auto w-full object-contain" priority />
+                        </div>
+                    )}
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }
