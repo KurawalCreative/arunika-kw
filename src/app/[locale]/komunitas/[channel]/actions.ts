@@ -33,12 +33,26 @@ export async function getPresignedUrl(fileName: string, type: string) {
 }
 
 export async function getPost(slug: string) {
+    const session = (await getServerAuthSession()) as any;
+    if (!session?.user) return [];
+
+    const userId = session?.user?.id;
+
     const posts = await prisma.post.findMany({
         where: { channel: { slug } },
-        include: { author: true, images: true, _count: { select: { comments: true, likes: true } } },
+        include: {
+            author: true,
+            images: true,
+            _count: { select: { comments: true, likes: true } },
+            likes: { where: { userId }, select: { id: true } },
+        },
         orderBy: { createdAt: "desc" },
     });
-    return posts;
+
+    return posts.map((post) => ({
+        ...post,
+        isLikedByUser: post.likes.length > 0,
+    }));
 }
 
 export async function storePost(content: string, images: string[], slug: string) {
@@ -191,16 +205,30 @@ export async function deletePost(postId: string) {
 }
 
 export async function searchPosts(slug: string, query: string) {
+    const session = (await getServerAuthSession()) as any;
+    if (!session?.user) return [];
+
+    const userId = session?.user?.id;
+
     const posts = await prisma.post.findMany({
         where: {
             channel: { slug },
             content: { contains: query, mode: "insensitive" },
         },
-        include: { author: true, images: true, _count: { select: { comments: true, likes: true } } },
+        include: {
+            author: true,
+            images: true,
+            _count: { select: { comments: true, likes: true } },
+            likes: { where: { userId } },
+        },
         orderBy: { createdAt: "desc" },
         take: 20,
     });
-    return posts;
+
+    return posts.map((post) => ({
+        ...post,
+        isLikedByUser: post.likes.length > 0,
+    }));
 }
 
 export async function getUserLikedPosts(slug: string) {

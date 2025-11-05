@@ -3,63 +3,22 @@
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
-import { ArrowLeft, User, MapPin, Calendar, Heart, MessageCircle, Users, UserPlus, UserMinus } from "lucide-react";
+import { ArrowLeft, MapPin, Calendar, Heart, MessageCircle, Users, UserPlus, UserMinus, UserIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import PostItem from "@/components/post-item";
 import { authClient } from "@/lib/auth-client";
-
-interface UserProfile {
-    id: string;
-    name: string;
-    email: string;
-    image: string;
-    role: string;
-    createdAt: string;
-    _count: {
-        followers: number;
-        following: number;
-        Post: number;
-    };
-}
-
-interface Post {
-    id: string;
-    content: string;
-    authorId: string;
-    author: {
-        id: string;
-        name: string;
-        image: string;
-        role: string;
-    };
-    createdAt: string;
-    images?: Array<{ id: string; url: string }>;
-    likesCount: number;
-    likedByUser?: boolean;
-    comments: Array<{
-        id: string;
-        content: string;
-        author: { id: string; name: string; image: string };
-        createdAt: string;
-        replies?: Array<{
-            id: string;
-            content: string;
-            author: { id: string; name: string; image: string };
-            createdAt: string;
-        }>;
-    }>;
-}
+import { Post, PostImage, User } from "@/generated/prisma/client";
 
 export default function ProfilePage() {
     const params = useParams();
     const router = useRouter();
     const { data: session } = authClient.useSession();
 
-    const [profile, setProfile] = useState<UserProfile | null>(null);
-    const [posts, setPosts] = useState<Post[]>([]);
+    const [profile, setProfile] = useState<(User & { _count: { followers: number; following: number; Post: number } }) | null>(null);
+    const [posts, setPosts] = useState<(Post & { images: PostImage[]; likedByUser: boolean; likesCount: number; author: User })[]>([]);
     const [loading, setLoading] = useState(true);
     const [following, setFollowing] = useState(false);
     const [togglingFollow, setTogglingFollow] = useState(false);
@@ -161,7 +120,7 @@ export default function ProfilePage() {
         return (
             <div className="flex h-96 items-center justify-center">
                 <div className="text-center">
-                    <User className="mx-auto mb-4 h-12 w-12 text-gray-400" />
+                    <UserIcon className="mx-auto mb-4 h-12 w-12 text-gray-400" />
                     <h2 className="mb-2 text-xl font-semibold">Profil tidak ditemukan</h2>
                     <p className="text-gray-600 dark:text-gray-400">Pengguna yang Anda cari tidak ada.</p>
                     <Button onClick={() => router.back()} className="mt-4">
@@ -188,8 +147,8 @@ export default function ProfilePage() {
                 <CardContent className="pt-6">
                     <div className="flex flex-col items-center space-y-4 sm:flex-row sm:items-start sm:space-y-0 sm:space-x-6">
                         <Avatar className="h-24 w-24">
-                            <AvatarImage src={profile.image} alt={profile.name} />
-                            <AvatarFallback className="text-2xl">{profile.name[0]}</AvatarFallback>
+                            <AvatarImage src={profile.image || ""} alt={profile.name || ""} />
+                            <AvatarFallback className="text-2xl">{profile.name?.[0] || ""}</AvatarFallback>
                         </Avatar>
 
                         <div className="flex-1 text-center sm:text-left">

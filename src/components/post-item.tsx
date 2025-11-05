@@ -11,27 +11,10 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
-
-interface Post {
-    id: string;
-    content: string;
-    authorId: string;
-    author: {
-        id: string;
-        name: string;
-        image: string;
-        role: string;
-    };
-    createdAt: string;
-    images?: Array<{ id: string; url: string }>;
-    likesCount: number;
-    likedByUser?: boolean;
-    comments?: Array<any>; // Optional - loaded on demand
-    commentCount?: number; // Comment count for display
-}
+import { Post, PostImage, User } from "@/generated/prisma/client";
 
 interface PostItemProps {
-    post: Post;
+    post: Post & { images: PostImage[]; likedByUser: boolean; likesCount: number; commentCount?: number; author: User };
     onLike: (id: string) => void;
     onCommentClick: (post: Post) => void;
     onDelete: (id: string) => void;
@@ -95,8 +78,8 @@ export default function PostItem({ post, onLike, onCommentClick, onDelete, toggl
                     <div className="flex items-center space-x-3">
                         <Link href={`/komunitas/profile/${post.authorId}`} className="flex items-center space-x-3 transition-opacity hover:opacity-80">
                             <Avatar className="size-10">
-                                <AvatarImage src={post.author.image} alt={post.author.name} />
-                                <AvatarFallback>{post.author.name[0]}</AvatarFallback>
+                                <AvatarImage src={post.author.image || ""} alt={post.author.name || ""} />
+                                <AvatarFallback>{post.author.name?.[0] || ""}</AvatarFallback>
                             </Avatar>
                             <div>
                                 <CardTitle className="text-font-primary dark:text-background flex items-center gap-2 text-lg font-semibold">
@@ -125,7 +108,7 @@ export default function PostItem({ post, onLike, onCommentClick, onDelete, toggl
                                         </button>
                                     )}
                                 </CardTitle>
-                                <p className="text-font-secondary text-sm dark:text-gray-400">{post.createdAt}</p>
+                                <p className="text-font-secondary text-sm dark:text-gray-400">{new Date(post.createdAt).toLocaleDateString()}</p>
                             </div>
                         </Link>
                         <div className="ml-auto flex items-center gap-2">

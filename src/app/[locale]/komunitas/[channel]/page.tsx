@@ -24,27 +24,26 @@ export default function page() {
     const [previews, setPreviews] = useState<string[]>([]);
     const [uploadProgress, setUploadProgress] = useState<number[]>([]);
     const [isOpen, setIsOpen] = useState(false);
-    const [posts, setPosts] = useState<(Post & { author: User; images: PostImage[]; _count: { likes: number; comments: number } })[]>([]);
-    const [likedPosts, setLikedPosts] = useState<Set<string>>(new Set());
-    const [expandedComments, setExpandedComments] = useState<Set<string>>(new Set());
+    const [posts, setPosts] = useState<(Post & { author: User; images: PostImage[]; _count: { likes: number; comments: number }; isLikedByUser: boolean })[]>([]);
+    const [expandedComments, setExpandedComments] = useState<string[]>([]);
     const [comments, setComments] = useState<Record<string, any[]>>({});
     const [commentInput, setCommentInput] = useState<Record<string, string>>({});
     const [replyingTo, setReplyingTo] = useState<string | null>(null);
     const [replyInput, setReplyInput] = useState<Record<string, string>>({});
     const [openMenu, setOpenMenu] = useState<string | null>(null);
-    const [loadingLike, setLoadingLike] = useState<Set<string>>(new Set());
-    const [loadingComment, setLoadingComment] = useState<Set<string>>(new Set());
-    const [loadingReply, setLoadingReply] = useState<Set<string>>(new Set());
-    const [deletingPost, setDeletingPost] = useState<Set<string>>(new Set());
-    const [deletingComment, setDeletingComment] = useState<Set<string>>(new Set());
+    const [loadingLike, setLoadingLike] = useState<string[]>([]);
+    const [loadingComment, setLoadingComment] = useState<string[]>([]);
+    const [loadingReply, setLoadingReply] = useState<string[]>([]);
+    const [deletingPost, setDeletingPost] = useState<string[]>([]);
+    const [deletingComment, setDeletingComment] = useState<string[]>([]);
     const [searchQuery, setSearchQuery] = useState("");
 
     useEffect(() => {
         setLoadingPage(true);
         Promise.all([
             getChannelBySlug(params.channel).then(setChannel), //
-            getPost(params.channel).then(setPosts),
-            getUserLikedPosts(params.channel).then((ids) => setLikedPosts(new Set(ids))),
+            getPost(params.channel).then((r) => setPosts(r || [])),
+            // getUserLikedPosts(params.channel).then((ids) => setLikedPosts(new Set(ids))),
         ]).finally(() => setLoadingPage(false));
     }, [params.channel]);
 
@@ -55,10 +54,10 @@ export default function page() {
     const handleSearch = async () => {
         if (!searchQuery.trim()) {
             const data = await getPost(params.channel);
-            setPosts(data);
+            setPosts(data || []);
         } else {
             const data = await searchPosts(params.channel, searchQuery);
-            setPosts(data);
+            setPosts(data || []);
         }
     };
 
@@ -127,24 +126,22 @@ export default function page() {
     };
 
     const handleToggleComments = async (postId: string) => {
-        const newExpanded = new Set(expandedComments);
-        if (newExpanded.has(postId)) {
-            newExpanded.delete(postId);
+        if (expandedComments.includes(postId)) {
+            setExpandedComments((prev) => prev.filter((id) => id !== postId));
         } else {
-            newExpanded.add(postId);
+            setExpandedComments((prev) => [...prev, postId]);
             if (!comments[postId]) {
                 const data = await getComments(postId);
                 setComments((prev) => ({ ...prev, [postId]: data }));
             }
         }
-        setExpandedComments(newExpanded);
     };
 
     const handlePostComment = async (postId: string) => {
         const text = commentInput[postId]?.trim();
         if (!text) return;
 
-        setLoadingComment((prev) => new Set(prev).add(postId));
+        setLoadingComment((prev) => [...prev, postId]);
         setCommentInput((prev) => ({ ...prev, [postId]: "" }));
 
         const newComment = await createComment(postId, text);
@@ -162,18 +159,14 @@ export default function page() {
             });
         }
 
-        setLoadingComment((prev) => {
-            const next = new Set(prev);
-            next.delete(postId);
-            return next;
-        });
+        setLoadingComment((prev) => prev.filter((id) => id !== postId));
     };
 
     const handleCreateReply = async (commentId: string, postId: string) => {
         const text = replyInput[commentId]?.trim();
         if (!text) return;
 
-        setLoadingReply((prev) => new Set(prev).add(commentId));
+        setLoadingReply((prev) => [...prev, commentId]);
         setReplyInput((prev) => ({ ...prev, [commentId]: "" }));
 
         const newReply = await createReply(commentId, text);
@@ -191,11 +184,7 @@ export default function page() {
             setReplyingTo(null);
         }
 
-        setLoadingReply((prev) => {
-            const next = new Set(prev);
-            next.delete(commentId);
-            return next;
-        });
+        setLoadingReply((prev) => prev.filter((id) => id !== commentId));
     };
 
     const handleDeleteReply = async (replyId: string, commentId: string, postId: string) => {
@@ -215,23 +204,18 @@ export default function page() {
     };
 
     const handleDeletePost = async (postId: string) => {
-        setDeletingPost((prev) => new Set(prev).add(postId));
+        setDeletingPost((prev) => [...prev, postId]);
         const success = await deletePost(postId);
         if (success) {
             setPosts((prev) => prev.filter((p) => p.id !== postId));
             setOpenMenu(null);
         }
-        setDeletingPost((prev) => {
-            const next = new Set(prev);
-            next.delete(postId);
-            return next;
-        });
+        setDeletingPost((prev) => prev.filter((id) => id !== postId));
     };
 
     const handleDeleteComment = async (commentId: string, postId: string) => {
-        setDeletingComment((prev) => new Set(prev).add(commentId));
+        setDeletingComment((prev) => [...prev, commentId]);
 
-        // hitung total yang akan dihapus (parent + replies)
         const comment = comments[postId]?.find((c) => c.id === commentId);
         const totalToDelete = 1 + (comment?.replies?.length || 0);
 
@@ -250,36 +234,23 @@ export default function page() {
             });
         }
 
-        setDeletingComment((prev) => {
-            const next = new Set(prev);
-            next.delete(commentId);
-            return next;
-        });
+        setDeletingComment((prev) => prev.filter((id) => id !== commentId));
     };
 
     const handleLike = async (postId: string, idx: number) => {
-        setLoadingLike((prev) => new Set(prev).add(postId));
+        setLoadingLike((prev) => [...prev, postId]);
         try {
-            const newCount = await toggleLike(postId);
-            if (newCount !== null) {
-                setPosts((prev) => {
-                    const copy = [...prev];
-                    copy[idx]._count.likes = newCount;
-                    return copy;
-                });
-
-                const newLiked = new Set(likedPosts);
-                newLiked.has(postId) ? newLiked.delete(postId) : newLiked.add(postId);
-                setLikedPosts(newLiked);
-            }
+            const result = await toggleLike(postId);
+            setPosts((prev) => {
+                const copy = [...prev];
+                copy[idx]._count.likes = result!;
+                copy[idx].isLikedByUser = !copy[idx].isLikedByUser;
+                return copy;
+            });
         } catch (err) {
             console.error("Failed toggle like", err);
         } finally {
-            setLoadingLike((prev) => {
-                const next = new Set(prev);
-                next.delete(postId);
-                return next;
-            });
+            setLoadingLike((prev) => prev.filter((id) => id !== postId));
         }
     };
 
@@ -404,7 +375,7 @@ export default function page() {
                                     </button>
                                     {openMenu === post.id && (
                                         <div className="absolute right-0 z-10 mt-1 w-32 rounded border bg-white shadow-lg">
-                                            <button onClick={() => handleDeletePost(post.id)} className="w-full px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50 disabled:opacity-50" disabled={deletingPost.has(post.id)}>
+                                            <button onClick={() => handleDeletePost(post.id)} className="w-full px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50 disabled:opacity-50" disabled={deletingPost.includes(post.id)}>
                                                 Hapus
                                             </button>
                                         </div>
@@ -429,25 +400,25 @@ export default function page() {
 
                             {/* Actions */}
                             <div className="flex items-center gap-6 border-t pt-3">
-                                <button onClick={() => handleLike(post.id, i)} disabled={loadingLike.has(post.id)} className="flex items-center gap-2 rounded-lg px-3 py-1.5 transition-colors hover:bg-red-50 disabled:opacity-50">
-                                    {loadingLike.has(post.id) ? <Loader2 className="h-4 w-4 animate-spin" /> : <Heart className={`h-4 w-4 ${likedPosts.has(post.id) ? "fill-red-500 text-red-500" : "text-gray-600"}`} />}
-                                    <span className={likedPosts.has(post.id) ? "font-semibold text-red-500" : "text-gray-600"}>{post._count.likes}</span>
+                                <button onClick={() => handleLike(post.id, i)} disabled={loadingLike.includes(post.id)} className="flex items-center gap-2 rounded-lg px-3 py-1.5 transition-colors hover:bg-red-50 disabled:opacity-50">
+                                    {loadingLike.includes(post.id) ? <Loader2 className="h-4 w-4 animate-spin" /> : <Heart key={i} className={`h-4 w-4 ${post.isLikedByUser ? "fill-red-500 text-red-500" : "text-gray-600"}`} />}
+                                    <span className={post.isLikedByUser ? "font-semibold text-red-500" : "text-gray-600"}>{post._count.likes}</span>
                                 </button>
 
                                 <button onClick={() => handleToggleComments(post.id)} className="flex items-center gap-2 rounded-lg px-3 py-1.5 text-gray-600 transition-colors hover:bg-blue-50">
-                                    {expandedComments.has(post.id) ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                                    {expandedComments.includes(post.id) ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                                     <span>{post._count.comments} Komentar</span>
                                 </button>
                             </div>
 
                             {/* Comments Section */}
-                            {expandedComments.has(post.id) && (
+                            {expandedComments.includes(post.id) && (
                                 <div className="mt-4 space-y-3 border-t pt-4">
                                     {/* Add Comment Form */}
                                     <div className="flex gap-2">
-                                        <Input placeholder="Tulis komentar..." value={commentInput[post.id] || ""} onChange={(e) => setCommentInput((prev) => ({ ...prev, [post.id]: e.target.value }))} disabled={loadingComment.has(post.id)} />
-                                        <Button onClick={() => handlePostComment(post.id)} size="sm" disabled={loadingComment.has(post.id)}>
-                                            {loadingComment.has(post.id) ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                                        <Input placeholder="Tulis komentar..." value={commentInput[post.id] || ""} onChange={(e) => setCommentInput((prev) => ({ ...prev, [post.id]: e.target.value }))} disabled={loadingComment.includes(post.id)} />
+                                        <Button onClick={() => handlePostComment(post.id)} size="sm" disabled={loadingComment.includes(post.id)}>
+                                            {loadingComment.includes(post.id) ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
                                         </Button>
                                     </div>
 
@@ -485,9 +456,9 @@ export default function page() {
                                                 {/* Reply Form */}
                                                 {replyingTo === comment.id && (
                                                     <div className="ml-11 flex gap-2">
-                                                        <Input placeholder="Tulis balasan..." value={replyInput[comment.id] || ""} onChange={(e) => setReplyInput((prev) => ({ ...prev, [comment.id]: e.target.value }))} disabled={loadingReply.has(comment.id)} className="text-xs" />
-                                                        <Button onClick={() => handleCreateReply(comment.id, post.id)} size="sm" disabled={loadingReply.has(comment.id)}>
-                                                            {loadingReply.has(comment.id) ? <Loader2 className="h-3 w-3 animate-spin" /> : <Send className="h-3 w-3" />}
+                                                        <Input placeholder="Tulis balasan..." value={replyInput[comment.id] || ""} onChange={(e) => setReplyInput((prev) => ({ ...prev, [comment.id]: e.target.value }))} disabled={loadingReply.includes(comment.id)} className="text-xs" />
+                                                        <Button onClick={() => handleCreateReply(comment.id, post.id)} size="sm" disabled={loadingReply.includes(comment.id)}>
+                                                            {loadingReply.includes(comment.id) ? <Loader2 className="h-3 w-3 animate-spin" /> : <Send className="h-3 w-3" />}
                                                         </Button>
                                                     </div>
                                                 )}
