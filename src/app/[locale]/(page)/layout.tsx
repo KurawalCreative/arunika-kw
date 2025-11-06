@@ -13,7 +13,7 @@ export default function Layout(props: { children: ReactNode }) {
         <main className="flex min-h-screen flex-col">
             <Navbar />
             <div className="flex flex-1 pt-16">
-                <div className="flex flex-1">
+                <div className="flex flex-1 flex-col">
                     <>{props.children}</>
                 </div>
             </div>
