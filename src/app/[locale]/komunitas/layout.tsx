@@ -34,7 +34,7 @@ export default function KomunitasLayout({ children }: { children: ReactNode }) {
                 <nav className="sticky top-0 z-50 border-b border-gray-200 bg-white/50 backdrop-blur-sm transition-colors dark:border-slate-700 dark:bg-slate-900/50">
                     <div className="flex items-center justify-between px-4 py-4 sm:px-6">
                         <Link href="/komunitas" className="flex items-center gap-2">
-                            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-purple-600">
+                            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-linear-to-br from-blue-500 to-purple-600">
                                 <Hash className="h-5 w-5 text-white" />
                             </div>
                             <span className="hidden text-lg font-bold text-gray-900 sm:inline dark:text-white">Arunika</span>
@@ -87,7 +87,7 @@ export default function KomunitasLayout({ children }: { children: ReactNode }) {
                             {sidebarOpen ? <X className="h-5 w-5 text-gray-700 dark:text-slate-300" /> : <Menu className="h-5 w-5 text-gray-700 dark:text-slate-300" />}
                         </button>
                         <Link href="/komunitas" className="flex items-center gap-2">
-                            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-purple-600">
+                            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-linear-to-br from-blue-500 to-purple-600">
                                 <Hash className="h-5 w-5 text-white" />
                             </div>
                             <span className="hidden text-lg font-bold text-gray-900 sm:inline dark:text-white">Arunika</span>

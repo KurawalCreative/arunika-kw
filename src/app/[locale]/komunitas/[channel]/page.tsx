@@ -538,7 +538,7 @@ export default function page() {
                                                             </Avatar>
                                                             <div className="min-w-0 flex-1">
                                                                 <p className="text-sm font-semibold text-gray-900 dark:text-white">{comment.author.name}</p>
-                                                                <p className="text-sm break-words text-gray-700 dark:text-slate-300">{comment.content}</p>
+                                                                <p className="text-sm wrap-break-words text-gray-700 dark:text-slate-300">{comment.content}</p>
                                                                 <button onClick={() => setReplyingTo(replyingTo === comment.id ? null : comment.id)} className="mt-1 text-xs text-blue-600 transition-colors hover:underline dark:text-blue-400">
                                                                     Balas
                                                                 </button>
@@ -599,7 +599,7 @@ export default function page() {
                                                                 </Avatar>
                                                                 <div className="min-w-0 flex-1">
                                                                     <p className="text-xs font-semibold text-gray-900 dark:text-white">{reply.author.name}</p>
-                                                                    <p className="text-xs break-words text-gray-700 dark:text-slate-300">{reply.content}</p>
+                                                                    <p className="text-xs wrap-break-words text-gray-700 dark:text-slate-300">{reply.content}</p>
                                                                 </div>
                                                                 {(session?.user as any)?.id === reply.author.id && (
                                                                     <DropdownMenu open={openReplyMenu === reply.id} onOpenChange={(open) => setOpenReplyMenu(open ? reply.id : null)}>
