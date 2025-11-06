@@ -13,8 +13,8 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 
 export default function KomunitasLayout({ children }: { children: ReactNode }) {
     return (
-        <div className="min-h-screen bg-white transition-colors dark:bg-slate-950">
-            <div className="flex flex-col lg:flex-row pt-16">
+        <div className="flex min-h-screen flex-1 bg-white transition-colors dark:bg-slate-950">
+            <div className="flex flex-1 flex-col pt-16 lg:flex-row">
                 <AppSidebar />
                 <main className="flex-1">
                     <div className="w-full px-4 sm:px-6 lg:px-8">{children}</div>
