@@ -3,85 +3,51 @@
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
-import { ArrowLeft, User, MapPin, Calendar, Heart, MessageCircle, Users, UserPlus, UserMinus } from "lucide-react";
+import { ArrowLeft, MapPin, Calendar, Heart, MessageCircle, Users, UserPlus, UserMinus, UserIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import PostItem from "@/components/post-item";
 import { authClient } from "@/lib/auth-client";
-
-interface UserProfile {
-    id: string;
-    name: string;
-    email: string;
-    image: string;
-    role: string;
-    createdAt: string;
-    _count: {
-        followers: number;
-        following: number;
-        Post: number;
-    };
-}
-
-interface Post {
-    id: string;
-    content: string;
-    authorId: string;
-    author: {
-        id: string;
-        name: string;
-        image: string;
-        role: string;
-    };
-    createdAt: string;
-    images?: Array<{ id: string; url: string }>;
-    likes: Array<{ id: string; userId?: string }>;
-    comments: Array<{
-        id: string;
-        content: string;
-        author: { id: string; name: string; image: string };
-        createdAt: string;
-        replies?: Array<{
-            id: string;
-            content: string;
-            author: { id: string; name: string; image: string };
-            createdAt: string;
-        }>;
-    }>;
-}
+import { Post, PostImage, User } from "@/generated/prisma/client";
 
 export default function ProfilePage() {
     const params = useParams();
     const router = useRouter();
     const { data: session } = authClient.useSession();
 
-    const [profile, setProfile] = useState<UserProfile | null>(null);
-    const [posts, setPosts] = useState<Post[]>([]);
+    const [profile, setProfile] = useState<(User & { _count: { followers: number; following: number; Post: number } }) | null>(null);
+    const [posts, setPosts] = useState<(Post & { images: PostImage[]; likedByUser: boolean; likesCount: number; author: User })[]>([]);
     const [loading, setLoading] = useState(true);
     const [following, setFollowing] = useState(false);
     const [togglingFollow, setTogglingFollow] = useState(false);
 
-    const userId = params.userId as string;
-    const isOwnProfile = session?.user.id === userId;
+    const profileUserId = params.userId as string;
+
+    // Safely read NextAuth runtime fields from session.user
+    const sessUser = (session?.user as any) || {};
+    const sessionUserId = sessUser.id as string | undefined;
+    const sessionUserRole = sessUser.role as string | undefined;
+
+    const isOwnProfile = sessionUserId === profileUserId;
 
     useEffect(() => {
-        if (!userId) return;
+        if (!profileUserId) return;
         fetchProfile();
-    }, [userId]);
+    }, [profileUserId]);
 
     const fetchProfile = async () => {
         try {
             setLoading(true);
-            const [profileRes, postsRes] = await Promise.all([axios.get(`/api/komunitas/profile/${userId}`), axios.get(`/api/komunitas/profile/${userId}/posts`)]);
+            const [profileRes, postsRes] = await Promise.all([axios.get(`/api/komunitas/profile/${profileUserId}`), axios.get(`/api/komunitas/profile/${profileUserId}/posts`)]);
 
             setProfile(profileRes.data.user);
             setPosts(postsRes.data.posts);
 
             // Check if current user is following this profile
-            if (session?.user.id && session.user.id !== userId) {
-                const followRes = await axios.get(`/api/komunitas/follow/check?followerId=${session.user.id}&followingId=${userId}`);
+            if (sessionUserId && sessionUserId !== profileUserId) {
+                const followRes = await axios.get(`/api/komunitas/follow/check?followerId=${sessionUserId}&followingId=${profileUserId}`);
                 setFollowing(followRes.data.isFollowing);
             }
         } catch (err) {
@@ -92,18 +58,18 @@ export default function ProfilePage() {
     };
 
     const handleFollow = async () => {
-        if (!session || togglingFollow) return;
+        if (!sessionUserId || togglingFollow) return;
 
         setTogglingFollow(true);
         try {
             if (following) {
                 await axios.delete(`/api/komunitas/follow`, {
-                    data: { followingId: userId },
+                    data: { followingId: profileUserId },
                 });
                 setFollowing(false);
                 setProfile((prev) => (prev ? { ...prev, _count: { ...prev._count, followers: prev._count.followers - 1 } } : null));
             } else {
-                await axios.post(`/api/komunitas/follow`, { followingId: userId });
+                await axios.post(`/api/komunitas/follow`, { followingId: profileUserId });
                 setFollowing(true);
                 setProfile((prev) => (prev ? { ...prev, _count: { ...prev._count, followers: prev._count.followers + 1 } } : null));
             }
@@ -115,53 +81,27 @@ export default function ProfilePage() {
     };
 
     const handleLike = async (id: string) => {
-        if (!session) return;
+        if (!sessionUserId) return;
+        const hasLiked = posts.some((p) => p.id === id && p.likedByUser);
 
-        const hasLiked = posts.some((p) => p.id === id && p.likes.some((l) => l.userId === session?.user.id));
-
+        // optimistic update: count-only
         setPosts((prev) =>
             prev.map((p) => {
                 if (p.id !== id) return p;
-                if (hasLiked) {
-                    return { ...p, likes: p.likes.filter((l) => l.userId !== session.user.id) };
-                }
-                return {
-                    ...p,
-                    likes: [
-                        ...p.likes,
-                        {
-                            id: `temp-${session.user.id}-${Date.now()}`,
-                            userId: session.user.id!,
-                        },
-                    ],
-                };
+                const nextCount = hasLiked ? Math.max(0, (p.likesCount || 0) - 1) : (p.likesCount || 0) + 1;
+                return { ...p, likesCount: nextCount, likedByUser: !hasLiked } as any;
             }),
         );
 
         try {
-            await axios.post("/api/komunitas/like", { postId: id });
+            const res = await axios.post("/api/komunitas/like", { postId: id });
+            if (res.data && typeof res.data.likesCount === "number") {
+                setPosts((prev) => prev.map((p) => (p.id === id ? { ...p, likesCount: res.data.likesCount, likedByUser: !!res.data.liked } : p)));
+            }
         } catch (error) {
             console.error("Failed to toggle like:", error);
-            // Revert optimistic update
-            setPosts((prev) =>
-                prev.map((p) => {
-                    if (p.id !== id) return p;
-                    if (hasLiked) {
-                        if (p.likes.some((l) => l.userId === session.user.id)) return p;
-                        return {
-                            ...p,
-                            likes: [
-                                ...p.likes,
-                                {
-                                    id: `temp-restore-${session.user.id}-${Date.now()}`,
-                                    userId: session.user.id!,
-                                },
-                            ],
-                        };
-                    }
-                    return { ...p, likes: p.likes.filter((l) => !(l.userId === session.user.id && String(l.id).startsWith("temp-"))) };
-                }),
-            );
+            // rollback
+            setPosts((prev) => prev.map((p) => (p.id === id ? { ...p, likedByUser: hasLiked, likesCount: hasLiked ? (p.likesCount || 0) + 1 : Math.max(0, (p.likesCount || 1) - 1) } : p)));
         }
     };
 
@@ -180,7 +120,7 @@ export default function ProfilePage() {
         return (
             <div className="flex h-96 items-center justify-center">
                 <div className="text-center">
-                    <User className="mx-auto mb-4 h-12 w-12 text-gray-400" />
+                    <UserIcon className="mx-auto mb-4 h-12 w-12 text-gray-400" />
                     <h2 className="mb-2 text-xl font-semibold">Profil tidak ditemukan</h2>
                     <p className="text-gray-600 dark:text-gray-400">Pengguna yang Anda cari tidak ada.</p>
                     <Button onClick={() => router.back()} className="mt-4">
@@ -207,8 +147,8 @@ export default function ProfilePage() {
                 <CardContent className="pt-6">
                     <div className="flex flex-col items-center space-y-4 sm:flex-row sm:items-start sm:space-y-0 sm:space-x-6">
                         <Avatar className="h-24 w-24">
-                            <AvatarImage src={profile.image} alt={profile.name} />
-                            <AvatarFallback className="text-2xl">{profile.name[0]}</AvatarFallback>
+                            <AvatarImage src={profile.image || ""} alt={profile.name || ""} />
+                            <AvatarFallback className="text-2xl">{profile.name?.[0] || ""}</AvatarFallback>
                         </Avatar>
 
                         <div className="flex-1 text-center sm:text-left">

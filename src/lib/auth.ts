@@ -1,27 +1,29 @@
+import { GetServerSidePropsContext } from "next";
+import { getServerSession, NextAuthOptions, Session } from "next-auth";
+import GoogleProvider from "next-auth/providers/google";
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import prisma from "./prisma";
-import { betterAuth } from "better-auth";
-import { prismaAdapter } from "better-auth/adapters/prisma";
 
-export const auth = betterAuth({
-    database: prismaAdapter(prisma, {
-        provider: "mongodb",
-    }),
-    socialProviders: {
-        google: {
+export const authOptions: NextAuthOptions = {
+    adapter: PrismaAdapter(prisma as any),
+    providers: [
+        GoogleProvider({
             clientId: process.env.GOOGLE_CLIENT_ID!,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-            accessType: "offline",
-            prompt: "select_account consent",
+            allowDangerousEmailAccountLinking: true,
+        }),
+    ],
+    callbacks: {
+        async session({ session, user }) {
+            if (session.user) {
+                (session.user as any).id = user.id;
+                (session.user as any).role = (user as any).role || "user";
+            }
+            return session;
         },
     },
-    user: {
-        additionalFields: {
-            role: {
-                type: "string[]",
-                enum: ["user", "admin"],
-                default: "user",
-                required: true,
-            },
-        },
-    },
-});
+};
+
+export async function getServerAuthSession<Session>() {
+    return await getServerSession(authOptions as any);
+}

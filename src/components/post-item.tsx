@@ -11,26 +11,10 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
-
-interface Post {
-    id: string;
-    content: string;
-    authorId: string;
-    author: {
-        id: string;
-        name: string;
-        image: string;
-        role: string;
-    };
-    createdAt: string;
-    images?: Array<{ id: string; url: string }>;
-    likes: Array<{ id: string; userId?: string }>;
-    comments?: Array<any>; // Optional - loaded on demand
-    commentCount?: number; // Comment count for display
-}
+import { Post, PostImage, User } from "@/generated/prisma/client";
 
 interface PostItemProps {
-    post: Post;
+    post: Post & { images: PostImage[]; likedByUser: boolean; likesCount: number; commentCount?: number; author: User };
     onLike: (id: string) => void;
     onCommentClick: (post: Post) => void;
     onDelete: (id: string) => void;
@@ -43,17 +27,23 @@ export default function PostItem({ post, onLike, onCommentClick, onDelete, toggl
     const [isFollowing, setIsFollowing] = useState(false);
     const [togglingFollow, setTogglingFollow] = useState(false);
 
-    const isOwnPost = post.authorId === session?.user.id;
+    // Safely read runtime-only fields that NextAuth attaches to session.user
+    const user = (session?.user as any) || {};
+    const userId = user.id as string | undefined;
+    const userRole = user.role as string | undefined;
+
+    const isOwnPost = post.authorId === userId;
 
     useEffect(() => {
-        if (session?.user.id && !isOwnPost) {
+        if (userId && !isOwnPost) {
             checkFollowStatus();
         }
-    }, [session?.user.id, post.authorId]);
+    }, [userId, post.authorId]);
 
     const checkFollowStatus = async () => {
+        if (!userId) return;
         try {
-            const res = await axios.get(`/api/komunitas/follow/check?followerId=${session.user.id}&followingId=${post.authorId}`);
+            const res = await axios.get(`/api/komunitas/follow/check?followerId=${userId}&followingId=${post.authorId}`);
             setIsFollowing(res.data.isFollowing);
         } catch (err) {
             console.error("Failed to check follow status:", err);
@@ -61,7 +51,7 @@ export default function PostItem({ post, onLike, onCommentClick, onDelete, toggl
     };
 
     const handleFollow = async () => {
-        if (!session || togglingFollow) return;
+        if (!userId || togglingFollow) return;
 
         setTogglingFollow(true);
         try {
@@ -83,13 +73,13 @@ export default function PostItem({ post, onLike, onCommentClick, onDelete, toggl
 
     return (
         <>
-            <Card className={`transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${post.authorId === session?.user.id ? "ring-2 ring-blue-500/20" : ""}`}>
+            <Card className={`transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${post.authorId === userId ? "ring-2 ring-blue-500/20" : ""}`}>
                 <CardHeader>
                     <div className="flex items-center space-x-3">
                         <Link href={`/komunitas/profile/${post.authorId}`} className="flex items-center space-x-3 transition-opacity hover:opacity-80">
                             <Avatar className="size-10">
-                                <AvatarImage src={post.author.image} alt={post.author.name} />
-                                <AvatarFallback>{post.author.name[0]}</AvatarFallback>
+                                <AvatarImage src={post.author.image || ""} alt={post.author.name || ""} />
+                                <AvatarFallback>{post.author.name?.[0] || ""}</AvatarFallback>
                             </Avatar>
                             <div>
                                 <CardTitle className="text-font-primary dark:text-background flex items-center gap-2 text-lg font-semibold">
@@ -118,11 +108,11 @@ export default function PostItem({ post, onLike, onCommentClick, onDelete, toggl
                                         </button>
                                     )}
                                 </CardTitle>
-                                <p className="text-font-secondary text-sm dark:text-gray-400">{post.createdAt}</p>
+                                <p className="text-font-secondary text-sm dark:text-gray-400">{new Date(post.createdAt).toLocaleDateString()}</p>
                             </div>
                         </Link>
                         <div className="ml-auto flex items-center gap-2">
-                            {(isOwnPost || (session?.user as any)?.role === "admin") && (
+                            {(isOwnPost || userRole === "admin") && (
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
                                         <button className="rounded p-1 hover:bg-gray-100 dark:hover:bg-gray-800">
@@ -155,8 +145,8 @@ export default function PostItem({ post, onLike, onCommentClick, onDelete, toggl
 
                     <div className="flex items-center space-x-6 text-sm">
                         <button onClick={() => onLike(post.id)} disabled={!!togglingLikes[post.id]} className={`flex items-center space-x-1 transition-all duration-200 hover:scale-110 active:scale-95 ${togglingLikes[post.id] ? "pointer-events-none animate-pulse opacity-50" : "hover:text-red-500"}`} aria-busy={!!togglingLikes[post.id]}>
-                            <Heart className={`h-4 w-4 transition-all duration-200 ${post.likes.some((like) => like.userId === session?.user.id) ? "scale-110 fill-red-500 text-red-500" : ""}`} />
-                            <span className={`transition-colors duration-200 ${post.likes.some((like) => like.userId === session?.user.id) ? "text-red-500" : ""}`}>{post.likes.length}</span>
+                            <Heart className={`h-4 w-4 transition-all duration-200 ${post.likedByUser ? "scale-110 fill-red-500 text-red-500" : ""}`} />
+                            <span className={`transition-colors duration-200 ${post.likedByUser ? "text-red-500" : ""}`}>{post.likesCount}</span>
                         </button>
                         <button onClick={() => onCommentClick(post)} className="text-font-primary dark:text-background flex items-center space-x-1 transition-all duration-200 hover:scale-110 hover:text-sky-500 active:scale-95">
                             <MessageCircle className={`h-4 w-4 transition-all duration-200 ${(post.commentCount || 0) > 0 ? "text-sky-500" : ""}`} />

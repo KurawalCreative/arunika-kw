@@ -1,291 +1,173 @@
 "use client";
 
-import { ReactNode, useState, useEffect } from "react";
-import { Hash, TrendingUp, Users, MessageSquare, Calendar, Heart, MessageCircle, Clock, User, UserPlus, UserMinus } from "lucide-react";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { ReactNode, useEffect, useState } from "react";
+import { getChannels } from "./actions";
+import { Channel } from "@/generated/prisma/client";
+import { Link } from "@/i18n/navigation";
+import { useParams, useRouter } from "next/navigation";
+import { signOut, useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
-import axios from "axios";
-import { useRouter } from "next/navigation";
-import FooterSection from "@/components/footer";
-import NavbarArunika from "@/components/navbar";
-import { authClient } from "@/lib/auth-client";
+import { Input } from "@/components/ui/input";
+import { LogOut, LogIn, Loader2, Hash, Search, Menu, X, Users } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ModeToggle } from "@/components/mode-toggle";
 
-interface KomunitasLayoutProps {
-    children: ReactNode;
-}
-
-interface TrendingPost {
-    id: string;
-    content: string;
-    author: {
-        id: string;
-        name: string;
-        image: string;
-    };
-    likesCount: number;
-    commentsCount: number;
-    score: number;
-    createdAt: string;
-}
-
-export default function KomunitasLayout({ children }: KomunitasLayoutProps) {
-    const [popularTags, setPopularTags] = useState<{ name: string; count: number }[]>([]);
-    const [trendingPosts, setTrendingPosts] = useState<TrendingPost[]>([]);
-    const [stats, setStats] = useState({
-        totalPosts: 0,
-        totalUsers: 0,
-        totalComments: 0,
-        activeToday: 0,
-    });
-    const [userProfile, setUserProfile] = useState<{
-        id: string;
-        name: string;
-        image: string;
-        _count: { followers: number; following: number; Post: number };
-    } | null>(null);
+export default function KomunitasLayout({ children }: { children: ReactNode }) {
+    const [channels, setChannels] = useState<Channel[]>([]);
+    const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState("");
+    const params = useParams<{ channel: string }>();
+    const { data: session, status } = useSession();
     const router = useRouter();
-    const { data: session } = authClient.useSession();
-
-    const handleTagClick = (tagName: string) => {
-        router.push(`/id/komunitas?search=${encodeURIComponent(tagName)}`);
-    };
-
-    const handlePostClick = (postId: string) => {
-        router.push(`/id/komunitas#post-${postId}`);
-    };
 
     useEffect(() => {
-        const fetchCommonData = async () => {
-            try {
-                // Fetch popular tags
-                const tagsRes = await axios.get("/api/tags/popular");
-                setPopularTags(tagsRes.data.tags);
-
-                // Fetch trending posts
-                const trendingRes = await axios.get("/api/komunitas/trending");
-                setTrendingPosts(trendingRes.data.posts);
-
-                // Fetch real community stats
-                const statsRes = await axios.get("/api/komunitas/stats");
-                setStats(statsRes.data);
-            } catch (err) {
-                console.error("Failed to fetch common data:", err);
-                // Fallback to default values if API fails
-                setStats({
-                    totalPosts: 0,
-                    totalUsers: 0,
-                    totalComments: 0,
-                    activeToday: 0,
-                });
-            }
-        };
-        fetchCommonData();
+        getChannels().then(setChannels);
     }, []);
 
-    useEffect(() => {
-        if (!session?.user.id) {
-            setUserProfile(null);
-            return;
-        }
-        const fetchUserProfile = async () => {
-            try {
-                const profileRes = await axios.get(`/api/komunitas/profile/${session.user.id}`);
-                setUserProfile(profileRes.data.user);
-            } catch (err) {
-                console.error("Failed to fetch user profile:", err);
-                setUserProfile(null);
-            }
-        };
-        fetchUserProfile();
-    }, [session?.user.id]);
+    const filteredChannels = channels.filter((c) => c.name?.toLowerCase().includes(searchQuery.toLowerCase()));
 
-    return (
-        <>
-            <NavbarArunika />
-            <div className="bg-background text-foreground dark:bg-foreground dark:text-background min-h-screen pt-24 pb-12">
-                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-0">
-                    <div className="grid grid-cols-1 gap-6 lg:grid-cols-4">
-                        {/* Konten Utama */}
-                        <div className="lg:col-span-3">{children}</div>
+    // Jika belum login, tampilkan login prompt
+    if (status === "unauthenticated") {
+        return (
+            <div className="min-h-screen bg-white transition-colors dark:bg-slate-950">
+                {/* Top Navbar */}
+                <nav className="sticky top-0 z-50 border-b border-gray-200 bg-white/50 backdrop-blur-sm transition-colors dark:border-slate-700 dark:bg-slate-900/50">
+                    <div className="flex items-center justify-between px-4 py-4 sm:px-6">
+                        <Link href="/komunitas" className="flex items-center gap-2">
+                            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-linear-to-br from-blue-500 to-purple-600">
+                                <Hash className="h-5 w-5 text-white" />
+                            </div>
+                            <span className="hidden text-lg font-bold text-gray-900 sm:inline dark:text-white">Arunika</span>
+                        </Link>
 
-                        {/* Sidebar */}
-                        <div className="space-y-6 lg:col-span-1">
-                            {/* User Profile */}
-                            {userProfile && (
-                                <Card className="dark:border-gray-700 dark:bg-gray-800">
-                                    <CardHeader>
-                                        <CardTitle className="text-font-primary dark:text-background flex items-center text-lg">
-                                            <User className="mr-2 h-5 w-5" />
-                                            Profil Anda
-                                        </CardTitle>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <div className="mb-4 flex items-center space-x-3">
-                                            <Avatar className="h-12 w-12">
-                                                <AvatarImage src={userProfile.image} alt={userProfile.name} />
-                                                <AvatarFallback>{userProfile.name[0]}</AvatarFallback>
-                                            </Avatar>
-                                            <div className="min-w-0 flex-1">
-                                                <p className="text-font-primary dark:text-background truncate font-medium">{userProfile.name}</p>
-                                                <p className="text-font-secondary text-sm dark:text-gray-400">@{userProfile.id.slice(-8)}</p>
-                                            </div>
-                                        </div>
-
-                                        <div className="mb-4 grid grid-cols-3 gap-4">
-                                            <div className="text-center">
-                                                <div className="text-lg font-bold text-blue-600 dark:text-blue-400">{userProfile._count.Post}</div>
-                                                <div className="text-xs text-gray-600 dark:text-gray-400">Posts</div>
-                                            </div>
-                                            <div className="text-center">
-                                                <div className="text-lg font-bold text-green-600 dark:text-green-400">{userProfile._count.followers}</div>
-                                                <div className="text-xs text-gray-600 dark:text-gray-400">Followers</div>
-                                            </div>
-                                            <div className="text-center">
-                                                <div className="text-lg font-bold text-purple-600 dark:text-purple-400">{userProfile._count.following}</div>
-                                                <div className="text-xs text-gray-600 dark:text-gray-400">Following</div>
-                                            </div>
-                                        </div>
-
-                                        <Button variant="outline" size="sm" className="w-full" onClick={() => router.push(`/id/komunitas/profile/${userProfile.id}`)}>
-                                            Lihat Profil
-                                        </Button>
-                                    </CardContent>
-                                </Card>
-                            )}
-
-                            {/* Statistik Komunitas */}
-                            <Card className="dark:border-gray-700 dark:bg-gray-800">
-                                <CardHeader>
-                                    <CardTitle className="text-font-primary dark:text-background flex items-center text-lg">
-                                        <TrendingUp className="mr-2 h-5 w-5" />
-                                        Statistik Komunitas
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent className="space-y-4">
-                                    <div className="flex items-center justify-between">
-                                        <div className="text-font-secondary flex items-center text-sm dark:text-gray-300">
-                                            <MessageSquare className="mr-2 h-4 w-4" />
-                                            Total Post
-                                        </div>
-                                        <Badge variant="secondary">{stats.totalPosts.toLocaleString()}</Badge>
-                                    </div>
-                                    <div className="flex items-center justify-between">
-                                        <div className="text-font-secondary flex items-center text-sm dark:text-gray-300">
-                                            <Users className="mr-2 h-4 w-4" />
-                                            Anggota
-                                        </div>
-                                        <Badge variant="secondary">{stats.totalUsers.toLocaleString()}</Badge>
-                                    </div>
-                                    <div className="flex items-center justify-between">
-                                        <div className="text-font-secondary flex items-center text-sm dark:text-gray-300">
-                                            <MessageSquare className="mr-2 h-4 w-4" />
-                                            Komentar
-                                        </div>
-                                        <Badge variant="secondary">{stats.totalComments.toLocaleString()}</Badge>
-                                    </div>
-                                    <div className="flex items-center justify-between">
-                                        <div className="text-font-secondary flex items-center text-sm dark:text-gray-300">
-                                            <Calendar className="mr-2 h-4 w-4" />
-                                            Aktif Hari Ini
-                                        </div>
-                                        <Badge variant="secondary">{stats.activeToday}</Badge>
-                                    </div>
-                                </CardContent>
-                            </Card>
-
-                            {/* Trending Posts */}
-                            <Card className="dark:border-gray-700 dark:bg-gray-800">
-                                <CardHeader>
-                                    <CardTitle className="text-font-primary dark:text-background flex items-center text-lg">
-                                        <TrendingUp className="mr-2 h-5 w-5" />
-                                        Trending Posts
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="space-y-3">
-                                        {trendingPosts.length > 0 ? (
-                                            trendingPosts.map((post) => (
-                                                <div key={post.id} className="cursor-pointer rounded-lg border p-3 hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-700" onClick={() => handlePostClick(post.id)}>
-                                                    <div className="flex items-start space-x-3">
-                                                        <Avatar className="h-8 w-8">
-                                                            <AvatarImage src={post.author.image} alt={post.author.name} />
-                                                            <AvatarFallback>{post.author.name.charAt(0)}</AvatarFallback>
-                                                        </Avatar>
-                                                        <div className="min-w-0 flex-1">
-                                                            <p className="text-font-primary dark:text-background text-sm font-medium">{post.author.name}</p>
-                                                            <p className="text-font-secondary line-clamp-2 text-sm dark:text-gray-300">{post.content}</p>
-                                                            <div className="text-font-secondary mt-2 flex items-center space-x-4 text-xs dark:text-gray-400">
-                                                                <div className="flex items-center">
-                                                                    <Heart className="mr-1 h-3 w-3" />
-                                                                    {post.likesCount}
-                                                                </div>
-                                                                <div className="flex items-center">
-                                                                    <MessageCircle className="mr-1 h-3 w-3" />
-                                                                    {post.commentsCount}
-                                                                </div>
-                                                                <div className="flex items-center">
-                                                                    <Clock className="mr-1 h-3 w-3" />
-                                                                    {new Date(post.createdAt).toLocaleDateString("id-ID")}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            ))
-                                        ) : (
-                                            <div className="text-font-secondary text-center text-sm dark:text-gray-400">Memuat trending posts...</div>
-                                        )}
-                                    </div>
-                                </CardContent>
-                            </Card>
-
-                            {/* Tag Populer */}
-                            <Card className="dark:border-gray-700 dark:bg-gray-800">
-                                <CardHeader>
-                                    <CardTitle className="text-font-primary dark:text-background flex items-center text-lg">
-                                        <Hash className="mr-2 h-5 w-5" />
-                                        Tag Populer
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="space-y-2">
-                                        {popularTags.length > 0 ? (
-                                            popularTags.slice(0, 10).map((tag) => (
-                                                <div key={tag.name} className="flex cursor-pointer items-center justify-between rounded-md p-2 hover:bg-gray-100 dark:hover:bg-gray-700" onClick={() => handleTagClick(tag.name)}>
-                                                    <span className="text-sm font-medium text-blue-600 dark:text-blue-400">#{tag.name}</span>
-                                                    <Badge variant="outline" className="text-xs">
-                                                        {tag.count}
-                                                    </Badge>
-                                                </div>
-                                            ))
-                                        ) : (
-                                            <div className="text-font-secondary text-center text-sm dark:text-gray-400">Memuat tag...</div>
-                                        )}
-                                    </div>
-                                </CardContent>
-                            </Card>
-
-                            {/* Tips Komunitas */}
-                            <Card className="dark:border-gray-700 dark:bg-gray-800">
-                                <CardHeader>
-                                    <CardTitle className="text-font-primary dark:text-background text-lg">💡 Tips Komunitas</CardTitle>
-                                </CardHeader>
-                                <CardContent className="text-font-secondary space-y-3 text-sm dark:text-gray-300">
-                                    <div className="space-y-2">
-                                        <p>• Gunakan tag yang relevan untuk postingan Anda</p>
-                                        <p>• Bantu sesama anggota komunitas</p>
-                                        <p>• Jaga keramahan dan saling menghormati</p>
-                                        <p>• Laporkan konten yang tidak pantas</p>
-                                    </div>
-                                </CardContent>
-                            </Card>
+                        <div className="flex items-center gap-3">
+                            <ModeToggle />
+                            <Button onClick={() => router.push("/api/auth/signin")} size="sm" className="bg-blue-600 hover:bg-blue-700">
+                                <LogIn className="mr-2 h-4 w-4" />
+                                <span className="hidden sm:inline">Login</span>
+                            </Button>
                         </div>
                     </div>
-                </div>
+                </nav>
+
+                {/* Login Prompt */}
+                <main className="flex min-h-[calc(100vh-60px)] flex-col items-center justify-center">
+                    <div className="max-w-md text-center">
+                        <div className="mb-6 flex justify-center">
+                            <Users className="h-16 w-16 text-gray-300 dark:text-slate-600" />
+                        </div>
+                        <h1 className="mb-3 text-2xl font-bold text-gray-900 dark:text-white">Bergabunglah dengan Komunitas</h1>
+                        <p className="mb-6 text-gray-600 dark:text-slate-400">Silakan login untuk melihat dan berpartisipasi dalam diskusi komunitas</p>
+                        <Button onClick={() => router.push("/api/auth/signin")} size="lg" className="w-full bg-blue-600 hover:bg-blue-700">
+                            <LogIn className="mr-2 h-4 w-4" />
+                            Login Sekarang
+                        </Button>
+                    </div>
+                </main>
             </div>
-            <FooterSection />
-        </>
+        );
+    }
+
+    // Jika masih loading
+    if (status === "loading") {
+        return (
+            <div className="flex min-h-screen items-center justify-center bg-white transition-colors dark:bg-slate-950">
+                <Loader2 className="h-8 w-8 animate-spin text-blue-400" />
+            </div>
+        );
+    }
+
+    return (
+        <div className="min-h-screen bg-white transition-colors dark:bg-slate-950">
+            {/* Top Navbar */}
+            <nav className="sticky top-0 z-50 border-b border-gray-200 bg-white/50 backdrop-blur-sm transition-colors dark:border-slate-700 dark:bg-slate-900/50">
+                <div className="flex items-center justify-between px-4 py-4 sm:px-6">
+                    <div className="flex items-center gap-3">
+                        <button onClick={() => setSidebarOpen(!sidebarOpen)} className="rounded-lg p-2 transition-colors hover:bg-gray-100 lg:hidden dark:hover:bg-slate-800">
+                            {sidebarOpen ? <X className="h-5 w-5 text-gray-700 dark:text-slate-300" /> : <Menu className="h-5 w-5 text-gray-700 dark:text-slate-300" />}
+                        </button>
+                        <Link href="/komunitas" className="flex items-center gap-2">
+                            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-linear-to-br from-blue-500 to-purple-600">
+                                <Hash className="h-5 w-5 text-white" />
+                            </div>
+                            <span className="hidden text-lg font-bold text-gray-900 sm:inline dark:text-white">Arunika</span>
+                        </Link>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                        <ModeToggle />
+                        {session ? (
+                            <div className="flex items-center gap-2">
+                                <Avatar className="h-8 w-8">
+                                    <AvatarImage src={session.user?.image || ""} />
+                                    <AvatarFallback className="bg-gray-200 text-gray-900 dark:bg-slate-700 dark:text-white">{session.user?.name?.[0]}</AvatarFallback>
+                                </Avatar>
+                                <Button onClick={() => signOut()} variant="ghost" size="sm" className="hidden text-gray-700 hover:bg-gray-100 sm:flex dark:text-slate-300 dark:hover:bg-slate-800">
+                                    <LogOut className="h-4 w-4" />
+                                </Button>
+                            </div>
+                        ) : (
+                            <Button onClick={() => router.push("/api/auth/signin")} size="sm" className="bg-blue-600 hover:bg-blue-700">
+                                <LogIn className="mr-2 h-4 w-4" />
+                                <span className="hidden sm:inline">Login</span>
+                            </Button>
+                        )}
+                    </div>
+                </div>
+            </nav>
+
+            {/* Main Content */}
+            <div className="flex flex-col lg:flex-row">
+                {/* Left Sidebar */}
+                <aside className={`fixed inset-y-0 top-14 left-0 z-40 w-64 border-r border-gray-200 bg-white backdrop-blur-sm transition-transform duration-300 lg:sticky lg:top-16 lg:translate-x-0 dark:border-slate-700 dark:bg-slate-900/50 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}>
+                    <div className="flex h-full flex-col">
+                        {/* Search */}
+                        <div className="border-b border-gray-200 p-4 dark:border-slate-700">
+                            <div className="relative">
+                                <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400 dark:text-slate-500" />
+                                <Input placeholder="Cari channel..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:placeholder-slate-500" />
+                            </div>
+                        </div>
+
+                        {/* Channels List */}
+                        <div className="flex-1 space-y-1 overflow-auto p-3">
+                            {filteredChannels.length === 0 ? (
+                                <p className="p-3 text-sm text-gray-500 dark:text-slate-500">Tidak ada channel</p>
+                            ) : (
+                                filteredChannels.map((channel) => {
+                                    const isActive = params.channel === channel.slug;
+                                    return (
+                                        <Link key={channel.id} href={`/komunitas/${channel.slug}`} onClick={() => setSidebarOpen(false)}>
+                                            <div className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${isActive ? "border border-blue-500 bg-blue-50 text-blue-600 dark:bg-blue-500/20 dark:text-blue-300" : "text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white"}`}>
+                                                <Hash className="h-4 w-4 shrink-0" />
+                                                <span className="truncate text-sm font-medium">{channel.name}</span>
+                                            </div>
+                                        </Link>
+                                    );
+                                })
+                            )}
+                        </div>
+                    </div>
+                </aside>
+
+                {/* Overlay */}
+                {sidebarOpen && <div className="fixed inset-0 top-16 z-30 bg-black/50 lg:hidden" onClick={() => setSidebarOpen(false)} />}
+
+                {/* Content Area */}
+                <main className="flex-1">
+                    <div className="w-full px-4 py-6 sm:px-6 lg:px-8">{children}</div>
+                </main>
+
+                {/* Right Sidebar - Info (Hidden on smaller screens) */}
+                {/* <aside className="hidden w-80 border-l border-gray-200 bg-white p-6 backdrop-blur-sm xl:block dark:border-slate-700 dark:bg-slate-900/50">
+                    <h3 className="mb-4 text-lg font-bold text-gray-900 dark:text-white">Trending</h3>
+                    <div className="space-y-3">
+                        <div className="cursor-pointer rounded-lg border border-gray-200 bg-gray-50 p-3 transition-colors hover:border-gray-300 dark:border-slate-700 dark:bg-slate-800/50 dark:hover:border-slate-600">
+                            <p className="text-sm text-gray-600 dark:text-slate-300">Segera hadir...</p>
+                        </div>
+                    </div>
+                </aside> */}
+            </div>
+        </div>
     );
 }

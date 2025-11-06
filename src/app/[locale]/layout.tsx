@@ -6,6 +6,8 @@ import "../globals.css";
 
 import { routing } from "@/i18n/routing";
 import { ThemeProvider } from "@/components/theme-provider";
+import NextAuthProvider from "@/components/next-auth-session-provider";
+import { getServerAuthSession } from "@/lib/auth";
 import RaniChatCompanion from "@/components/rani-chat-companion";
 
 const manrope = Manrope({
@@ -33,12 +35,13 @@ export default async function RootLayout({
     return (
         <html lang={locale} suppressHydrationWarning>
             <body className={`${manrope.className} dark:bg-foreground text-font-primary dark:text-background antialiased`}>
-                <NextIntlClientProvider>
-                    <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
-                        {children}
-                        <RaniChatCompanion />
-                    </ThemeProvider>
-                </NextIntlClientProvider>
+                <NextAuthProvider>
+                    <NextIntlClientProvider>
+                        <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
+                            {children}
+                        </ThemeProvider>
+                    </NextIntlClientProvider>
+                </NextAuthProvider>
             </body>
         </html>
     );
