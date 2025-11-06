@@ -183,15 +183,13 @@ export default function page() {
 
         const newComment = await createComment(postId, text);
         if (newComment) {
-            setComments((prev) => ({
-                ...prev,
-                [postId]: [newComment, ...(prev[postId] || [])],
-            }));
+            const updatedComments = await getComments(postId); // 💡 fetch ulang server
+            setComments((prev) => ({ ...prev, [postId]: updatedComments }));
 
             setPosts((prev) => {
                 const copy = [...prev];
                 const post = copy.find((p) => p.id === postId);
-                if (post) post._count.comments += 1;
+                if (post) post._count.comments = updatedComments.length;
                 return copy;
             });
         }
