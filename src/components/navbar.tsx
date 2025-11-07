@@ -12,7 +12,7 @@ import { authClient } from "@/lib/auth-client";
 import logoLight from "@/assets/svg/logo-light.svg";
 import logoDark from "@/assets/svg/logo-dark.svg";
 import { usePathname } from "@/i18n/navigation";
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence } from "motion/react";
 
 const NavbarList = [
     { label: "Komunitas", href: "/komunitas" },
@@ -86,12 +86,6 @@ export default function NavbarArunika() {
         checkSession();
     }, []);
 
-    const handleLogoutConfirm = async () => {
-        await authClient.signOut();
-        setSession(null);
-        setShowLogoutDialog(false);
-    };
-
     const handleMouseEnter = () => {
         if (timeoutRef.current) {
             window.clearTimeout(timeoutRef.current);
@@ -115,60 +109,28 @@ export default function NavbarArunika() {
 
     return (
         <>
-            <nav
-                className={`
-                fixed top-0 left-0 right-0 z-50
-                bg-white/80 backdrop-blur-md dark:bg-neutral-900/80 transition-all duration-200 border-b
-                ${isScrolled ? "border-b shadow-sm dark:border-neutral-700" : ""}
-            `}
-            >
-                <motion.div
-                    layoutId="nav-width"
-                    className={`mx-auto px-4 sm:px-6 w-full ${!isKomunitasPage ? "max-w-7xl" : ""}`}
-                    transition={{ type: "spring", stiffness: 120, damping: 20 }}
-                >
-                    <div className="relative flex h-16 sm:h-16 items-center justify-between">
+            <nav className={`fixed top-0 right-0 left-0 z-50 bg-white/80 backdrop-blur-md transition-all duration-200 dark:bg-neutral-900/80 ${isScrolled && !isKomunitasPage ? "border-b shadow-sm dark:border-neutral-700" : ""} ${isKomunitasPage ? "border-b" : ""}`}>
+                <motion.div layoutId="nav-width" className={`mx-auto w-full px-4 sm:px-6 ${!isKomunitasPage ? "max-w-7xl" : ""}`} transition={{ type: "spring", stiffness: 120, damping: 20 }}>
+                    <div className="relative flex h-16 items-center justify-between sm:h-16">
                         {/* Logo - Kiri */}
-                        <div className="flex items-center shrink-0">
+                        <div className="flex shrink-0 items-center">
                             <Link href="/" className="flex items-center gap-2">
-                                <Image
-                                    src={logoLight}
-                                    alt="Arunika Logo"
-                                    className="block h-14 sm:h-20 w-auto dark:hidden"
-                                    priority
-                                />
-                                <Image
-                                    src={logoDark}
-                                    alt="Arunika Logo"
-                                    className="hidden h-14 sm:h-20 w-auto dark:block"
-                                    priority
-                                />
+                                <Image src={logoLight} alt="Arunika Logo" className="block h-14 w-auto sm:h-20 dark:hidden" priority />
+                                <Image src={logoDark} alt="Arunika Logo" className="hidden h-14 w-auto sm:h-20 dark:block" priority />
                             </Link>
                         </div>
 
                         {/* Menu - Tengah (Desktop) */}
-                        <div className="hidden lg:flex items-center absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 space-x-6 xl:space-x-8">
-                            <div
-                                className="relative flex cursor-pointer items-center text-font-primary transition hover:text-orange-500 dark:text-gray-300 dark:hover:text-orange-400"
-                                onMouseEnter={handleMouseEnter}
-                                onMouseLeave={handleMouseLeave}
-                            >
-                                <span className="select-none font-medium text-sm xl:text-base">Fitur</span>
-                                <motion.div
-                                    className="ml-1.5"
-                                    animate={{ rotate: isExpanded ? 180 : 0 }}
-                                    transition={{ duration: 0.2 }}
-                                >
+                        <div className="absolute top-1/2 left-1/2 hidden -translate-x-1/2 -translate-y-1/2 items-center space-x-6 lg:flex xl:space-x-8">
+                            <div className="text-font-primary relative flex cursor-pointer items-center transition hover:text-orange-500 dark:text-gray-300 dark:hover:text-orange-400" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+                                <span className="text-sm font-medium select-none xl:text-base">Fitur</span>
+                                <motion.div className="ml-1.5" animate={{ rotate: isExpanded ? 180 : 0 }} transition={{ duration: 0.2 }}>
                                     <ChevronDown size={18} />
                                 </motion.div>
                             </div>
 
                             {NavbarList.map((link) => (
-                                <Link
-                                    key={link.href}
-                                    href={link.href}
-                                    className="font-medium text-sm xl:text-base text-font-primary transition hover:text-orange dark:text-gray-300 dark:hover:text-orange"
-                                >
+                                <Link key={link.href} href={link.href} className="text-font-primary hover:text-orange dark:hover:text-orange text-sm font-medium transition xl:text-base dark:text-gray-300">
                                     {link.label}
                                 </Link>
                             ))}
@@ -179,26 +141,15 @@ export default function NavbarArunika() {
                             <LocaleSwitcher />
                             <ModeToggle />
                             {session ? (
-                                <Button
-                                    variant="ghost"
-                                    onClick={() => setShowLogoutDialog(true)}
-                                    className="hidden lg:inline-flex text-sm"
-                                >
+                                <Button variant="ghost" onClick={() => setShowLogoutDialog(true)} className="hidden text-sm lg:inline-flex">
                                     Logout
                                 </Button>
                             ) : (
-                                <Link
-                                    href="/login"
-                                    className="hidden lg:inline-flex items-center rounded-full bg-orange-500 px-4 xl:px-5 py-2 xl:py-2.5 text-sm font-medium text-white transition hover:bg-orange-600"
-                                >
+                                <Link href="/login" className="hidden items-center rounded-full bg-orange-500 px-4 py-2 text-sm font-medium text-white transition hover:bg-orange-600 lg:inline-flex xl:px-5 xl:py-2.5">
                                     Masuk
                                 </Link>
                             )}
-                            <button
-                                className="lg:hidden p-2 text-font-primary dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-md transition"
-                                onClick={() => setIsMobileMenuOpen((prev) => !prev)}
-                                aria-label="Toggle menu"
-                            >
+                            <button className="text-font-primary rounded-md p-2 transition hover:bg-gray-100 lg:hidden dark:text-gray-300 dark:hover:bg-neutral-800" onClick={() => setIsMobileMenuOpen((prev) => !prev)} aria-label="Toggle menu">
                                 {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
                             </button>
                         </div>
@@ -215,27 +166,16 @@ export default function NavbarArunika() {
                             animate={{ opacity: 1, height: "auto" }}
                             exit={{ opacity: 0, height: 0 }}
                             transition={{ duration: 0.2 }}
-                            className={`
-          ${isHomePage ? "absolute left-0 right-0 z-50" : "absolute left-0 right-0 z-50"}
-          border-t border-neutral-200 bg-white backdrop-blur-md dark:border-neutral-700 dark:bg-neutral-900/95 shadow-sm
-        `}
+                            className={` ${isHomePage ? "absolute right-0 left-0 z-50" : "absolute right-0 left-0 z-50"} border-t border-neutral-200 bg-white shadow-sm backdrop-blur-md dark:border-neutral-700 dark:bg-neutral-900/95`}
                         >
-                            <div
-                                className={`${isKomunitasPage ? "w-full px-4 sm:px-6" : "mx-auto max-w-7xl px-4 sm:px-6"} 
-          grid grid-cols-3 gap-6 xl:gap-8 py-6 xl:py-8`}
-                            >
+                            <div className={`${isKomunitasPage ? "w-full px-4 sm:px-6" : "mx-auto max-w-7xl px-4 sm:px-6"} grid grid-cols-3 gap-6 py-6 xl:gap-8 xl:py-8`}>
                                 {DropdownList.map((section) => (
                                     <div key={section.title}>
-                                        <h4 className="mb-3 xl:mb-4 text-xs xl:text-sm font-semibold text-gray-900 dark:text-gray-100 tracking-wide">
-                                            {section.title}
-                                        </h4>
+                                        <h4 className="mb-3 text-xs font-semibold tracking-wide text-gray-900 xl:mb-4 xl:text-sm dark:text-gray-100">{section.title}</h4>
                                         <ul className="space-y-2 xl:space-y-3">
                                             {section.items.map((item) => (
                                                 <li key={item.href}>
-                                                    <Link
-                                                        href={item.href}
-                                                        className="block text-sm text-gray-600 transition hover:text-orange-500 dark:text-gray-400 dark:hover:text-orange-400 hover:translate-x-1 duration-200"
-                                                    >
+                                                    <Link href={item.href} className="block text-sm text-gray-600 transition duration-200 hover:translate-x-1 hover:text-orange-500 dark:text-gray-400 dark:hover:text-orange-400">
                                                         {item.label}
                                                     </Link>
                                                 </li>
@@ -254,34 +194,15 @@ export default function NavbarArunika() {
                 {isMobileMenuOpen && (
                     <>
                         {/* Overlay */}
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            transition={{ duration: 0.2 }}
-                            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-45 lg:hidden"
-                            onClick={closeMobileMenu}
-                        />
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} className="fixed inset-0 z-45 bg-black/50 backdrop-blur-sm lg:hidden" onClick={closeMobileMenu} />
 
                         {/* Menu Panel */}
-                        <motion.div
-                            initial={{ x: "100%" }}
-                            animate={{ x: 0 }}
-                            exit={{ x: "100%" }}
-                            transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                            className="fixed top-0 right-0 bottom-0 w-full sm:w-80 bg-white dark:bg-neutral-900 z-50 lg:hidden overflow-y-auto shadow-2xl"
-                        >
+                        <motion.div initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }} transition={{ type: "spring", damping: 25, stiffness: 200 }} className="fixed top-0 right-0 bottom-0 z-50 w-full overflow-y-auto bg-white shadow-2xl sm:w-80 lg:hidden dark:bg-neutral-900">
                             <div className="p-6">
                                 {/* Close Button */}
-                                <div className="flex justify-between items-center mb-8">
-                                    <span className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                                        Menu
-                                    </span>
-                                    <button
-                                        onClick={closeMobileMenu}
-                                        className="p-2 text-font-primary dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-md transition"
-                                        aria-label="Close menu"
-                                    >
+                                <div className="mb-8 flex items-center justify-between">
+                                    <span className="text-lg font-semibold text-gray-900 dark:text-gray-100">Menu</span>
+                                    <button onClick={closeMobileMenu} className="text-font-primary rounded-md p-2 transition hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-neutral-800" aria-label="Close menu">
                                         <X size={24} />
                                     </button>
                                 </div>
@@ -290,42 +211,24 @@ export default function NavbarArunika() {
                                 <div className="space-y-1">
                                     {/* Fitur Dropdown */}
                                     <div>
-                                        <button
-                                            onClick={() => setIsMobileDropdownOpen(!isMobileDropdownOpen)}
-                                            className="w-full flex items-center justify-between py-3 px-4 text-font-primary dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-lg transition font-medium"
-                                        >
+                                        <button onClick={() => setIsMobileDropdownOpen(!isMobileDropdownOpen)} className="text-font-primary flex w-full items-center justify-between rounded-lg px-4 py-3 font-medium transition hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-neutral-800">
                                             <span>Fitur</span>
-                                            <motion.div
-                                                animate={{ rotate: isMobileDropdownOpen ? 180 : 0 }}
-                                                transition={{ duration: 0.2 }}
-                                            >
+                                            <motion.div animate={{ rotate: isMobileDropdownOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
                                                 <ChevronDown size={20} />
                                             </motion.div>
                                         </button>
 
                                         <AnimatePresence>
                                             {isMobileDropdownOpen && (
-                                                <motion.div
-                                                    initial={{ height: 0, opacity: 0 }}
-                                                    animate={{ height: "auto", opacity: 1 }}
-                                                    exit={{ height: 0, opacity: 0 }}
-                                                    transition={{ duration: 0.2 }}
-                                                    className="overflow-hidden"
-                                                >
-                                                    <div className="py-2 px-4 space-y-4">
+                                                <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }} className="overflow-hidden">
+                                                    <div className="space-y-4 px-4 py-2">
                                                         {DropdownList.map((section) => (
                                                             <div key={section.title}>
-                                                                <h4 className="mb-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                                                                    {section.title}
-                                                                </h4>
+                                                                <h4 className="mb-2 text-xs font-semibold tracking-wide text-gray-500 uppercase dark:text-gray-400">{section.title}</h4>
                                                                 <ul className="space-y-1">
                                                                     {section.items.map((item) => (
                                                                         <li key={item.href}>
-                                                                            <Link
-                                                                                href={item.href}
-                                                                                onClick={closeMobileMenu}
-                                                                                className="block py-2 px-3 text-sm text-gray-600 dark:text-gray-400 hover:text-orange-500 dark:hover:text-orange-400 hover:bg-gray-50 dark:hover:bg-neutral-800/50 rounded transition"
-                                                                            >
+                                                                            <Link href={item.href} onClick={closeMobileMenu} className="block rounded px-3 py-2 text-sm text-gray-600 transition hover:bg-gray-50 hover:text-orange-500 dark:text-gray-400 dark:hover:bg-neutral-800/50 dark:hover:text-orange-400">
                                                                                 {item.label}
                                                                             </Link>
                                                                         </li>
@@ -341,19 +244,14 @@ export default function NavbarArunika() {
 
                                     {/* Other Links */}
                                     {NavbarList.map((link) => (
-                                        <Link
-                                            key={link.href}
-                                            href={link.href}
-                                            onClick={closeMobileMenu}
-                                            className="block py-3 px-4 text-font-primary dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-lg transition font-medium"
-                                        >
+                                        <Link key={link.href} href={link.href} onClick={closeMobileMenu} className="text-font-primary block rounded-lg px-4 py-3 font-medium transition hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-neutral-800">
                                             {link.label}
                                         </Link>
                                     ))}
                                 </div>
 
                                 {/* Auth Button */}
-                                <div className="mt-8 pt-6 border-t border-gray-200 dark:border-neutral-700">
+                                <div className="mt-8 border-t border-gray-200 pt-6 dark:border-neutral-700">
                                     {session ? (
                                         <Button
                                             variant="outline"
@@ -366,11 +264,7 @@ export default function NavbarArunika() {
                                             Logout
                                         </Button>
                                     ) : (
-                                        <Link
-                                            href="/login"
-                                            onClick={closeMobileMenu}
-                                            className="block w-full text-center rounded-full bg-orange-500 px-5 py-3 text-sm font-medium text-white transition hover:bg-orange-600"
-                                        >
+                                        <Link href="/login" onClick={closeMobileMenu} className="block w-full rounded-full bg-orange-500 px-5 py-3 text-center text-sm font-medium text-white transition hover:bg-orange-600">
                                             Masuk
                                         </Link>
                                     )}
