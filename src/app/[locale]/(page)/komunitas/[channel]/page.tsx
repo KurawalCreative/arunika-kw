@@ -309,7 +309,7 @@ export default function page() {
 
     if (loadingPage) {
         return (
-            <div className="flex w-full items-center justify-center py-20">
+            <div className="flex w-full items-center justify-center py-20 lg:pr-82">
                 <Loader2 className="h-8 w-8 animate-spin text-blue-400" />
             </div>
         );
@@ -327,7 +327,7 @@ export default function page() {
     const hasMorePosts = posts.length < totalPosts;
 
     return (
-        <div className="max-w-4xl w-full space-y-6 p-8">
+        <div className="flex w-full flex-1 flex-col space-y-6 p-6 lg:pr-82">
             <ChannelHeader channel={channel} searchQuery={searchQuery} isSearching={isSearching} onSearchChange={setSearchQuery} onSearch={handleSearch} onCreatePost={() => setIsOpen(true)} />
 
             <CreatePostDialog isOpen={isOpen} channel={channel} content={content} files={files} previews={previews} isUploading={isUploading} onOpenChange={setIsOpen} onContentChange={setContent} onFilesChange={onFilesChange} onRemovePreview={removePreview} onUpload={handleUpload} />
@@ -339,7 +339,7 @@ export default function page() {
                     <p className="text-sm">Jadilah yang pertama berbagi</p>
                 </div>
             ) : (
-                <div className="space-y-4 w-full">
+                <div className="w-full space-y-4">
                     {posts.map((post, i) => (
                         <PostCard
                             key={post.id}
