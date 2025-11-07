@@ -67,17 +67,17 @@ export default function PostCard({
     openCommentMenu = null,
     openReplyMenu = null,
     isLoadingComments = false,
-    onCommentInputChange = () => {},
-    onPostComment = () => {},
-    onReplyTo = () => {},
-    onReplyInputChange = () => {},
-    onCreateReply = () => {},
-    onDeleteComment = () => {},
-    onDeleteReply = () => {},
-    onOpenCommentMenuChange = () => {},
-    onOpenReplyMenuChange = () => {},
+    onCommentInputChange = () => { },
+    onPostComment = () => { },
+    onReplyTo = () => { },
+    onReplyInputChange = () => { },
+    onCreateReply = () => { },
+    onDeleteComment = () => { },
+    onDeleteReply = () => { },
+    onOpenCommentMenuChange = () => { },
+    onOpenReplyMenuChange = () => { },
 }: PostCardProps) {
-    return (
+    return (<>
         <div className="rounded-lg bg-white p-2 transition-all hover:bg-gray-50 sm:p-4 dark:border-slate-700 dark:bg-slate-800/50 dark:hover:border-slate-600 dark:hover:shadow-none">
             {/* Header */}
             <div className="mb-4 flex items-center justify-between">
@@ -120,7 +120,7 @@ export default function PostCard({
                 dangerouslySetInnerHTML={{
                     __html: post.content,
                 }}
-                className="prose dark:prose-invert prose-p:mb-2 prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-strong:text-gray-900 dark:prose-strong:text-white mb-4 max-w-none text-gray-700 dark:text-slate-300"
+                className="wrap-break-word prose dark:prose-invert prose-p:mb-2 prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-strong:text-gray-900 dark:prose-strong:text-white mb-4 max-w-none text-gray-700 dark:text-slate-300"
             />
 
             {/* Images / Video */}
@@ -183,5 +183,9 @@ export default function PostCard({
                 />
             )}
         </div>
+        <div className="last:hidden max-w-3xl w-full mx-auto">
+            <hr className="px-4 border-[1.5px] rounded-full" />
+        </div>
+    </>
     );
 }
