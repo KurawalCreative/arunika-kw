@@ -6,8 +6,8 @@ import AppRightSidebar from "@/components/app-right-sidebar";
 
 export default function Layout({ children }: { children: ReactNode }) {
     return (
-        <div className="min-h-screen bg-white dark:bg-slate-950 pt-16 transition-colors">
-            <div className="flex flex-row min-h-screen relative">
+        <div className="flex min-h-screen flex-1 bg-white transition-colors dark:bg-slate-950">
+            <div className="flex flex-1 flex-col pt-16 lg:flex-row">
                 <AppSidebar />
                 <main className="flex-1 px-4 sm:px-6 lg:px-8">
                     {children}
