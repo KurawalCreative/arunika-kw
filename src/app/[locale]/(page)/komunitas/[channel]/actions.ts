@@ -13,6 +13,20 @@ export async function getChannelBySlug(slug: string) {
     return data;
 }
 
+export async function getPostById(postId: string) {
+    const post = await prisma.post.findUnique({
+        where: { id: postId },
+        include: {
+            author: true,
+            images: true,
+            channel: true,
+            _count: { select: { likes: true, comments: true } },
+        },
+    });
+
+    return post;
+}
+
 export async function getPresignedUrl(fileName: string, type: string) {
     const bucket = process.env.S3_BUCKET;
 

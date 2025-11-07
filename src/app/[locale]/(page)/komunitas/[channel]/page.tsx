@@ -1,4 +1,3 @@
-// page.tsx (Main Page - Refactored)
 "use client";
 
 import { Channel, Post, PostImage, User } from "@/generated/prisma/client";
@@ -342,6 +341,7 @@ export default function page() {
                 <div className="space-y-4 w-full">
                     {posts.map((post, i) => (
                         <PostCard
+                            channel={channel}
                             key={post.id}
                             post={post}
                             currentUserId={(session?.user as any)?.id}
