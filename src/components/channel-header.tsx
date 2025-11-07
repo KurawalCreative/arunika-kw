@@ -18,7 +18,7 @@ const ChannelHeader = ({ channel, searchQuery, isSearching, onSearchChange, onSe
                 <Hash size={60} />
                 <div>
                     <h1 className="text-font-primary text-4xl font-bold tracking-wide dark:text-white">{channel?.name}</h1>
-                    <p className="text-font-secondary mt-2 text-sm dark:text-slate-400">{channel?.description}</p>
+                    <p className="text-font-secondary text-sm dark:text-slate-400">{channel?.description}</p>
                 </div>
             </div>
 
@@ -41,9 +41,9 @@ const ChannelHeader = ({ channel, searchQuery, isSearching, onSearchChange, onSe
 
             <div className="flex pt-3">
                 <div className="border-b-2 w-full py-4">
-                    <div className="flex-row flex gap-4 px-8">
-                        <button>Postingan Top</button>
-                        <button>Terbaru</button>
+                    <div className="flex-row flex gap-2 px-2">
+                        <button className="border px-4 py-2 rounded-md">Postingan Top</button>
+                        <button className="border px-4 py-2 rounded-md">Terbaru</button>
                     </div>
                 </div>
             </div>
