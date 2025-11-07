@@ -9,7 +9,7 @@ export default function Layout({ children }: { children: ReactNode }) {
         <div className="min-h-screen bg-white dark:bg-slate-950 pt-16 transition-colors">
             <div className="flex flex-row min-h-screen relative">
                 <AppSidebar />
-                <main className="flex-1 ">
+                <main className="flex-1 px-4 sm:px-6 lg:px-8">
                     {children}
                 </main>
                 <AppRightSidebar />

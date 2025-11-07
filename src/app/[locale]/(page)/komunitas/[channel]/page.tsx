@@ -12,7 +12,6 @@ import axios, { AxiosProgressEvent } from "axios";
 import ChannelHeader from "@/components/channel-header";
 import CreatePostDialog from "@/components/create-post-dialog";
 import PostCard from "@/components/post-card";
-import CommentsSection from "@/components/comment-section";
 import ImagePreviewDialog from "@/components/image-preview-dialog";
 
 export default function page() {
@@ -183,13 +182,20 @@ export default function page() {
 
         const newComment = await createComment(postId, text);
         if (newComment) {
-            const updatedComments = await getComments(postId); // 💡 fetch ulang server
+            // Fetch fresh data from database
+            const updatedComments = await getComments(postId);
             setComments((prev) => ({ ...prev, [postId]: updatedComments }));
 
+            // Calculate total count (comments + all replies)
+            const totalCount = updatedComments.reduce((sum, comment) => {
+                return sum + 1 + (comment.replies?.length || 0);
+            }, 0);
+
+            // Update count based on fresh data
             setPosts((prev) => {
                 const copy = [...prev];
                 const post = copy.find((p) => p.id === postId);
-                if (post) post._count.comments = updatedComments.length;
+                if (post) post._count.comments = totalCount;
                 return copy;
             });
         }
@@ -206,16 +212,23 @@ export default function page() {
 
         const newReply = await createReply(commentId, text);
         if (newReply) {
-            setComments((prev) => ({
-                ...prev,
-                [postId]:
-                    prev[postId]?.map((c) => {
-                        if (c.id === commentId) {
-                            return { ...c, replies: [...(c.replies || []), newReply] };
-                        }
-                        return c;
-                    }) || [],
-            }));
+            // Fetch fresh data from database
+            const updatedComments = await getComments(postId);
+            setComments((prev) => ({ ...prev, [postId]: updatedComments }));
+
+            // Calculate total count (comments + all replies)
+            const totalCount = updatedComments.reduce((sum, comment) => {
+                return sum + 1 + (comment.replies?.length || 0);
+            }, 0);
+
+            // Update count based on fresh data
+            setPosts((prev) => {
+                const copy = [...prev];
+                const post = copy.find((p) => p.id === postId);
+                if (post) post._count.comments = totalCount;
+                return copy;
+            });
+
             setReplyingTo(null);
         }
 
@@ -226,21 +239,20 @@ export default function page() {
         setDeletingReply((prev) => [...prev, replyId]);
         const success = await deleteReply(replyId);
         if (success) {
-            setComments((prev) => ({
-                ...prev,
-                [postId]:
-                    prev[postId]?.map((c) => {
-                        if (c.id === commentId) {
-                            return { ...c, replies: c.replies?.filter((r: any) => r.id !== replyId) || [] };
-                        }
-                        return c;
-                    }) || [],
-            }));
+            // Fetch fresh data from database
+            const updatedComments = await getComments(postId);
+            setComments((prev) => ({ ...prev, [postId]: updatedComments }));
 
+            // Calculate total count (comments + all replies)
+            const totalCount = updatedComments.reduce((sum, comment) => {
+                return sum + 1 + (comment.replies?.length || 0);
+            }, 0);
+
+            // Update count based on fresh data
             setPosts((prev) => {
                 const copy = [...prev];
                 const post = copy.find((p) => p.id === postId);
-                if (post) post._count.comments = Math.max(0, post._count.comments - 1);
+                if (post) post._count.comments = totalCount;
                 return copy;
             });
         }
@@ -260,20 +272,17 @@ export default function page() {
     const handleDeleteComment = async (commentId: string, postId: string) => {
         setDeletingComment((prev) => [...prev, commentId]);
 
-        const comment = comments[postId]?.find((c) => c.id === commentId);
-        const totalToDelete = 1 + (comment?.replies?.length || 0);
-
         const success = await deleteComment(commentId);
         if (success) {
-            setComments((prev) => ({
-                ...prev,
-                [postId]: prev[postId]?.filter((c) => c.id !== commentId) || [],
-            }));
+            // Fetch fresh data from database
+            const updatedComments = await getComments(postId);
+            setComments((prev) => ({ ...prev, [postId]: updatedComments }));
 
+            // Update count based on fresh data
             setPosts((prev) => {
                 const copy = [...prev];
                 const post = copy.find((p) => p.id === postId);
-                if (post) post._count.comments = Math.max(0, post._count.comments - totalToDelete);
+                if (post) post._count.comments = updatedComments.length;
                 return copy;
             });
         }
@@ -332,60 +341,44 @@ export default function page() {
             ) : (
                 <div className="space-y-4">
                     {posts.map((post, i) => (
-                        <div key={post.id}>
-                            <PostCard
-                                post={post}
-                                currentUserId={(session?.user as any)?.id}
-                                loadingLike={loadingLike.includes(post.id)}
-                                deletingPost={deletingPost.includes(post.id)}
-                                openMenu={openMenu === post.id}
-                                onLike={() => handleLike(post.id, i)}
-                                onToggleComments={() => handleToggleComments(post.id)}
-                                onDeletePost={() => handleDeletePost(post.id)}
-                                onOpenMenuChange={(open) => setOpenMenu(open ? post.id : null)}
-                                onImageClick={(url) => {
-                                    setSelectedImage(url);
-                                    setImagePreviewOpen(true);
-                                }}
-                            />
-
-                            {expandedComments.includes(post.id) && (
-                                <CommentsSection
-                                    postId={post.id}
-                                    comments={comments[post.id] || []}
-                                    commentInput={commentInput[post.id] || ""}
-                                    replyingTo={replyingTo}
-                                    replyInput={replyInput}
-                                    loadingComment={loadingComment.includes(post.id)}
-                                    loadingReply={loadingReply}
-                                    deletingComment={deletingComment}
-                                    deletingReply={deletingReply}
-                                    openMenu={openMenu}
-                                    openReplyMenu={openReplyMenu}
-                                    currentUserId={(session?.user as any)?.id}
-                                    isLoading={loadingComments.includes(post.id)}
-                                    onCommentInputChange={(value) =>
-                                        setCommentInput((prev) => ({
-                                            ...prev,
-                                            [post.id]: value,
-                                        }))
-                                    }
-                                    onPostComment={() => handlePostComment(post.id)}
-                                    onReplyTo={setReplyingTo}
-                                    onReplyInputChange={(commentId, value) =>
-                                        setReplyInput((prev) => ({
-                                            ...prev,
-                                            [commentId]: value,
-                                        }))
-                                    }
-                                    onCreateReply={(commentId) => handleCreateReply(commentId, post.id)}
-                                    onDeleteComment={(commentId) => handleDeleteComment(commentId, post.id)}
-                                    onDeleteReply={(replyId, commentId) => handleDeleteReply(replyId, commentId, post.id)}
-                                    onOpenMenuChange={setOpenMenu}
-                                    onOpenReplyMenuChange={setOpenReplyMenu}
-                                />
-                            )}
-                        </div>
+                        <PostCard
+                            key={post.id}
+                            post={post}
+                            currentUserId={(session?.user as any)?.id}
+                            loadingLike={loadingLike.includes(post.id)}
+                            deletingPost={deletingPost.includes(post.id)}
+                            openMenu={openMenu === post.id}
+                            onLike={() => handleLike(post.id, i)}
+                            onToggleComments={() => handleToggleComments(post.id)}
+                            onDeletePost={() => handleDeletePost(post.id)}
+                            onOpenMenuChange={(open) => setOpenMenu(open ? post.id : null)}
+                            onImageClick={(url) => {
+                                setSelectedImage(url);
+                                setImagePreviewOpen(true);
+                            }}
+                            // Comments props
+                            showComments={expandedComments.includes(post.id)}
+                            comments={comments[post.id] || []}
+                            commentInput={commentInput[post.id] || ""}
+                            replyingTo={replyingTo}
+                            replyInput={replyInput}
+                            loadingComment={loadingComment.includes(post.id)}
+                            loadingReply={loadingReply}
+                            deletingComment={deletingComment}
+                            deletingReply={deletingReply}
+                            openCommentMenu={openMenu}
+                            openReplyMenu={openReplyMenu}
+                            isLoadingComments={loadingComments.includes(post.id)}
+                            onCommentInputChange={(value) => setCommentInput((prev) => ({ ...prev, [post.id]: value }))}
+                            onPostComment={() => handlePostComment(post.id)}
+                            onReplyTo={setReplyingTo}
+                            onReplyInputChange={(commentId, value) => setReplyInput((prev) => ({ ...prev, [commentId]: value }))}
+                            onCreateReply={(commentId) => handleCreateReply(commentId, post.id)}
+                            onDeleteComment={(commentId) => handleDeleteComment(commentId, post.id)}
+                            onDeleteReply={(replyId, commentId) => handleDeleteReply(replyId, commentId, post.id)}
+                            onOpenCommentMenuChange={setOpenMenu}
+                            onOpenReplyMenuChange={setOpenReplyMenu}
+                        />
                     ))}
                 </div>
             )}

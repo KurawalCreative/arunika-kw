@@ -26,8 +26,7 @@ const AsideEvent = () => {
 
     return (
         <div>
-            {/* Sidebar kanan fixed */}
-            <aside className="hidden lg:flex fixed right-4 top-24 w-72 h-fit bg-white border border-gray-200 rounded-xl text-gray-800 p-5 shadow-sm z-10">
+            <aside className="hidden lg:flex fixed right-8 top-24 w-72 h-fit bg-white border border-gray-200 rounded-xl text-gray-800 p-5 shadow-sm z-50">
                 <div className="w-full">
                     <h2 className="text-lg font-semibold mb-4 text-gray-800">Upcoming Events</h2>
                     <div className="space-y-3">
