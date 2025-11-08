@@ -1,11 +1,10 @@
-// page.tsx (Main Page - Refactored)
 "use client";
 
 import { Channel, Post, PostImage, User } from "@/generated/prisma/client";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { getChannelBySlug, getPost, getPresignedUrl, storePost, toggleLike, getComments, createComment, deleteComment, createReply, deleteReply, deletePost, searchPosts } from "./actions";
+import { getChannelBySlug, getPost, getPresignedUrl, storePost, toggleLike, deletePost, searchPosts } from "./actions";
 import { Button } from "@/components/ui/button";
 import { Loader2, MessageCircle } from "lucide-react";
 import axios, { AxiosProgressEvent } from "axios";
@@ -13,6 +12,13 @@ import ChannelHeader from "@/components/channel-header";
 import CreatePostDialog from "@/components/create-post-dialog";
 import PostCard from "@/components/post-card";
 import ImagePreviewDialog from "@/components/image-preview-dialog";
+import {
+    getComments,
+    createComment,
+    createReply,
+    deleteComment,
+    deleteReply,
+} from "@/app/[locale]/(page)/komunitas/[channel]/[postId]/actions";
 
 export default function page() {
     const params = useParams<{ channel: string }>();
@@ -342,6 +348,7 @@ export default function page() {
                 <div className="w-full space-y-4">
                     {posts.map((post, i) => (
                         <PostCard
+                            channel={channel}
                             key={post.id}
                             post={post}
                             currentUserId={(session?.user as any)?.id}

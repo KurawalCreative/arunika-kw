@@ -3,10 +3,12 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Button } from "@/components/ui/button";
 import { Heart, MoreVertical, Loader2, MessageCircle, Trash2, Forward } from "lucide-react";
 import Image from "next/image";
-import { Post, PostImage, User } from "@/generated/prisma/client";
+import { Channel, Post, PostImage, User } from "@/generated/prisma/client";
 import CommentsSection from "./comment-section";
+import { Link } from "@/i18n/navigation";
 
 interface PostCardProps {
+    channel: Channel | null;
     post: Post & { author: User; images: PostImage[]; _count: { likes: number; comments: number }; isLikedByUser: boolean };
     currentUserId?: string;
     loadingLike: boolean;
@@ -43,6 +45,7 @@ interface PostCardProps {
 }
 
 export default function PostCard({
+    channel,
     post,
     currentUserId,
     loadingLike,
