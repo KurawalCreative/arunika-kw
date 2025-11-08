@@ -62,7 +62,7 @@ export default function CommentList({
     }
 
     return (
-        <div className="space-y-4 border-t border-gray-200 pt-4 dark:border-slate-700">
+        <div className="space-y-4 border-gray-200 dark:border-slate-700">
             <div className="space-y-3">
                 {comments?.map((comment) => (
                     <CommentItem
