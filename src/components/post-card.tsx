@@ -150,10 +150,10 @@ export default function PostCard({
                         {loadingLike ? <Loader2 className="h-4 w-4 animate-spin" /> : <Heart className={`h-4 w-4 ${post.isLikedByUser ? "fill-red-500 text-red-500" : ""}`} />}
                         <span className={`text-sm ${post.isLikedByUser ? "font-semibold text-red-500" : ""}`}>{post._count.likes}</span>
                     </button>
-                    <button onClick={onToggleComments} className="flex items-center gap-1 rounded-full px-3 py-2 text-gray-500 transition-colors hover:bg-blue-50 hover:text-blue-600 dark:text-slate-400 dark:hover:bg-blue-500/10 dark:hover:text-blue-400">
+                    <Link href={`/komunitas/${channel?.name}/${post.id}`} className="flex items-center gap-1 rounded-full px-3 py-2 text-gray-500 transition-colors hover:bg-blue-50 hover:text-blue-600 dark:text-slate-400 dark:hover:bg-blue-500/10 dark:hover:text-blue-400">
                         <MessageCircle className="h-4 w-4" />
                         <span className="text-sm">{post._count.comments}</span>
-                    </button>
+                    </Link>
                     <button onClick={onToggleComments} className="flex items-center gap-1 rounded-full px-3 py-2 text-gray-500 transition-colors hover:bg-green-50 hover:text-green-600 dark:text-slate-400 dark:hover:bg-green-500/10 dark:hover:text-green-400">
                         <Forward className="h-4 w-4" />
                     </button>

@@ -150,7 +150,7 @@ export default function Page() {
     if (!post) return <div className="flex justify-center py-20 text-gray-500">Post tidak ditemukan</div>;
 
     return (
-        <div className="mx-auto max-w-4xl space-y-8 px-4 py-8">
+        <div className="mx-auto space-y-8 px-4 py-8 lg:pr-82">
             <CommentHeader post={post} session={session} onPostComment={handlePostComment} loadingComment={loadingComment} setCommentInput={setCommentInput} commentInput={commentInput} />
             <hr className="mt-4 rounded-full border-[1.5px]" />
             <CommentList
