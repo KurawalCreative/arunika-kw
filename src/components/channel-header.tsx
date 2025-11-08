@@ -13,7 +13,7 @@ interface ChannelHeaderProps {
 
 const ChannelHeader = ({ channel, searchQuery, isSearching, onSearchChange, onSearch, onCreatePost }: ChannelHeaderProps) => {
     return (
-        <div className="mx-auto">
+        <>
             <div className="mb-6 flex items-center gap-3">
                 <Hash size={60} />
                 <div>
@@ -29,7 +29,7 @@ const ChannelHeader = ({ channel, searchQuery, isSearching, onSearchChange, onSe
                             <AvatarImage src="https://github.com/shadcn.png" />
                             <AvatarFallback>CN</AvatarFallback>
                         </Avatar>
-                        <button onClick={onCreatePost} className="flex-1 rounded-xl text-start border px-4 py-2">
+                        <button onClick={onCreatePost} className="flex-1 rounded-xl border px-4 py-2 text-start">
                             Buat Postingan Baru
                         </button>
                         <button onClick={onCreatePost} className="bg-orange flex rounded-xl border px-4 py-2 font-semibold text-white">
@@ -40,10 +40,10 @@ const ChannelHeader = ({ channel, searchQuery, isSearching, onSearchChange, onSe
             </div>
 
             <div className="flex pt-3">
-                <div className="border-b-2 w-full py-4">
-                    <div className="flex-row flex gap-2 px-2">
-                        <button className="border px-4 py-2 rounded-md">Postingan Top</button>
-                        <button className="border px-4 py-2 rounded-md">Terbaru</button>
+                <div className="w-full border-b-2 py-4">
+                    <div className="flex flex-row gap-2 px-2">
+                        <button className="rounded-md border px-4 py-2">Postingan Top</button>
+                        <button className="rounded-md border px-4 py-2">Terbaru</button>
                     </div>
                 </div>
             </div>
@@ -75,7 +75,7 @@ const ChannelHeader = ({ channel, searchQuery, isSearching, onSearchChange, onSe
                     )}
                 </Button>
             </div> */}
-        </div>
+        </>
     );
 };
 
