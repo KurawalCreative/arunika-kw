@@ -1,27 +1,26 @@
-
 const adventage = [
     {
         id: 1,
         point: '38+',
-        color: '#b8e994',
+        color: '#5DD39E',
         describe: 'Provinsi dengan Certia Unik'
     },
     {
         id: 2,
         point: '700+',
-        color: '#a7c7e7',
+        color: '#3ABEFF',
         describe: 'Pakaian Adat Nusantara'
     },
     {
         id: 3,
         point: '1.340+',
-        color: '#f9e79f',
+        color: '#FF8C42',
         describe: 'Suku & Tradisi'
     },
     {
         id: 4,
         point: '1.000+',
-        color: '#ffa559',
+        color: '#FF6B6B',
         describe: 'Kisah & Dongeng Rakyat'
     }
 ]

@@ -114,8 +114,9 @@
 }
 
 @theme {
-    --color-font-primary: #2b2b2b;
-    --color-font-secondary: #70747d;
+    --color-text-primary: #1E1E1E;
+    --color-text-secondary: #4B5563;
+    --color-text-muted: #9CA3AF;
 
     --color-gray-background: #f8f8f8;
 
@@ -126,6 +127,20 @@
     --color-light-blue: #a7c7e7;
     --color-light-orange: #f9e79f;
     --color-light-blue: #5bc0c7;
+
+    /* New Color */
+    --color-primary-blue: #3ABEFF;
+    --color-primary-blue-hover: #28A9E2;
+
+    --color-secondary-green: #00B894;
+    --color-secondary-green-hover: #009879;
+
+    --color-accent-coral: #FF6B6B;
+    --color-accent-coral-hover: #FF5252;
+
+    --color-bg-base: #F9FAFB;
+    --color-bg-surface: #FFFFFF;
+    --color-bg-muted: #F1F5F9;
 }
 
 @layer base {

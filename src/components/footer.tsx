@@ -3,7 +3,7 @@ import Link from 'next/link'
 
 const FooterSection = () => {
     return (
-        <footer className="w-full bg-font-primary text-white">
+        <footer className="w-full bg-text-primary text-white">
             {/* Container utama */}
             <div className="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-3 gap-8">
                 {/* Brand / Logo */}

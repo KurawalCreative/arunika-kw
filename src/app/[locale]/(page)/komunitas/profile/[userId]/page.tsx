@@ -3,9 +3,9 @@
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
-import { ArrowLeft, MapPin, Calendar, Heart, MessageCircle, Users, UserPlus, UserMinus, UserIcon } from "lucide-react";
+import { ArrowLeft, Calendar, MessageCircle, UserPlus, UserMinus, UserIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import PostItem from "@/components/post-item";
@@ -221,7 +221,7 @@ export default function ProfilePage() {
                         </CardContent>
                     </Card>
                 ) : (
-                    posts.map((post) => <PostItem key={post.id} post={post} onLike={handleLike} onCommentClick={() => {}} onDelete={() => {}} togglingLikes={{}} session={session} />)
+                    posts.map((post) => <PostItem key={post.id} post={post} onLike={handleLike} onCommentClick={() => { }} onDelete={() => { }} togglingLikes={{}} session={session} />)
                 )}
             </div>
         </div>
