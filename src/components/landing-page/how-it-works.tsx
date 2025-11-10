@@ -1,77 +1,77 @@
+"use client";
+
+import { useState } from "react";
+import Image from "next/image";
+
 const steps = [
     {
         num: "01",
         title: "Pilih Daerah di Peta",
         desc: "Klik peta interaktif untuk menjelajahi provinsi yang ingin kamu pelajari.",
-        color: "text-orange",
+        color: "text-primary-blue",
+        border: "border-primary-blue",
     },
     {
         num: "02",
-        title: "AI Jadi Pemandu Belajarmu",
-        desc: "Asisten AI akan mengenalkanmu pada keunikan tiap daerah, merekomendasikan topik menarik, dan membantu menjawab pertanyaan budaya yang kamu temui.",
-        color: "text-light-blue-dark",
+        title: "Eksplorasi Konten Budaya",
+        desc: "Temukan sejarah, baju adat, makanan khas, hingga tarian tradisional dari daerah pilihanmu.",
+        color: "text-secondary-green",
+        border: "border-secondary-green",
     },
     {
         num: "03",
-        title: "Eksplorasi Konten Budaya",
-        desc: "Temukan sejarah, baju adat, makanan khas, hingga tarian tradisional dari daerah pilihanmu.",
-        color: "text-green-lime-dark",
+        title: "Belajar Sambil Bermain",
+        desc: "Ikuti mini game, kuis cepat, atau dengarkan storyteller audio untuk memperdalam pemahamanmu.",
+        color: "text-accent-coral",
+        border: "border-accent-coral",
     },
     {
         num: "04",
-        title: "Belajar Sambil Bermain",
-        desc: "Ikuti mini game, kuis cepat, atau dengarkan storyteller audio untuk memperdalam pemahamanmu.",
-        color: "text-orange",
-    },
-    {
-        num: "05",
         title: "Kumpulkan Lencana Budaya",
-        desc: "Setiap kali menyelesaikan aktivitas, kamu mendapatkan lencana unik dari tiap daerah. Semakin banyak belajar, makin banyak koleksi!",
-        color: "text-light-blue",
+        desc: "Setiap kali menyelesaikan aktivitas, kamu mendapatkan lencana unik dari tiap daerah.",
+        color: "text-orange",
+        border: "border-orange",
     },
 ];
 
-const HowItWorksSection = () => {
+export default function HowItWorksSection() {
+    const [active, setActive] = useState(1);
+
     return (
-        <section className="max-w-7xl mx-auto py-20 px-6">
-            <div className="text-center mb-16">
-                <h1 className="text-3xl font-semibold">
-                    Bagaimana <span className="text-green-lime-dark">Cara Kerjanya</span>
+        <section className="w-full px-6 py-20">
+            {/* Header */}
+            <div className="text-text-primary mx-auto mb-16 max-w-5xl px-4 text-center">
+                <h1 className="text-3xl leading-snug font-semibold">
+                    <span className="text-primary-blue">Belajar budaya Indonesia</span> nggak harus membosankan.
                 </h1>
-                <h4 className="mt-3 text-2xl font-medium text-font-secondary">
-                    Belajar budaya kini lebih{" "}
-                    <span className="text-orange">seru, mudah, dan interaktif!</span>
+                <h4 className="text-text-secondary mx-auto mt-2 max-w-3xl text-xl leading-relaxed font-medium">
+                    Di sini, kamu bisa <span className="text-secondary-green">menjelajahi peta, bermain kuis, dan mendengarkan cerita menarik dari setiap daerah Nusantara!</span>
                 </h4>
-                <p className="mt-4 text-lg text-[#6e727b] max-w-3xl mx-auto">
-                    Kami mengubah pelajaran budaya menjadi pengalaman yang bisa kamu
-                    jelajahi langsung lewat peta, permainan, dan cerita.
-                </p>
             </div>
 
-            <div className="flex flex-col md:flex-row items-stretch gap-12">
-                <div className="flex-1 bg-gray-100 rounded-2xl shadow-inner relative overflow-hidden" />
+            {/* Content */}
+            <div className="mx-auto flex max-w-7xl flex-col items-stretch gap-12 md:flex-row">
+                {/* Kiri (Placeholder) */}
+                <div className="relative flex min-h-[400px] flex-1 items-center justify-center overflow-hidden rounded-md bg-gray-100 shadow-sm">
+                    <div className="text-lg text-gray-400 italic"></div>
+                </div>
 
-                <div className="flex-1/6 flex flex-col justify-center space-y-4 ">
-                    {steps.map((step) => (
-                        <div key={step.num} className="flex items-start gap-4">
-                            <span className={`text-2xl font-semibold ${step.color}`}>
-                                {step.num}
-                            </span>
-                            <div>
-                                <h3 className={`text-xl font-semibold ${step.color}`}>
-                                    {step.title}
-                                </h3>
-                                <p className="text-font-secondary mt-1 text-base">
-                                    {step.desc}
-                                </p>
-                            </div>
-                        </div>
-                    ))}
+                {/* Kanan (Langkah-langkah interaktif) */}
+                <div className="flex flex-1 flex-col justify-center">
+                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                        {steps.map((step, index) => {
+                            const isActive = active === index + 1;
+                            return (
+                                <button key={step.num} onClick={() => setActive(index + 1)} className={`group relative flex h-full flex-col rounded-lg border-2 p-6 text-left transition-all duration-300 ${isActive ? `${step.border} bg-white shadow-md` : "border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm"}`}>
+                                    <span className={`mb-3 text-3xl font-bold transition-colors duration-300 ${isActive ? step.color : "text-gray-300"}`}>{step.num}</span>
+                                    <h3 className={`mb-2 text-lg leading-tight font-semibold transition-colors duration-300 ${isActive ? step.color : "text-gray-600"}`}>{step.title}</h3>
+                                    <p className={`text-sm leading-relaxed transition-colors duration-300 ${isActive ? "text-gray-700" : "text-gray-500"}`}>{step.desc}</p>
+                                </button>
+                            );
+                        })}
+                    </div>
                 </div>
             </div>
-
         </section>
     );
-};
-
-export default HowItWorksSection;
+}

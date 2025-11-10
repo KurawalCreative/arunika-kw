@@ -47,12 +47,12 @@ const WhatCanLearnSection = () => {
             <div className="flex w-full">
                 <div className="flex-1">
                     <div className="max-w-xl">
-                        <h1 className="text-3xl font-semibold">Apa yang bisa kamu <span className="text-green-lime-dark">pelajari disini?</span></h1>
-                        <p className="text-xl text-font-secondary mt-2">Temukan keindahan budaya Indonesia lewat cara belajar yang <span className="text-orange">seru, interaktif, dan penuh warna.</span></p>
+                        <h1 className="text-3xl font-semibold">Apa yang bisa kamu <span className="text-primary-blue">pelajari disini?</span></h1>
+                        <p className="text-xl text-text-secondary mt-2">Temukan keindahan budaya Indonesia lewat cara belajar yang <span className="text-secondary-green">seru, interaktif, dan penuh warna.</span></p>
                     </div>
                 </div>
                 <div className="flex-1">
-                    <p className="text-[#6e727b] text-lg">
+                    <p className="text-text-muted text-lg">
                         Dari pakaian adat hingga bahasa daerah, setiap halaman membawa kamu mengenal kisah dan makna di balik tradisi Nusantara. Yuk, jelajahi dan temukan betapa kayanya Indonesia dari Sabang sampai Merauke!
                     </p>
                 </div>

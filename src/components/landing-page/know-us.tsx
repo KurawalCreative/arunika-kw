@@ -3,46 +3,45 @@ import { ArrowUpRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
-import hinduTample from "@/assets/images/hindu-tample.jpg"
-import minangkabauDance from "@/assets/images/minangkabau-dance.jpg"
-import reogDance from "@/assets/images/reog-dance.jpg"
-import mapSvg from "@/assets/svg/map-dark.svg"
+import hinduTample from "@/assets/images/hindu-tample.jpg";
+import minangkabauDance from "@/assets/images/minangkabau-dance.jpg";
+import reogDance from "@/assets/images/reog-dance.jpg";
+import mapSvg from "@/assets/svg/map-dark.svg";
+import javaMapSvg from "@/assets/svg/java-map.svg";
+import kids from "@/assets/svg/kids.svg";
+
+const leaders = [
+    { rank: 2, name: "Aulia", score: 780, color: "#00B894" },
+    { rank: 1, name: "Rafi", score: 890, color: "#3ABEFF" },
+    { rank: 3, name: "Sinta", score: 750, color: "#FF6B6B" },
+];
+
+const height = (rank: number) => (rank === 1 ? "h-36" : rank === 2 ? "h-28" : "h-24");
 
 const KnowUsSection = () => {
     return (
-        <section className="flex max-w-7xl w-full py-20 mx-auto">
-            <div className="flex flex-wrap lg:flex-nowrap w-full">
+        <section className="mx-auto flex w-full max-w-7xl py-20">
+            <div className="flex w-full flex-wrap lg:flex-nowrap">
                 <div className="flex-1">
                     <div className="max-w-xl">
-                        <h1 className="text-3xl font-bold leading-snug">Mari Jelajahi Kekayaan Budaya <span className="text-green-lime-dark">Indonesia</span>
-                            {" "} & Pelajari <span className="text-orange">Cerita menarik</span> di Baliknya
+                        <h1 className="text-text-primary text-3xl leading-snug font-bold">
+                            Mari Jelajahi Kekayaan <span className="text-primary-blue">Budaya Indonesia</span> & Pelajari <span className="text-secondary-green">Cerita menarik</span> di Baliknya
                         </h1>
-                        <p className="text-xl text-font-secondary py-8">
-                            Temukan cara seru belajar budaya lewat dongeng, sejarah, dan interaksi digital yang membuat
-                            anak-anak mencintai tanah airnya sejak dini.
-                        </p>
+                        <p className="text-text-secondary text-font-secondary py-6 text-xl">Temukan cara seru belajar budaya lewat dongeng, sejarah, dan interaksi digital yang membuat anak-anak mencintai tanah airnya sejak dini.</p>
 
                         <div className="relative">
-                            <Link href={'/'} className='py-1 pl-4 pr-1 bg-orange rounded-full gap-3 flex items-center justify-center w-fit text-white font-normal'>
+                            <Link href={"/"} className="hover:bg-primary-blue-hover bg-primary-blue flex w-fit items-center justify-center gap-3 rounded-full py-1 pr-1 pl-4 font-normal text-white">
                                 Mulai Petualangan
-                                <span className='bg-white w-9 h-9 text-orange rounded-full flex items-center justify-center'>
+                                <span className="text-primary-blue flex h-9 w-9 items-center justify-center rounded-full bg-white">
                                     <ArrowUpRight size={28} />
                                 </span>
                             </Link>
-                            <div className="absolute left-70 bottom-12">
-                                <div className="absolute left-0 top-2 w-24 h-32 -rotate-15 bg-white rounded-md shadow-lg flex flex-col items-center  p-1">
-                                    <Image
-                                        src={minangkabauDance}
-                                        alt="minangkabau-dance"
-                                        className="w-24 h-20 rounded-sm object-cover relative top-0"
-                                    />
+                            <div className="absolute bottom-12 left-70">
+                                <div className="absolute top-2 left-0 flex h-32 w-24 -rotate-15 flex-col items-center bg-white p-1 shadow-lg">
+                                    <Image src={minangkabauDance} alt="minangkabau-dance" className="relative top-0 h-25 w-24 object-cover" />
                                 </div>
-                                <div className="absolute left-4 top-2 w-24 h-32 rotate-15 bg-white rounded-md shadow-lg flex flex-col items-center  p-1">
-                                    <Image
-                                        src={reogDance}
-                                        alt="reog-dance"
-                                        className="w-24 h-20 rounded-sm object-cover"
-                                    />
+                                <div className="absolute top-2 left-4 flex h-32 w-24 rotate-15 flex-col items-center bg-white p-1 shadow-lg">
+                                    <Image src={reogDance} alt="reog-dance" className="h-25 w-24 object-cover" />
                                 </div>
                             </div>
                         </div>
@@ -51,74 +50,66 @@ const KnowUsSection = () => {
                 <div className="flex-1 lg:ml-12">
                     <div className="grid grid-cols-3 gap-4">
                         {/* Atas */}
-                        <div className="bg-gray-background rounded-xl col-span-3 md:h-62 flex flex-col justify-center relative overflow-hidden">
-                            <div className="absolute inset-6 right-0 top-0">
-                                <Image
-                                    src={mapSvg}
-                                    alt="map-dark"
-                                    fill
-                                    draggable={false}
-                                    className="object-cover"
-                                />
+                        <div className="bg-gray-background relative col-span-3 flex flex-col justify-center overflow-hidden rounded-xl shadow-sm md:h-62">
+                            <div className="absolute inset-6 top-0 right-0">
+                                <Image src={mapSvg} alt="map-dark" fill draggable={false} className="object-cover" />
                                 <div className="relative h-full">
-                                    <div className="absolute bottom-0 right-0 text-end px-4">
+                                    <div className="absolute right-0 bottom-0 px-4 text-end">
                                         <div className="relative bottom-21 -left-32">
-                                            <div className="absolute left-0 top-6 w-24 h-32 -rotate-10 bg-white rounded-md shadow-lg flex flex-col items-center  p-1">
-                                                <Image
-                                                    src={minangkabauDance}
-                                                    alt="minangkabau-dance"
-                                                    className="w-24 h-20 rounded-sm object-cover relative top-0"
-                                                />
+                                            <div className="absolute top-6 left-0 flex h-32 w-24 -rotate-10 flex-col items-center bg-white p-1 shadow-lg">
+                                                <Image src={minangkabauDance} alt="minangkabau-dance" className="relative top-0 h-25 w-24 object-cover" />
                                             </div>
-                                            <div className="absolute left-4 top-2 w-24 h-32 -rotate-5 bg-white rounded-md shadow-lg flex flex-col items-center  p-1">
-                                                <Image
-                                                    src={reogDance}
-                                                    alt="reog-dance"
-                                                    className="w-24 h-20 rounded-sm object-cover"
-                                                />
+                                            <div className="absolute top-2 left-4 flex h-32 w-24 -rotate-5 flex-col items-center bg-white p-1 shadow-lg">
+                                                <Image src={reogDance} alt="reog-dance" className="h-25 w-24 object-cover" />
                                             </div>
                                         </div>
 
-                                        <div className="absolute bottom-4 right-0 w-96 h-24 bg-linear-to-l from-stone-50 via-stone-50/70 to-transparent blur-3xl rounded-xl pointer-events-none z-0" />
-                                        <h1 className="text-lg font-semibold relative z-10">
-                                            Jelajahi Peta Interaktif <span className="text-orange">Nusantara</span>
+                                        <div className="pointer-events-none absolute right-0 bottom-4 z-0 h-24 w-96 rounded-xl bg-linear-to-l from-stone-50 via-stone-50/70 to-transparent blur-3xl" />
+                                        <h1 className="text-text-primary relative z-10 text-lg font-semibold">
+                                            Jelajahi <span className="text-accent-coral">Peta Interaktif Nusantara</span>
                                         </h1>
-                                        <p className="text-sm text-[#6e727b] mt-1 w-110 relative z-10">
-                                            Temukan keunikan setiap daerah lewat peta interaktif yang seru! Dari pakaian adat, tarian tradisional, hingga cerita rakyat.
-                                        </p>
+                                        <p className="text-text-secondary relative z-10 mt-1 w-110 text-sm">Temukan keunikan setiap daerah lewat peta interaktif yang seru! Dari pakaian adat, tarian tradisional, hingga cerita rakyat.</p>
                                     </div>
                                 </div>
-
                             </div>
                         </div>
 
                         {/* Kiri bawah */}
-                        <div className="bg-gray-background rounded-2xl overflow-hidden col-span-1 relative">
-                            <Image
-                                src={hinduTample}
-                                alt="hindu-tample"
-                                fill
-                                className="object-cover"
-                            />
+                        <div className="bg-gray-background relative col-span-1 flex flex-col items-center justify-end rounded-2xl p-4 shadow-sm">
+                            <div className="flex w-full items-end justify-center gap-2">
+                                {leaders.map((l) => (
+                                    <div key={l.rank} className="flex flex-col items-center">
+                                        <div className={`relative flex w-12 items-center justify-center ${l.rank === 1 ? "h-26" : l.rank === 2 ? "h-20" : "h-16"}`} style={{ backgroundColor: l.color }}>
+                                            <span className="absolute bottom-2 text-sm font-bold text-white">{l.rank}</span>
+                                        </div>
+                                        <p className="text-text-primary mt-2 text-sm font-bold">{l.name}</p>
+                                        <p className="text-text-secondary mt-1 text-xs">{l.score} pts</p>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
 
                         {/* Kanan bawah */}
-                        <div className="bg-gray-background rounded-2xl col-span-2 p-6 flex flex-col justify-center">
-                            <input
-                                type="text"
-                                placeholder="Cari nama daerah"
-                                className="border border-gray-300 rounded-full px-4 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-orange-400"
-                            />
-                            <p className="text-gray-600 text-sm md:text-base leading-relaxed">
-                                Temukan berbagai cerita unik dari berbagai daerah di Indonesia.
-                            </p>
+                        <div className="bg-gray-background relative col-span-2 h-full overflow-hidden rounded-2xl p-4 shadow-sm">
+                            <div className="text-start">
+                                <h1 className="text-text-primary text-lg font-semibold">
+                                    Belajar budaya <span className="text-accent-coral">bareng yuk!</span>
+                                </h1>
+                                <p className="text-text-secondary mt-1 text-sm">
+                                    Yuk kenali budaya Indonesia dengan <br /> cara yang asyik!
+                                </p>
+                            </div>
+
+                            <div className="object-cover">
+                                <Image src={javaMapSvg} alt="java-map" draggable={false} className="pointer-events-none absolute bottom-7 left-4 z-10 w-48 md:w-64" />
+                                <Image src={kids} alt="kids" draggable={false} className="pointer-events-none absolute right-4 bottom-0 z-10 w-34" />
+                            </div>
                         </div>
                     </div>
-
                 </div>
             </div>
         </section>
-    )
-}
+    );
+};
 
 export default KnowUsSection;

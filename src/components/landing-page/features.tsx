@@ -62,7 +62,7 @@ const FeaturesSection = () => {
                 <div className="flex-1">
                     <h1 className="font-semibold text-3xl leading-snug">
                         Belajar budaya dengan{" "}
-                        <span className="text-orange">
+                        <span className="text-primary-blue">
                             cara baru yang seru, interaktif, dan cerdas!
                         </span>
                     </h1>
@@ -72,10 +72,10 @@ const FeaturesSection = () => {
                     </p>
                     <Link
                         href="/"
-                        className="mt-4 inline-flex items-center gap-3 bg-orange text-white rounded-full pl-5 pr-2 py-2 font-medium hover:bg-orange/90 transition-all"
+                        className="mt-4 inline-flex items-center gap-3 bg-primary-blue text-white rounded-full pl-5 pr-2 py-2 font-medium hover:bg-primary-blue-hover transition-all"
                     >
                         Menjelajah Nusantara
-                        <span className="bg-white text-orange w-8 h-8 flex items-center justify-center rounded-full">
+                        <span className="bg-white text-primary-blue w-8 h-8 flex items-center justify-center rounded-full">
                             <ArrowUpRight size={22} />
                         </span>
                     </Link>
