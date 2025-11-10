@@ -1,4 +1,3 @@
-
 const adventage = [
     {
         id: 1,

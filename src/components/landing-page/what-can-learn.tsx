@@ -1,4 +1,3 @@
-
 import historyIndonesia from '@/assets/images/history-indonesia.jpg'
 import traditionalFood from '@/assets/images/food-traditional.jpg'
 import traditionalCloth from '@/assets/images/traditional-clothing.jpg'

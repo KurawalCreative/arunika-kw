@@ -66,7 +66,7 @@ const FeaturesSection = () => {
                             cara baru yang seru, interaktif, dan cerdas!
                         </span>
                     </h1>
-                    <p className="mt-6 text-xl text-font-secondary leading-relaxed">
+                    <p className="mt-2 font-medium text-text-secondary leading-relaxed">
                         Setiap fitur di Arunika dirancang agar anak-anak bisa menjelajahi
                         kekayaan budaya Indonesia sambil bermain dan berimajinasi.
                     </p>

@@ -83,7 +83,7 @@ const KnowUsSection = () => {
                                             <span className="absolute bottom-2 text-sm font-bold text-white">{l.rank}</span>
                                         </div>
                                         <p className="text-text-primary mt-2 text-sm font-bold">{l.name}</p>
-                                        <p className="text-text-secondary mt-1 text-xs">{l.score} pts</p>
+                                        <p className="text-text-secondary mt-0.5 text-xs">{l.score} pts</p>
                                     </div>
                                 ))}
                             </div>

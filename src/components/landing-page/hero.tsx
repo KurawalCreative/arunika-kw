@@ -33,7 +33,7 @@ const HeroSection = () => {
 
     return (
         <div className="overflow-x-hidden">
-            <div ref={ref} className="relative flex h-screen flex-col items-center justify-center gap-52 overflow-hidden">
+            <div ref={ref} className="relative flex min-h-[calc(100vh-64px)] flex-col items-center justify-center gap-52 overflow-hidden">
                 <motion.div style={{ y: mapY }} className="pointer-events-none absolute inset-0 bottom-40">
                     <div className="relative h-full w-full overflow-hidden md:h-screen">
                         <Image src={map} alt="map" draggable={false} loading="eager" fill className="transform-gpu object-contain object-top select-none md:object-contain" priority />
