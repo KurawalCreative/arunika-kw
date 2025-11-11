@@ -31,9 +31,7 @@ const ChannelHeader = ({ authorImage, authorName, channel, searchQuery, isSearch
                         <button onClick={onCreatePost} className="flex-1 rounded-md border px-4 py-2 text-start">
                             Buat Postingan Baru
                         </button>
-                        <button className="bg-primary-blue-disable flex rounded-md px-4 py-2 font-semibold text-gray-100">
-                            Buat
-                        </button>
+                        <button className="bg-primary-blue-disable flex rounded-md px-4 py-2 font-semibold text-gray-100">Buat</button>
                     </div>
                 </div>
             </div>

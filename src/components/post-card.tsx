@@ -99,7 +99,7 @@ export default function PostCard({
 
     return (
         <>
-            <div className="rounded-lg bg-white p-4 transition-all hover:bg-gray-50 dark:border-slate-700 dark:bg-slate-800/50 dark:hover:border-slate-600 dark:hover:shadow-none">
+            <div className="group rounded-lg bg-white p-4 transition-all hover:bg-gray-50 dark:border-slate-700 dark:bg-slate-800/50 dark:hover:border-slate-600 dark:hover:shadow-none">
                 <div onClick={handleCommentSectionToggle} className="cursor-pointer">
                     {/* Header */}
                     <div className="mb-4 flex w-full items-center justify-between">
@@ -153,7 +153,7 @@ export default function PostCard({
                                     <button
                                         key={idx}
                                         onClick={(e) => {
-                                            e.stopPropagation(); // ⛔️ cegah klik link
+                                            e.stopPropagation();
                                             onImageClick(url); // preview
                                         }}
                                         className="group relative h-40 w-full cursor-pointer overflow-hidden rounded-lg transition-opacity hover:opacity-75"
@@ -168,22 +168,33 @@ export default function PostCard({
                     {/* Post Content */}
                     <div className="relative my-4">
                         <div ref={contentRef} dangerouslySetInnerHTML={{ __html: post.content }} className={`prose dark:prose-invert prose-p:mb-2 prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-strong:text-gray-900 dark:prose-strong:text-white break-all text-gray-700 transition-all duration-300 dark:text-slate-300 ${showComments ? "max-h-none overflow-visible" : "max-h-144 overflow-hidden"}`} />
-                        {!showComments && isOverflowing && <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-linear-to-t from-white via-white/80 to-transparent dark:from-[#0f172a] dark:via-[#0f172a]/80" />}
+
+                        {!showComments && isOverflowing && <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-linear-to-t from-white via-white/80 to-transparent transition-colors duration-300 ease-in-out group-hover:from-gray-50 group-hover:via-gray-50/80 dark:from-[#0f172a] dark:via-[#0f172a]/80 dark:group-hover:from-slate-800/50 dark:group-hover:via-slate-800/70" />}
                     </div>
                 </div>
 
                 {/* Actions */}
-                <div className="flex items-center justify-start gap-2 border-gray-200 pb-4 dark:border-slate-700">
-                    <button onClick={onLike} disabled={loadingLike} className="flex items-center gap-1 rounded-full px-3 py-2 text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600 disabled:opacity-50 dark:text-slate-400 dark:hover:bg-red-500/10 dark:hover:text-red-400">
-                        {loadingLike ? <Loader2 className="h-4 w-4 animate-spin" /> : <Heart className={`h-4 w-4 ${post.isLikedByUser ? "fill-red-500 text-red-500" : ""}`} />}
-                        <span className={`text-sm ${post.isLikedByUser ? "font-semibold text-red-500" : ""}`}>{post._count.likes}</span>
+                <div className="flex items-center justify-start gap-3 pb-4">
+                    {/* Like Button */}
+                    <button
+                        onClick={onLike}
+                        disabled={loadingLike}
+                        aria-label={post.isLikedByUser ? "Un-like post" : "Like post"}
+                        className={`group flex items-center gap-2 rounded-full px-3 py-2 transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-60 ${post.isLikedByUser ? "bg-accent-coral/10 text-accent-coral dark:bg-accent-coral/15" : "hover:bg-accent-coral/10 hover:text-accent-coral-hover dark:hover:bg-accent-coral/10 dark:hover:text-accent-coral-hover text-gray-500 dark:text-slate-400"} `}
+                    >
+                        {loadingLike ? <Loader2 className="h-4 w-4 animate-spin" /> : <Heart className={`h-4 w-4 transition-colors ${post.isLikedByUser ? "fill-accent-coral text-accent-coral" : "group-hover:text-accent-coral-hover dark:group-hover:text-accent-coral-hover text-gray-500 dark:text-slate-400"}`} />}
+                        <span className={`text-sm font-medium transition-colors ${post.isLikedByUser ? "text-accent-coral" : "text-gray-500 dark:text-slate-400"}`}>{post._count.likes}</span>
                     </button>
-                    <Link href={`/komunitas/${channel?.name}/${post.id}`} className="flex items-center gap-1 rounded-full px-3 py-2 text-gray-500 transition-colors hover:bg-blue-50 hover:text-blue-600 dark:text-slate-400 dark:hover:bg-blue-500/10 dark:hover:text-blue-400">
-                        <MessageCircle className="h-4 w-4" />
-                        <span className="text-sm">{post._count.comments}</span>
+
+                    {/* Comment Button */}
+                    <Link href={`/komunitas/${channel?.name}/${post.id}`} aria-label={`${post._count.comments} komentar`} className={`group hover:bg-primary-blue/10 hover:text-primary-blue-hover dark:hover:bg-primary-blue/10 dark:hover:text-primary-blue-hover flex items-center gap-2 rounded-full px-3 py-2 text-gray-500 transition-all duration-200 dark:text-slate-400`}>
+                        <MessageCircle className="group-hover:text-primary-blue-hover dark:group-hover:text-primary-blue-hover h-4 w-4 transition-colors" />
+                        <span className="text-sm font-medium">{post._count.comments}</span>
                     </Link>
-                    <button onClick={onToggleComments} className="flex items-center gap-1 rounded-full px-3 py-2 text-gray-500 transition-colors hover:bg-green-50 hover:text-green-600 dark:text-slate-400 dark:hover:bg-green-500/10 dark:hover:text-green-400">
-                        <Forward className="h-4 w-4" />
+
+                    {/* Share */}
+                    <button className={`group hover:bg-secondary-green/10 hover:text-secondary-green-hover dark:hover:bg-secondary-green/10 dark:hover:text-secondary-green-hover flex items-center gap-2 rounded-full px-3 py-2 text-gray-500 transition-all duration-200 dark:text-slate-400`}>
+                        <Forward className="group-hover:text-secondary-green-hover dark:group-hover:text-secondary-green-hover h-4 w-4 transition-colors" />
                     </button>
                 </div>
 

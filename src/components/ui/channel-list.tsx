@@ -82,7 +82,7 @@ const ChannelList = ({ searchQuery, currentChannel }: { searchQuery: string; cur
                 {channelsWithoutRegion.map((channel) => {
                     const isActive = currentChannel === channel.slug;
                     return (
-                        <Link key={channel.id} href={`/komunitas/${channel.slug}`}>
+                        <Link key={channel.id} href={`/komunitas/${channel.slug}/`}>
                             <div className={`flex items-center gap-2 rounded-md px-3 py-1.5 text-sm transition-all duration-200 ${isActive ? "text-primary-blue bg-[#E8F7FF] font-medium" : "text-gray-500 hover:bg-[#F5FAFF] hover:text-[#009EE0]"}`}>
                                 <Hash className="h-3.5 w-3.5 shrink-0 opacity-80" />
                                 <span className="truncate">{channel.name}</span>
