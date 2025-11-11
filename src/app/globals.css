@@ -131,6 +131,7 @@
     /* New Color */
     --color-primary-blue: #3ABEFF;
     --color-primary-blue-hover: #28A9E2;
+    --color-primary-blue-disable: #2C96C7;
 
     --color-secondary-green: #00B894;
     --color-secondary-green-hover: #009879;

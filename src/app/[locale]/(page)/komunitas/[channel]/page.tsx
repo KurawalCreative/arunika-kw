@@ -12,13 +12,7 @@ import ChannelHeader from "@/components/channel-header";
 import CreatePostDialog from "@/components/create-post-dialog";
 import PostCard from "@/components/post-card";
 import ImagePreviewDialog from "@/components/image-preview-dialog";
-import {
-    getComments,
-    createComment,
-    createReply,
-    deleteComment,
-    deleteReply,
-} from "@/app/[locale]/(page)/komunitas/[channel]/[postId]/actions";
+import { getComments, createComment, createReply, deleteComment, deleteReply } from "@/app/[locale]/(page)/komunitas/[channel]/[postId]/actions";
 
 export default function page() {
     const params = useParams<{ channel: string }>();
@@ -333,79 +327,80 @@ export default function page() {
     const hasMorePosts = posts.length < totalPosts;
 
     return (
-        <div className="flex w-full flex-1 flex-col space-y-6 p-6 lg:pr-82">
-            <ChannelHeader channel={channel} searchQuery={searchQuery} isSearching={isSearching} onSearchChange={setSearchQuery} onSearch={handleSearch} onCreatePost={() => setIsOpen(true)} />
+        <div className="flex w-full flex-1 flex-col  p-6 lg:pr-82">
+            <ChannelHeader authorImage={session?.user?.image || "/default-avatar.png"} authorName={session?.user?.name || "User"} channel={channel} searchQuery={searchQuery} isSearching={isSearching} onSearchChange={setSearchQuery} onSearch={handleSearch} onCreatePost={() => setIsOpen(true)} />
+            <div className="space-y-6">
+                <CreatePostDialog isOpen={isOpen} channel={channel} content={content} files={files} previews={previews} isUploading={isUploading} onOpenChange={setIsOpen} onContentChange={setContent} onFilesChange={onFilesChange} onRemovePreview={removePreview} onUpload={handleUpload} />
 
-            <CreatePostDialog isOpen={isOpen} channel={channel} content={content} files={files} previews={previews} isUploading={isUploading} onOpenChange={setIsOpen} onContentChange={setContent} onFilesChange={onFilesChange} onRemovePreview={removePreview} onUpload={handleUpload} />
+                {posts.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center rounded-lg border border-gray-200 bg-white py-20 text-gray-500 transition-colors dark:border-slate-700 dark:bg-slate-800/50 dark:text-slate-400">
+                        <MessageCircle className="mb-4 h-12 w-12 opacity-50" />
+                        <p className="text-lg text-gray-700 dark:text-slate-300">Belum ada postingan</p>
+                        <p className="text-sm">Jadilah yang pertama berbagi</p>
+                    </div>
+                ) : (
+                    <div className="w-full space-y-4">
+                        {posts.map((post, i) => (
+                            <PostCard
+                                channel={channel}
+                                key={post.id}
+                                post={post}
+                                currentUserId={(session?.user as any)?.id}
+                                loadingLike={loadingLike.includes(post.id)}
+                                deletingPost={deletingPost.includes(post.id)}
+                                openMenu={openMenu === post.id}
+                                onLike={() => handleLike(post.id, i)}
+                                onToggleComments={() => handleToggleComments(post.id)}
+                                onDeletePost={() => handleDeletePost(post.id)}
+                                onOpenMenuChange={(open) => setOpenMenu(open ? post.id : null)}
+                                onImageClick={(url) => {
+                                    setSelectedImage(url);
+                                    setImagePreviewOpen(true);
+                                }}
+                                // Comments props
+                                showComments={expandedComments.includes(post.id)}
+                                comments={comments[post.id] || []}
+                                commentInput={commentInput[post.id] || ""}
+                                replyingTo={replyingTo}
+                                replyInput={replyInput}
+                                loadingComment={loadingComment.includes(post.id)}
+                                loadingReply={loadingReply}
+                                deletingComment={deletingComment}
+                                deletingReply={deletingReply}
+                                openCommentMenu={openMenu}
+                                openReplyMenu={openReplyMenu}
+                                isLoadingComments={loadingComments.includes(post.id)}
+                                onCommentInputChange={(value) => setCommentInput((prev) => ({ ...prev, [post.id]: value }))}
+                                onPostComment={() => handlePostComment(post.id)}
+                                onReplyTo={setReplyingTo}
+                                onReplyInputChange={(commentId, value) => setReplyInput((prev) => ({ ...prev, [commentId]: value }))}
+                                onCreateReply={(commentId) => handleCreateReply(commentId, post.id)}
+                                onDeleteComment={(commentId) => handleDeleteComment(commentId, post.id)}
+                                onDeleteReply={(replyId, commentId) => handleDeleteReply(replyId, commentId, post.id)}
+                                onOpenCommentMenuChange={setOpenMenu}
+                                onOpenReplyMenuChange={setOpenReplyMenu}
+                            />
+                        ))}
+                    </div>
+                )}
 
-            {posts.length === 0 ? (
-                <div className="flex flex-col items-center justify-center rounded-lg border border-gray-200 bg-white py-20 text-gray-500 transition-colors dark:border-slate-700 dark:bg-slate-800/50 dark:text-slate-400">
-                    <MessageCircle className="mb-4 h-12 w-12 opacity-50" />
-                    <p className="text-lg text-gray-700 dark:text-slate-300">Belum ada postingan</p>
-                    <p className="text-sm">Jadilah yang pertama berbagi</p>
-                </div>
-            ) : (
-                <div className="w-full space-y-4">
-                    {posts.map((post, i) => (
-                        <PostCard
-                            channel={channel}
-                            key={post.id}
-                            post={post}
-                            currentUserId={(session?.user as any)?.id}
-                            loadingLike={loadingLike.includes(post.id)}
-                            deletingPost={deletingPost.includes(post.id)}
-                            openMenu={openMenu === post.id}
-                            onLike={() => handleLike(post.id, i)}
-                            onToggleComments={() => handleToggleComments(post.id)}
-                            onDeletePost={() => handleDeletePost(post.id)}
-                            onOpenMenuChange={(open) => setOpenMenu(open ? post.id : null)}
-                            onImageClick={(url) => {
-                                setSelectedImage(url);
-                                setImagePreviewOpen(true);
-                            }}
-                            // Comments props
-                            showComments={expandedComments.includes(post.id)}
-                            comments={comments[post.id] || []}
-                            commentInput={commentInput[post.id] || ""}
-                            replyingTo={replyingTo}
-                            replyInput={replyInput}
-                            loadingComment={loadingComment.includes(post.id)}
-                            loadingReply={loadingReply}
-                            deletingComment={deletingComment}
-                            deletingReply={deletingReply}
-                            openCommentMenu={openMenu}
-                            openReplyMenu={openReplyMenu}
-                            isLoadingComments={loadingComments.includes(post.id)}
-                            onCommentInputChange={(value) => setCommentInput((prev) => ({ ...prev, [post.id]: value }))}
-                            onPostComment={() => handlePostComment(post.id)}
-                            onReplyTo={setReplyingTo}
-                            onReplyInputChange={(commentId, value) => setReplyInput((prev) => ({ ...prev, [commentId]: value }))}
-                            onCreateReply={(commentId) => handleCreateReply(commentId, post.id)}
-                            onDeleteComment={(commentId) => handleDeleteComment(commentId, post.id)}
-                            onDeleteReply={(replyId, commentId) => handleDeleteReply(replyId, commentId, post.id)}
-                            onOpenCommentMenuChange={setOpenMenu}
-                            onOpenReplyMenuChange={setOpenReplyMenu}
-                        />
-                    ))}
-                </div>
-            )}
+                {hasMorePosts && (
+                    <div className="flex justify-center">
+                        <Button onClick={handleLoadMore} disabled={isLoadingMore} variant="outline" className="border-gray-200 text-gray-700 transition-colors hover:bg-gray-100 disabled:opacity-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800">
+                            {isLoadingMore ? (
+                                <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    Memuat...
+                                </>
+                            ) : (
+                                "Muat Lebih Banyak"
+                            )}
+                        </Button>
+                    </div>
+                )}
 
-            {hasMorePosts && (
-                <div className="flex justify-center">
-                    <Button onClick={handleLoadMore} disabled={isLoadingMore} variant="outline" className="border-gray-200 text-gray-700 transition-colors hover:bg-gray-100 disabled:opacity-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800">
-                        {isLoadingMore ? (
-                            <>
-                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                Memuat...
-                            </>
-                        ) : (
-                            "Muat Lebih Banyak"
-                        )}
-                    </Button>
-                </div>
-            )}
-
-            <ImagePreviewDialog isOpen={imagePreviewOpen} imageUrl={selectedImage} onOpenChange={setImagePreviewOpen} />
+                <ImagePreviewDialog isOpen={imagePreviewOpen} imageUrl={selectedImage} onOpenChange={setImagePreviewOpen} />
+            </div>
         </div>
     );
 }

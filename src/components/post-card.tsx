@@ -6,6 +6,8 @@ import Image from "next/image";
 import { Channel, Post, PostImage, User } from "@/generated/prisma/client";
 import CommentsSection from "./comment-section";
 import { Link } from "@/i18n/navigation";
+import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 
 interface PostCardProps {
     channel: Channel | null;
@@ -80,69 +82,95 @@ export default function PostCard({
     onOpenCommentMenuChange = () => {},
     onOpenReplyMenuChange = () => {},
 }: PostCardProps) {
+    const contentRef = useRef<HTMLDivElement>(null);
+    const [isOverflowing, setIsOverflowing] = useState(false);
+    const router = useRouter();
+
+    useEffect(() => {
+        const el = contentRef.current;
+        if (el) {
+            setIsOverflowing(el.scrollHeight > el.clientHeight + 10);
+        }
+    }, [post.content, showComments]);
+
+    const handleCommentSectionToggle = () => {
+        router.push(`/komunitas/${channel?.name}/${post.id}`);
+    };
+
     return (
         <>
             <div className="rounded-lg bg-white p-4 transition-all hover:bg-gray-50 dark:border-slate-700 dark:bg-slate-800/50 dark:hover:border-slate-600 dark:hover:shadow-none">
-                {/* Header */}
-                <div className="mb-4 flex w-full items-center justify-between">
-                    <div className="flex min-w-0 items-center gap-3">
-                        <Image width={40} height={40} src={post.author.image || ""} alt={post.author.name || ""} className="h-10 w-10 shrink-0 rounded-full" />
-                        <div className="min-w-0 flex-1">
-                            <p className="truncate font-semibold text-gray-900 dark:text-white">{post.author.name}</p>
-                            <p className="text-xs text-gray-500 dark:text-slate-400">{new Date(post.createdAt).toLocaleString()}</p>
+                <div onClick={handleCommentSectionToggle} className="cursor-pointer">
+                    {/* Header */}
+                    <div className="mb-4 flex w-full items-center justify-between">
+                        <div className="flex min-w-0 items-center gap-3">
+                            <Image width={40} height={40} src={post.author.image || ""} alt={post.author.name || ""} className="h-10 w-10 shrink-0 rounded-full" />
+                            <div className="min-w-0 flex-1">
+                                <p className="truncate font-semibold text-gray-900 dark:text-white">{post.author.name}</p>
+                                <p className="text-xs text-gray-500 dark:text-slate-400">{new Date(post.createdAt).toLocaleString()}</p>
+                            </div>
                         </div>
+
+                        {currentUserId === post.author.id && (
+                            <DropdownMenu open={openMenu} onOpenChange={onOpenMenuChange}>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 disabled:opacity-50 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-white" disabled={deletingPost}>
+                                        <MoreVertical className="h-4 w-4" />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                    <DropdownMenuItem onClick={onDeletePost} className="text-red-600 transition-colors focus:bg-red-50 focus:text-red-600 dark:focus:bg-red-500/10" disabled={deletingPost}>
+                                        {deletingPost ? (
+                                            <>
+                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                Menghapus...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Trash2 className="mr-2 h-4 w-4" />
+                                                Hapus
+                                            </>
+                                        )}
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        )}
                     </div>
 
-                    {currentUserId === post.author.id && (
-                        <DropdownMenu open={openMenu} onOpenChange={onOpenMenuChange}>
-                            <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 disabled:opacity-50 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-white" disabled={deletingPost}>
-                                    <MoreVertical className="h-4 w-4" />
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                                <DropdownMenuItem onClick={onDeletePost} className="text-red-600 transition-colors focus:bg-red-50 focus:text-red-600 dark:focus:bg-red-500/10" disabled={deletingPost}>
-                                    {deletingPost ? (
-                                        <>
-                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                            Menghapus...
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Trash2 className="mr-2 h-4 w-4" />
-                                            Hapus
-                                        </>
-                                    )}
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+                    {/* Images / Video */}
+                    {post.images.length > 0 && (
+                        <div
+                            className="mb-4 grid grid-cols-2 gap-2 sm:grid-cols-3"
+                            onClick={(e) => e.stopPropagation()} // ⛔️ mencegah klik di gambar trigger router.push
+                        >
+                            {post.images.map((image, idx) => {
+                                const url = `${process.env.NEXT_PUBLIC_S3_PUBLIC_URL}/${image.url}`;
+                                const ext = image.url.split(".").pop()?.toLowerCase() || "";
+                                const isVideo = ["mp4", "webm", "ogg"].includes(ext);
+                                return isVideo ? (
+                                    <video key={idx} src={url} controls className="h-40 w-full rounded-lg object-cover" />
+                                ) : (
+                                    <button
+                                        key={idx}
+                                        onClick={(e) => {
+                                            e.stopPropagation(); // ⛔️ cegah klik link
+                                            onImageClick(url); // preview
+                                        }}
+                                        className="group relative h-40 w-full cursor-pointer overflow-hidden rounded-lg transition-opacity hover:opacity-75"
+                                    >
+                                        <Image src={url} alt="Post image" fill sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw" className="object-cover transition-transform duration-300 group-hover:scale-105" />
+                                    </button>
+                                );
+                            })}
+                        </div>
                     )}
-                </div>
 
-                <div
-                    dangerouslySetInnerHTML={{
-                        __html: post.content,
-                    }}
-                    className="prose dark:prose-invert prose-p:mb-2 prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-strong:text-gray-900 dark:prose-strong:text-white mb-4 break-all text-gray-700 dark:text-slate-300"
-                />
-
-                {/* Images / Video */}
-                {post.images.length > 0 && (
-                    <div className="mb-4 grid grid-cols-2 gap-2 sm:grid-cols-3">
-                        {post.images.map((image, idx) => {
-                            const url = `${process.env.NEXT_PUBLIC_S3_PUBLIC_URL}/${image.url}`;
-                            const ext = image.url.split(".").pop()?.toLowerCase() || "";
-                            const isVideo = ["mp4", "webm", "ogg"].includes(ext);
-                            return isVideo ? (
-                                <video key={idx} src={url} controls className="h-40 w-full rounded-lg object-cover" />
-                            ) : (
-                                <button key={idx} onClick={() => onImageClick(url)} className="group relative h-40 w-full cursor-pointer overflow-hidden rounded-lg transition-opacity hover:opacity-75">
-                                    <Image src={url} alt="Post image" fill sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw" className="object-cover transition-transform duration-300 group-hover:scale-105" />
-                                </button>
-                            );
-                        })}
+                    {/* Post Content */}
+                    <div className="relative my-4">
+                        <div ref={contentRef} dangerouslySetInnerHTML={{ __html: post.content }} className={`prose dark:prose-invert prose-p:mb-2 prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-strong:text-gray-900 dark:prose-strong:text-white break-all text-gray-700 transition-all duration-300 dark:text-slate-300 ${showComments ? "max-h-none overflow-visible" : "max-h-144 overflow-hidden"}`} />
+                        {!showComments && isOverflowing && <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-linear-to-t from-white via-white/80 to-transparent dark:from-[#0f172a] dark:via-[#0f172a]/80" />}
                     </div>
-                )}
+                </div>
 
                 {/* Actions */}
                 <div className="flex items-center justify-start gap-2 border-gray-200 pb-4 dark:border-slate-700">
@@ -186,6 +214,7 @@ export default function PostCard({
                     />
                 )}
             </div>
+
             <div className="mx-auto w-full max-w-3xl last:hidden">
                 <hr className="rounded-full border-[1.5px] px-4" />
             </div>
