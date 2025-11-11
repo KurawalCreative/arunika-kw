@@ -29,7 +29,7 @@ export async function POST() {
                 auth: {
                     enableAuth: false, // atau true untuk kombinasi dengan signed URL
                     allowlist: [
-                        { hostname: "yourapp.vercel.app" },
+                        { hostname: "arunika.kurawal.site" },
                         { hostname: "www.yourapp.com" },
                         { hostname: "localhost:3000" }, // untuk development
                         { hostname: "localhost:3001" },

@@ -25,26 +25,7 @@ const expressions = [
     { mood: "sad", src: raniSedih },
 ];
 
-const funnyChats = [
-    "Hai! Aku Rani~ 👋",
-    "Lagi apa nih? 🤔",
-    "Klik aku dong! 😊",
-    "Yuk ngobrol! 💬",
-    "Jangan malu-malu~ 😆",
-    "Halo halo! 🙋‍♀️",
-    "Ada yang bisa aku bantu? 🤗",
-    "Penasaran sama aku? 😉",
-    "Tap tap tap! ☝️",
-    "Aku di sini loh! 👀",
-    "Jangan di ignore dong~ 🥺",
-    "Kesepian nih... 😢",
-    "Yuk kita main! 🎮",
-    "Cerita dong! 📖",
-    "Aku bosen nih~ 😴",
-    "Hehehe 😁",
-    "Psst... sini! 🤫",
-    "Aku punya cerita seru! ✨",
-];
+const funnyChats = ["Hai! Aku Rani~ 👋", "Lagi apa nih? 🤔", "Klik aku dong! 😊", "Yuk ngobrol! 💬", "Jangan malu-malu~ 😆", "Halo halo! 🙋‍♀️", "Ada yang bisa aku bantu? 🤗", "Penasaran sama aku? 😉", "Tap tap tap! ☝️", "Aku di sini loh! 👀", "Jangan di ignore dong~ 🥺", "Kesepian nih... 😢", "Yuk kita main! 🎮", "Cerita dong! 📖", "Aku bosen nih~ 😴", "Hehehe 😁", "Psst... sini! 🤫", "Aku punya cerita seru! ✨"];
 
 async function getSignedUrl(): Promise<string> {
     const response = await fetch("/api/signed-url");
@@ -281,7 +262,7 @@ const RaniChatCompanion = () => {
                             <div className="relative rounded-2xl bg-white px-4 py-3 shadow-lg dark:bg-gray-800">
                                 <p className="text-sm text-gray-700 dark:text-gray-200">{floatingChat}</p>
                                 {/* Arrow pointer ke Rani */}
-                                <div className="absolute right-8 -bottom-2 h-0 w-0 border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-white dark:border-t-gray-800" />
+                                <div className="absolute right-8 -bottom-2 h-0 w-0 border-t-8 border-r-8 border-l-8 border-t-white border-r-transparent border-l-transparent dark:border-t-gray-800" />
                             </div>
                         </motion.div>
                     )}
