@@ -4,6 +4,7 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { useSession } from "next-auth/react";
+import { useChannelPage } from "@/hooks/useChannelPage";
 
 import CommentHeader from "@/components/comment-header";
 import CommentList from "@/components/comment-list";
@@ -17,7 +18,6 @@ type PostDetail = { id: string; content: string; channel: Channel; author: UserS
 
 export default function Page() {
     const { postId } = useParams<{ postId: string }>();
-    const { data: session } = useSession();
 
     const [post, setPost] = useState<PostDetail | null>(null);
     const [loading, setLoading] = useState(true);
@@ -34,6 +34,8 @@ export default function Page() {
     const [openMenu, setOpenMenu] = useState<string | null>(null);
     const [openReplyMenu, setOpenReplyMenu] = useState<string | null>(null);
 
+    const { posts, session, handleLike, loadingLike } = useChannelPage();
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -46,15 +48,10 @@ export default function Page() {
         fetchData();
     }, [postId]);
 
-    const handlePostComment = async () => {
-        const text = commentInput.trim();
-        if (!text || !post || !session?.user) return;
-
-        setLoadingComment(true);
-        setCommentInput("");
+    const fetchAndSetComments = async () => {
+        if (!post) return;
 
         try {
-            await createComment(post.id, text);
             const updatedRaw = await getComments(post.id);
 
             const updatedComments: Comment[] = updatedRaw.map((c: any) => ({
@@ -68,7 +65,32 @@ export default function Page() {
                 })),
             }));
 
-            setPost((prev) => (prev ? { ...prev, comments: updatedComments } : prev));
+            const totalComments = updatedComments.reduce((sum, c) => sum + 1 + (c.replies?.length || 0), 0);
+
+            setPost((prev) =>
+                prev
+                    ? {
+                          ...prev,
+                          comments: updatedComments,
+                          _count: { ...prev._count, comments: totalComments },
+                      }
+                    : prev,
+            );
+        } catch (err) {
+            console.error("Failed to fetch comments:", err);
+        }
+    };
+
+    const handlePostComment = async () => {
+        const text = commentInput.trim();
+        if (!text || !post || !session?.user) return;
+
+        setLoadingComment(true);
+        setCommentInput("");
+
+        try {
+            await createComment(post.id, text);
+            await fetchAndSetComments();
         } catch (err) {
             console.error(err);
         } finally {
@@ -85,20 +107,7 @@ export default function Page() {
 
         try {
             await createReply(commentId, text);
-            const updatedRaw = await getComments(post.id);
-
-            const updatedComments: Comment[] = updatedRaw.map((c: any) => ({
-                ...c,
-                createdAt: new Date(c.createdAt).toISOString(),
-                author: { ...c.author },
-                replies: c.replies.map((r: any) => ({
-                    ...r,
-                    createdAt: new Date(r.createdAt).toISOString(),
-                    author: { ...r.author },
-                })),
-            }));
-
-            setPost((prev) => (prev ? { ...prev, comments: updatedComments } : prev));
+            await fetchAndSetComments(); // <-- panggil sini untuk update
         } catch (err) {
             console.error(err);
         } finally {
@@ -142,7 +151,7 @@ export default function Page() {
 
     if (loading)
         return (
-            <div className="flex justify-center py-20">
+            <div className="flex min-h-screen w-full items-center justify-center lg:pr-82">
                 <Loader2 className="h-8 w-8 animate-spin text-blue-400" />
             </div>
         );
@@ -150,9 +159,23 @@ export default function Page() {
     if (!post) return <div className="flex justify-center py-20 text-gray-500">Post tidak ditemukan</div>;
 
     return (
-        <div className="mx-auto space-y-8 px-4 py-8 lg:pr-82">
-            <CommentHeader post={post} session={session} onPostComment={handlePostComment} loadingComment={loadingComment} setCommentInput={setCommentInput} commentInput={commentInput} />
-            <hr className="mt-4 rounded-full border-[1.5px]" />
+        <div className="flex w-full max-w-7xl flex-col items-stretch space-y-8 px-4 py-8 lg:pr-82">
+            <CommentHeader
+                post={post}
+                session={session}
+                onlike={() =>
+                    handleLike(
+                        post.id,
+                        posts.findIndex((p) => p.id === post.id),
+                    )
+                }
+                onPostComment={handlePostComment}
+                loadingLike={loadingLike.includes(post.id)}
+                loadingComment={loadingComment}
+                setCommentInput={setCommentInput}
+                commentInput={commentInput}
+            />
+            <hr className="rounded-full border-[1.5px]" />
             <CommentList
                 postId={post.id}
                 comments={post.comments}

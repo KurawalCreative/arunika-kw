@@ -1,10 +1,12 @@
 "use server";
 
+import { Post, PostImage, User } from "@/generated/prisma/client";
 import { getServerAuthSession } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import s3 from "@/lib/s3";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { Channel } from "diagnostics_channel";
 
 export async function getChannelBySlug(slug: string) {
     const data = await prisma.channel.findFirst({
@@ -61,6 +63,7 @@ export async function getPost(slug: string, page: number = 1, limit: number = 10
                 images: true,
                 _count: { select: { comments: true, likes: true } },
                 likes: { where: { userId }, select: { id: true } },
+                channel: true,
             },
             orderBy: { createdAt: "desc" },
             skip,
@@ -121,8 +124,6 @@ export async function toggleLike(postId: string) {
     const count = await prisma.like.count({ where: { postId } });
     return count;
 }
-
-
 
 export async function deletePost(postId: string) {
     const session = (await getServerAuthSession()) as any;
@@ -188,6 +189,7 @@ export async function searchPosts(slug: string, query: string, page: number = 1,
                 images: true,
                 _count: { select: { comments: true, likes: true } },
                 likes: { where: { userId } },
+                channel: true,
             },
             orderBy: { createdAt: "desc" },
             skip,

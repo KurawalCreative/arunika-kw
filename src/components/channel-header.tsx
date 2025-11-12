@@ -1,8 +1,10 @@
 import { Channel } from "@/generated/prisma/client";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Hash } from "lucide-react";
+import Image from "next/image";
 
 interface ChannelHeaderProps {
+    authorImage?: string;
+    authorName?: string;
     channel: Channel | null;
     searchQuery: string;
     isSearching: boolean;
@@ -11,35 +13,30 @@ interface ChannelHeaderProps {
     onCreatePost: () => void;
 }
 
-const ChannelHeader = ({ channel, searchQuery, isSearching, onSearchChange, onSearch, onCreatePost }: ChannelHeaderProps) => {
+const ChannelHeader = ({ authorImage, authorName, channel, searchQuery, isSearching, onSearchChange, onSearch, onCreatePost }: ChannelHeaderProps) => {
     return (
         <>
-            <div className="mb-6 flex items-center gap-3">
+            <div className="mb-6 flex items-center gap-5">
                 <Hash size={60} />
                 <div>
                     <h1 className="text-font-primary text-4xl font-bold tracking-wide dark:text-white">{channel?.name}</h1>
-                    <p className="text-font-secondary text-sm dark:text-slate-400">{channel?.description}</p>
+                    <p className="text-font-secondary mt-1 text-sm dark:text-slate-400">{channel?.description}</p>
                 </div>
             </div>
 
             <div className="rounded-xl border">
                 <div className="p-4">
-                    <div className="flex flex-row items-center gap-2">
-                        <Avatar>
-                            <AvatarImage src="https://github.com/shadcn.png" />
-                            <AvatarFallback>CN</AvatarFallback>
-                        </Avatar>
-                        <button onClick={onCreatePost} className="flex-1 rounded-xl border px-4 py-2 text-start">
+                    <div className="flex flex-row items-center gap-4">
+                        <Image width={40} height={40} src={authorImage || "/default-avatar.png"} alt={authorName || "User"} className="h-10 w-10 rounded-full" />
+                        <button onClick={onCreatePost} className="flex-1 rounded-md border px-4 py-2 text-start">
                             Buat Postingan Baru
                         </button>
-                        <button onClick={onCreatePost} className="bg-orange flex rounded-xl border px-4 py-2 font-semibold text-white">
-                            Buat
-                        </button>
+                        <div className="bg-primary-blue-disable flex rounded-md px-4 py-2 font-semibold text-gray-100">Buat</div>
                     </div>
                 </div>
             </div>
 
-            <div className="flex pt-3">
+            <div className="flex py-4">
                 <div className="w-full border-b-2 py-4">
                     <div className="flex flex-row gap-2 px-2">
                         <button className="rounded-md border px-4 py-2">Postingan Top</button>

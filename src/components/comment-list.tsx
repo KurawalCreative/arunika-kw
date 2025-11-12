@@ -29,30 +29,7 @@ interface CommentListProps {
     onOpenReplyMenuChange: (id: string | null) => void;
 }
 
-export default function CommentList({
-    postId,
-    comments,
-    commentInput,
-    replyingTo,
-    replyInput,
-    loadingComment,
-    loadingReply,
-    deletingComment,
-    deletingReply,
-    openMenu,
-    openReplyMenu,
-    currentUserId,
-    isLoading,
-    onCommentInputChange,
-    onPostComment,
-    onReplyTo,
-    onReplyInputChange,
-    onCreateReply,
-    onDeleteComment,
-    onDeleteReply,
-    onOpenMenuChange,
-    onOpenReplyMenuChange,
-}: CommentListProps) {
+export default function CommentList({ postId, comments, commentInput, replyingTo, replyInput, loadingComment, loadingReply, deletingComment, deletingReply, openMenu, openReplyMenu, currentUserId, isLoading, onCommentInputChange, onPostComment, onReplyTo, onReplyInputChange, onCreateReply, onDeleteComment, onDeleteReply, onOpenMenuChange, onOpenReplyMenuChange }: CommentListProps) {
     if (isLoading) {
         return (
             <div className="flex items-center justify-center py-8">

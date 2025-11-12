@@ -1,4 +1,3 @@
-// components/PostCard.tsx
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Heart, MoreVertical, Loader2, MessageCircle, Trash2, Forward } from "lucide-react";
@@ -9,11 +8,13 @@ import { Link } from "@/i18n/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
+import dayjs from "dayjs";
 
-interface PostCardProps {
+interface KomunitasPostCardProps {
     channel: Channel | null;
     post: Post & { author: User; images: PostImage[]; _count: { likes: number; comments: number }; isLikedByUser: boolean };
     currentUserId?: string;
+    showChannel?: boolean;
     loadingLike: boolean;
     deletingPost: boolean;
     openMenu: boolean;
@@ -47,13 +48,14 @@ interface PostCardProps {
     onOpenReplyMenuChange?: (id: string | null) => void;
 }
 
-export default function PostCard({
+export default function KomunitasPostCard({
     channel,
     post,
     currentUserId,
     loadingLike,
     deletingPost,
     openMenu,
+    showChannel = false,
     onLike,
     onToggleComments,
     onDeletePost,
@@ -82,7 +84,7 @@ export default function PostCard({
     onDeleteReply = () => {},
     onOpenCommentMenuChange = () => {},
     onOpenReplyMenuChange = () => {},
-}: PostCardProps) {
+}: KomunitasPostCardProps) {
     const contentRef = useRef<HTMLDivElement>(null);
     const [isOverflowing, setIsOverflowing] = useState(false);
     const [copy, setCopy] = useState(false);
@@ -117,11 +119,24 @@ export default function PostCard({
                 <div onClick={handleCommentSectionToggle} className="cursor-pointer">
                     {/* Header */}
                     <div className="mb-4 flex w-full items-center justify-between">
-                        <div className="flex min-w-0 items-center gap-3">
+                        <div className="flex items-start gap-3">
                             <Image width={40} height={40} src={post.author.image || ""} alt={post.author.name || ""} className="h-10 w-10 shrink-0 rounded-full" />
-                            <div className="min-w-0 flex-1">
-                                <p className="truncate font-semibold text-gray-900 dark:text-white">{post.author.name}</p>
-                                <p className="text-xs text-gray-500 dark:text-slate-400">{new Date(post.createdAt).toLocaleString()}</p>
+                            <div className="flex flex-1 flex-col">
+                                <div className="flex items-center justify-between gap-3">
+                                    <p className="truncate font-semibold text-gray-900 dark:text-white">{post.author.name}</p>
+
+                                    <p className="text-xs text-gray-500">
+                                        <Tooltip>
+                                            <TooltipTrigger>{dayjs(post.createdAt).fromNow()}</TooltipTrigger>
+                                            <TooltipContent>{new Date(post.createdAt).toLocaleString()}</TooltipContent>
+                                        </Tooltip>
+                                    </p>
+                                </div>
+                                {channel && (
+                                    <p className="text-secondary-green inline-flex items-center gap-1 text-sm font-medium">
+                                        <span className="text-secondary-green dark:text-secondary-green-hover">#{channel.slug}</span>
+                                    </p>
+                                )}
                             </div>
                         </div>
 
@@ -153,10 +168,7 @@ export default function PostCard({
 
                     {/* Images / Video */}
                     {post.images.length > 0 && (
-                        <div
-                            className="mb-4 grid grid-cols-2 gap-2 sm:grid-cols-3"
-                            onClick={(e) => e.stopPropagation()} // ⛔️ mencegah klik di gambar trigger router.push
-                        >
+                        <div className="mb-4 grid grid-cols-2 gap-2 sm:grid-cols-3" onClick={(e) => e.stopPropagation()}>
                             {post.images.map((image, idx) => {
                                 const url = `${process.env.NEXT_PUBLIC_S3_PUBLIC_URL}/${image.url}`;
                                 const ext = image.url.split(".").pop()?.toLowerCase() || "";
@@ -168,7 +180,7 @@ export default function PostCard({
                                         key={idx}
                                         onClick={(e) => {
                                             e.stopPropagation();
-                                            onImageClick(url); // preview
+                                            onImageClick(url);
                                         }}
                                         className="group relative h-40 w-full cursor-pointer overflow-hidden rounded-lg transition-opacity hover:opacity-75"
                                     >
