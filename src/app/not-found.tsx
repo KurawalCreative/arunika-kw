@@ -1,11 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { motion } from "motion/react";
 import { Home, Search, MapPin, Camera, Music, Palette, BookOpen, Heart, Star, Sparkles, ArrowLeft, RotateCcw } from "lucide-react";
 import image404 from "@/assets/images/404.png";
 import "@/app/globals.css";
+import { Link } from "@/i18n/navigation";
 
 const floatingIcons = [
     { Icon: Home, delay: 0, x: -100, y: -50 },
