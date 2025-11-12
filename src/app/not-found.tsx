@@ -136,7 +136,7 @@ export default function NotFound() {
                             ease: "easeInOut",
                         }}
                     >
-                        Wah, Halaman Hilang! 🫣
+                        Wah, Halaman Tidak Ditemukan! 🫣
                     </motion.h1>
 
                     <motion.p className="mb-4 text-base text-gray-600 md:text-lg dark:text-gray-300" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 0.7 }}>
