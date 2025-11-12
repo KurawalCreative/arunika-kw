@@ -26,6 +26,7 @@ export function useChannelPage() {
             images: PostImage[];
             _count: { likes: number; comments: number };
             isLikedByUser: boolean;
+            channel: Channel;
         })[]
     >([]);
     const [expandedComments, setExpandedComments] = useState<string[]>([]);

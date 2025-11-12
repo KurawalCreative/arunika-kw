@@ -159,7 +159,7 @@ export default function Page() {
     if (!post) return <div className="flex justify-center py-20 text-gray-500">Post tidak ditemukan</div>;
 
     return (
-        <div className="mx-auto space-y-8 px-4 py-8 lg:pr-82">
+        <div className="flex w-full max-w-7xl flex-col items-stretch space-y-8 px-4 py-8 lg:pr-82">
             <CommentHeader
                 post={post}
                 session={session}

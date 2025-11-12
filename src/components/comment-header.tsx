@@ -41,7 +41,7 @@ export default function CommentHeader({ post, onlike, loadingLike, session, comm
     if (!post) return null;
 
     return (
-        <div className="mx-auto w-full max-w-4xl">
+        <>
             <button onClick={() => router.back()} className="mb-6 flex w-fit cursor-pointer items-center gap-3 p-0.5 text-3xl font-bold text-gray-900 dark:text-white">
                 <ArrowLeft size={26} /> Post
             </button>
@@ -115,7 +115,7 @@ export default function CommentHeader({ post, onlike, loadingLike, session, comm
 
                     {/* Share */}
                     <Tooltip>
-                        <TooltipTrigger>
+                        <TooltipTrigger asChild>
                             <button onClick={handleCopy} className={`group hover:bg-secondary-green/10 hover:text-secondary-green-hover dark:hover:bg-secondary-green/10 dark:hover:text-secondary-green-hover flex items-center gap-2 rounded-full px-3 py-2 text-gray-500 transition-all duration-200 dark:text-slate-400`}>
                                 <Forward className="group-hover:text-secondary-green-hover dark:group-hover:text-secondary-green-hover h-4 w-4 transition-colors" />
                             </button>
@@ -126,6 +126,6 @@ export default function CommentHeader({ post, onlike, loadingLike, session, comm
                     </Tooltip>
                 </div>
             </div>
-        </div>
+        </>
     );
 }
