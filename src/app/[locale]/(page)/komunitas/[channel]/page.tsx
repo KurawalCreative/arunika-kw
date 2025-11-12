@@ -1,11 +1,10 @@
-// page.tsx (Main Page - Refactored)
 "use client";
 
 import { Channel, Post, PostImage, User } from "@/generated/prisma/client";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { getChannelBySlug, getPost, getPresignedUrl, storePost, toggleLike, getComments, createComment, deleteComment, createReply, deleteReply, deletePost, searchPosts } from "./actions";
+import { getChannelBySlug, getPost, getPresignedUrl, storePost, toggleLike, deletePost, searchPosts } from "./actions";
 import { Button } from "@/components/ui/button";
 import { Loader2, MessageCircle } from "lucide-react";
 import axios, { AxiosProgressEvent } from "axios";
@@ -13,6 +12,13 @@ import ChannelHeader from "@/components/channel-header";
 import CreatePostDialog from "@/components/create-post-dialog";
 import PostCard from "@/components/post-card";
 import ImagePreviewDialog from "@/components/image-preview-dialog";
+import {
+    getComments,
+    createComment,
+    createReply,
+    deleteComment,
+    deleteReply,
+} from "@/app/[locale]/(page)/komunitas/[channel]/[postId]/actions";
 
 export default function page() {
     const params = useParams<{ channel: string }>();
@@ -309,7 +315,7 @@ export default function page() {
 
     if (loadingPage) {
         return (
-            <div className="flex w-full items-center justify-center py-20">
+            <div className="flex w-full items-center justify-center py-20 lg:pr-82">
                 <Loader2 className="h-8 w-8 animate-spin text-blue-400" />
             </div>
         );
@@ -327,7 +333,7 @@ export default function page() {
     const hasMorePosts = posts.length < totalPosts;
 
     return (
-        <div className="w-full space-y-6 p-8">
+        <div className="flex w-full flex-1 flex-col space-y-6 p-6 lg:pr-82">
             <ChannelHeader channel={channel} searchQuery={searchQuery} isSearching={isSearching} onSearchChange={setSearchQuery} onSearch={handleSearch} onCreatePost={() => setIsOpen(true)} />
 
             <CreatePostDialog isOpen={isOpen} channel={channel} content={content} files={files} previews={previews} isUploading={isUploading} onOpenChange={setIsOpen} onContentChange={setContent} onFilesChange={onFilesChange} onRemovePreview={removePreview} onUpload={handleUpload} />
@@ -339,9 +345,10 @@ export default function page() {
                     <p className="text-sm">Jadilah yang pertama berbagi</p>
                 </div>
             ) : (
-                <div className="space-y-4">
+                <div className="w-full space-y-4">
                     {posts.map((post, i) => (
                         <PostCard
+                            channel={channel}
                             key={post.id}
                             post={post}
                             currentUserId={(session?.user as any)?.id}

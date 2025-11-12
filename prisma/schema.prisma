@@ -15,6 +15,15 @@ model Channel {
     region      String?
     description String?
     logo        String?
+    ibu_kota    String?
+    pulau       String?
+    luas        Int?
+    penduduk    Int?
+    bahasa      String[]
+    budaya      String[]
+    kuliner     String[]
+    wisata      String[]
+    deskripsi2  String?
     post        Post[]
     createdAt   DateTime @default(now())
     updatedAt   DateTime @updatedAt
