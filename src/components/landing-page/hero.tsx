@@ -107,15 +107,15 @@ const HeroSection = () => {
             )}
           </h1>
           <p className="max-w-[749px] text-center">{t("description")}</p>
-          <Link
-            href={"/"}
+            <Link
+            href={"/jelajahi-nusantara"}
             className="bg-orange flex items-center justify-center gap-3 rounded-full py-1 pr-1 pl-4 font-normal text-white"
-          >
-            {t("button")}{" "}
+            >
+            {t("button")}{""}
             <span className="text-orange flex h-9 w-9 items-center justify-center rounded-full bg-white">
               <ArrowUpRight size={28} />
             </span>
-          </Link>
+            </Link>
         </div>
       </div>
     </div>

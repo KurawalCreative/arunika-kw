@@ -7,7 +7,7 @@ import { usePathname } from "@/i18n/navigation";
 
 export default function Layout(props: { children: ReactNode }) {
     const pathname = usePathname();
-    const showFooter = !pathname.startsWith("/komunitas");
+    const showFooter = !/^\/(komunitas|jelajahi-nusantara)/.test(pathname);
 
     return (
         <main className="flex min-h-screen flex-col">
