@@ -1,7 +1,8 @@
 import { Channel } from "@/generated/prisma/client";
 import prisma from "@/lib/prisma";
+import provinsi from "@/assets/provinsi.json";
 
-const channels = [
+var channels = [
     { name: "Publik", slug: "publik", description: "Komunitas untuk semua orang di seluruh Indonesia." },
     { name: "Aceh", slug: "aceh", description: "Peugah! Yuk ngobrol bareng di komunitas Aceh.", region: "Sumatera" },
     { name: "Sumatera Utara", slug: "sumatera-utara", description: "Horas! Gabung ngobrol santai di komunitas Sumut.", region: "Sumatera" },
@@ -43,6 +44,21 @@ const channels = [
     { name: "Papua Barat Daya", slug: "papua-barat-daya", description: "Along! Yuk ngobrol bareng di komunitas Papua Barat Daya.", region: "Papua" },
 ] as Channel[];
 
+channels = channels.map((v, i) => {
+    return {
+        ...v,
+        ibu_kota: provinsi.find((f) => f.name === v.name)?.ibu_kota,
+        pulau: provinsi.find((f) => f.name === v.name)?.pulau,
+        luas: provinsi.find((f) => f.name === v.name)?.luas,
+        penduduk: provinsi.find((f) => f.name === v.name)?.penduduk,
+        bahasa: provinsi.find((f) => f.name === v.name)?.bahasa,
+        budaya: provinsi.find((f) => f.name === v.name)?.budaya,
+        kuliner: provinsi.find((f) => f.name === v.name)?.kuliner,
+        wisata: provinsi.find((f) => f.name === v.name)?.bahasa,
+        deskripsi2: provinsi.find((f) => f.name === v.name)?.deskripsi,
+    };
+}) as Channel[];
+
 async function main() {
     try {
         for (const ch of channels) {
@@ -53,6 +69,15 @@ async function main() {
                     name: ch.name,
                     description: ch.description,
                     region: ch.region,
+                    ibu_kota: ch.ibu_kota,
+                    pulau: ch.pulau,
+                    luas: ch.luas,
+                    penduduk: ch.penduduk,
+                    bahasa: ch.bahasa,
+                    budaya: ch.budaya,
+                    kuliner: ch.kuliner,
+                    wisata: ch.wisata,
+                    deskripsi2: ch.deskripsi2,
                     updatedAt: new Date(),
                 },
                 create: {
@@ -60,6 +85,15 @@ async function main() {
                     slug: ch.slug,
                     description: ch.description,
                     region: ch.region,
+                    ibu_kota: ch.ibu_kota,
+                    pulau: ch.pulau,
+                    luas: ch.luas,
+                    penduduk: ch.penduduk,
+                    bahasa: ch.bahasa,
+                    budaya: ch.budaya,
+                    kuliner: ch.kuliner,
+                    wisata: ch.wisata,
+                    deskripsi2: ch.deskripsi2,
                 },
             });
         }

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ModeToggle } from "./mode-toggle";
 import LocaleSwitcher from "./locale-switcher";
 import { useState, useEffect, useRef } from "react";
-import { ChevronDown, Menu, X } from "lucide-react";
+import { ChevronDown, Menu, X, LogOut } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import Image from "next/image";
 import { authClient } from "@/lib/auth-client";
@@ -13,6 +13,9 @@ import logoLight from "@/assets/svg/logo-light.svg";
 import logoDark from "@/assets/svg/logo-dark.svg";
 import { usePathname } from "@/i18n/navigation";
 import { motion, AnimatePresence } from "motion/react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { useSearchParams } from "next/navigation";
 
 const NavbarList = [
     { label: "Komunitas", href: "/komunitas" },
@@ -56,6 +59,7 @@ export default function NavbarArunika() {
     const [isScrolled, setIsScrolled] = useState(false);
     const timeoutRef = useRef<number | null>(null);
     const pathname = usePathname();
+    const searchParams = useSearchParams();
     const isKomunitasPage = !!pathname.match(/\/komunitas/i);
     const isHomePage = pathname === "/";
 
@@ -107,6 +111,11 @@ export default function NavbarArunika() {
         setIsMobileDropdownOpen(false);
     };
 
+    const getLoginUrl = () => {
+        const currentPath = pathname + (searchParams.toString() ? `?${searchParams.toString()}` : "");
+        return `/login?callbackUrl=${encodeURIComponent(currentPath)}`;
+    };
+
     return (
         <>
             <nav className={`fixed top-0 right-0 left-0 z-50 bg-white/80 backdrop-blur-md transition-all duration-200 dark:bg-neutral-900/80 ${isScrolled && !isKomunitasPage ? "border-b shadow-sm dark:border-neutral-700" : ""} ${isKomunitasPage ? "border-b" : ""}`}>
@@ -141,11 +150,31 @@ export default function NavbarArunika() {
                             <LocaleSwitcher />
                             <ModeToggle />
                             {session ? (
-                                <Button variant="ghost" onClick={() => setShowLogoutDialog(true)} className="hidden text-sm lg:inline-flex">
-                                    Logout
-                                </Button>
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                                            <Avatar className="h-8 w-8">
+                                                <AvatarImage src={session.user?.image || ""} alt={session.user?.name || ""} />
+                                                <AvatarFallback>{session.user?.name?.charAt(0)?.toUpperCase() || "U"}</AvatarFallback>
+                                            </Avatar>
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent className="w-56" align="end" forceMount>
+                                        <div className="flex items-center justify-start gap-2 p-2">
+                                            <div className="flex flex-col space-y-1 leading-none">
+                                                {session.user?.name && <p className="font-medium">{session.user.name}</p>}
+                                                {session.user?.email && <p className="text-muted-foreground w-[200px] truncate text-sm">{session.user.email}</p>}
+                                            </div>
+                                        </div>
+                                        <DropdownMenuSeparator />
+                                        <DropdownMenuItem onClick={() => setShowLogoutDialog(true)}>
+                                            <LogOut className="mr-2 h-4 w-4" />
+                                            <span>Log out</span>
+                                        </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
                             ) : (
-                                <Link href="/login" className="hidden items-center rounded-full bg-orange-500 px-4 py-2 text-sm font-medium text-white transition hover:bg-orange-600 lg:inline-flex xl:px-5 xl:py-2.5">
+                                <Link href={getLoginUrl()} className="hidden items-center rounded-full bg-orange-500 px-4 py-2 text-sm font-medium text-white transition hover:bg-orange-600 lg:inline-flex xl:px-5 xl:py-2.5">
                                     Masuk
                                 </Link>
                             )}
@@ -264,7 +293,7 @@ export default function NavbarArunika() {
                                             Logout
                                         </Button>
                                     ) : (
-                                        <Link href="/login" onClick={closeMobileMenu} className="block w-full rounded-full bg-orange-500 px-5 py-3 text-center text-sm font-medium text-white transition hover:bg-orange-600">
+                                        <Link href={getLoginUrl()} onClick={closeMobileMenu} className="block w-full rounded-full bg-orange-500 px-5 py-3 text-center text-sm font-medium text-white transition hover:bg-orange-600">
                                             Masuk
                                         </Link>
                                     )}
@@ -274,6 +303,35 @@ export default function NavbarArunika() {
                     </>
                 )}
             </AnimatePresence>
+
+            {/* Logout Confirmation Dialog */}
+            <Dialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
+                <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                        <DialogTitle>Konfirmasi Logout</DialogTitle>
+                        <DialogDescription>Apakah Anda yakin ingin keluar dari akun Anda?</DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setShowLogoutDialog(false)}>
+                            Batal
+                        </Button>
+                        <Button
+                            variant="destructive"
+                            onClick={async () => {
+                                try {
+                                    await authClient.signOut();
+                                    setSession(null);
+                                    setShowLogoutDialog(false);
+                                } catch (error) {
+                                    console.error("Error during logout:", error);
+                                }
+                            }}
+                        >
+                            Logout
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </>
     );
 }
