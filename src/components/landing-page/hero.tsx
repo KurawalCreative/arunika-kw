@@ -50,7 +50,7 @@ const HeroSection = () => {
                     </div>
                 </motion.div>
 
-                <motion.div style={{ y: blurY }} className="pointer-events-none absolute top-0 left-1/2 h-[72vh] w-[200vw] -translate-x-1/2 rounded-[50%] bg-[#fffefe] blur-3xl dark:bg-[#1a1a1a]" />
+                <motion.div style={{ y: blurY }} className="dark:bg-foreground pointer-events-none absolute top-0 left-1/2 h-[72vh] w-[200vw] -translate-x-1/2 rounded-[50%] bg-[#fffefe] blur-3xl" />
 
                 <div className="absolute top-[14%] right-[7%]">
                     <svg width="106" height="126" viewBox="0 0 106 126" fill="none" xmlns="http://www.w3.org/2000/svg">

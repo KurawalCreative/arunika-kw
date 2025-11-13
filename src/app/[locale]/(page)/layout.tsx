@@ -4,6 +4,7 @@ import Navbar from "@/components/navbar";
 import FooterSection from "@/components/footer";
 import { ReactNode } from "react";
 import { usePathname } from "@/i18n/navigation";
+import RaniChatCompanion from "@/components/rani-chat-companion";
 
 export default function Layout(props: { children: ReactNode }) {
     const pathname = usePathname();
@@ -14,7 +15,10 @@ export default function Layout(props: { children: ReactNode }) {
             <Navbar />
             <div className="flex flex-1 pt-16">
                 <div className="flex flex-1 flex-col">
-                    <>{props.children}</>
+                    <>
+                        {props.children}
+                        <RaniChatCompanion />
+                    </>
                 </div>
             </div>
             {showFooter && <FooterSection />}

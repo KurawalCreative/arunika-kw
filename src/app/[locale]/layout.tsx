@@ -7,8 +7,6 @@ import "../globals.css";
 import { routing } from "@/i18n/routing";
 import { ThemeProvider } from "@/components/theme-provider";
 import NextAuthProvider from "@/components/next-auth-session-provider";
-import { getServerAuthSession } from "@/lib/auth";
-import RaniChatCompanion from "@/components/rani-chat-companion";
 
 const manrope = Manrope({
     subsets: ["latin"],
@@ -40,7 +38,6 @@ export default async function RootLayout({
                         <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
                             {children}
                         </ThemeProvider>
-                        <RaniChatCompanion />
                     </NextIntlClientProvider>
                 </NextAuthProvider>
             </body>

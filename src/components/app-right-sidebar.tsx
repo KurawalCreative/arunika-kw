@@ -26,9 +26,9 @@ const AppRightSidebar = () => {
 
     return (
         <>
-            <aside className="fixed top-22 right-4 z-50 hidden h-fit w-72 rounded-xl border border-gray-200 bg-white p-5 text-gray-800 shadow-sm lg:flex">
+            <aside className="text-text-primary fixed top-22 right-4 z-10 hidden h-fit w-72 rounded-xl border border-gray-200 bg-white p-5 shadow-sm lg:flex">
                 <div className="w-full">
-                    <h2 className="mb-4 text-lg font-semibold text-gray-800">Upcoming Events</h2>
+                    <h2 className="text-text-primary mb-4 text-lg font-semibold">Upcoming Events</h2>
                     <div className="space-y-3">
                         {events.map((event, i) => (
                             <div key={i} className="flex items-center gap-3 rounded-lg border border-gray-100 bg-white p-3 shadow-sm transition-colors hover:bg-gray-50">
