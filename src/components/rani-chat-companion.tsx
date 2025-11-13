@@ -253,7 +253,6 @@ const RaniChatCompanion = () => {
 
     return (
         <div className="fixed right-8 bottom-8 z-50 select-none">
-            {/* Floating Rani Avatar - Klik untuk buka/tutup widget */}
             {!isWidgetOpen && (
                 <>
                     {/* Floating Bubble Chat */}
@@ -288,8 +287,7 @@ const RaniChatCompanion = () => {
             {/* Widget Chat */}
             {isWidgetOpen && (
                 <motion.div initial={{ opacity: 0, y: 20, scale: 0.9 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 20, scale: 0.9 }} className="w-96 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl dark:border-gray-700 dark:bg-gray-900">
-                    {/* Header dengan Mode Selection */}
-                    <div className="bg-linear-to-r from-pink-500 to-purple-500 p-4">
+                    <div className="from-primary-blue to-secondary-green bg-linear-to-r p-4">
                         <div className="mb-3 flex items-center justify-between">
                             <div className="flex items-center gap-3">
                                 <Image src={currentMood.src} alt={currentMood.mood} width={50} height={50} className="object-contain" />
