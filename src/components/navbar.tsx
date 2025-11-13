@@ -125,7 +125,7 @@ export default function NavbarArunika() {
                         <div className="flex shrink-0 items-center">
                             <Link href="/" className="flex items-center gap-2">
                                 <Image src={logoLight} alt="Arunika Logo" className="block h-14 w-auto sm:h-20 dark:hidden" priority />
-                                <Image src={logoDark} alt="Arunika Logo" className="hidden h-14 w-auto sm:h-20 dark:block" priority />
+                                <Image src={logoLight} alt="Arunika Logo" className="hidden h-14 w-auto sm:h-20 dark:block" priority />
                             </Link>
                         </div>
 
