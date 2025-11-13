@@ -30,6 +30,7 @@ const DropdownList = [
             { label: "Arunika AI", href: "/ai", description: "Asisten AI untuk budaya Nusantara" },
             { label: "Peta Budaya", href: "/jelajahi-nusantara", description: "Jelajahi kebudayaan Indonesia" },
             { label: "Koleksi Interaktif", href: "/koleksi-interaktif", description: "Koleksi digital interaktif" },
+            { label: "Photo Booth", href: "/photo-booth" },
         ],
     },
     {
