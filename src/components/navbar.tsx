@@ -173,7 +173,7 @@ export default function NavbarArunika() {
                                         </DropdownMenuContent>
                                     </DropdownMenu>
                                 ) : (
-                                    <Link href={getLoginUrl()} className="hidden items-center rounded-full bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-blue-700 lg:inline-flex">
+                                    <Link href={getLoginUrl()} className="bg-primary-blue hover:bg-primary-blue-hover hidden items-center rounded-full px-4 py-2 text-sm font-medium text-white shadow-sm transition lg:inline-flex dark:bg-blue-600 dark:hover:bg-blue-700">
                                         Masuk
                                     </Link>
                                 )}
