@@ -49,7 +49,7 @@ const HeroSection = () => {
                     </div>
                 </motion.div>
 
-                <motion.div style={{ y: blurY }} className="pointer-events-none absolute top-0 left-1/2 h-[72vh] w-[200vw] -translate-x-1/2 rounded-[50%] bg-[#fffefe] blur-3xl dark:bg-[#1a1a1a]" />
+                <motion.div style={{ y: blurY }} className="dark:bg-foreground pointer-events-none absolute top-0 left-1/2 h-[72vh] w-[200vw] -translate-x-1/2 rounded-[50%] bg-[#fffefe] blur-3xl" />
 
                 <div className="absolute top-[14%] right-[7%]">
                     <svg width="106" height="126" viewBox="0 0 106 126" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -71,9 +71,9 @@ const HeroSection = () => {
                         )}
                     </h1>
                     <p className="max-w-[749px] text-center">{t("description")}</p>
-                    <Link href={"/"} className="bg-primary-blue hover:bg-primary-blue-hover transition-colors flex items-center justify-center gap-3 rounded-full py-1 pr-1 pl-4 font-normal text-white">
+                    <Link href={"/"} className="bg-primary-blue hover:bg-primary-blue-hover flex items-center justify-center gap-3 rounded-full py-1 pr-1 pl-4 font-normal text-white transition-colors">
                         {t("button")}{" "}
-                        <span className="text-primary-blue transition-colors flex h-9 w-9 items-center justify-center rounded-full bg-white">
+                        <span className="text-primary-blue flex h-9 w-9 items-center justify-center rounded-full bg-white transition-colors">
                             <ArrowUpRight size={28} />
                         </span>
                     </Link>
