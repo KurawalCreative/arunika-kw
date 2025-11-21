@@ -57,10 +57,10 @@ const HeroSection = () => {
                 </div>
 
                 <div className="relative mx-auto mb-40 flex max-w-7xl flex-col items-center justify-center gap-6 px-4">
-                    <h1 className="w-[1100px] text-center text-5xl leading-tight font-extrabold">
+                    <h1 className="w-[1100px] text-center text-5xl leading-tight font-extrabold text-gray-900 dark:text-white">
                         {parts.map((part: string, i: any) =>
                             i % 2 === 1 ? (
-                                <span key={i} className="text-secondary-green">
+                                <span key={i} className="text-secondary-green dark:text-green-400">
                                     {part}
                                 </span>
                             ) : (
@@ -69,14 +69,14 @@ const HeroSection = () => {
                         )}
                     </h1>
                     <div className="relative max-w-[749px] text-center">
-                        <p className="relative">Dari dongeng ajaib, pakaian adat, hingga sejarah daerah semua bisa kamu jelajahi bersama Arunika, tempat belajar budaya yang seru, interaktif, dan penuh warna!</p>
+                        <p className="relative text-gray-700 dark:text-gray-300">Dari dongeng ajaib, pakaian adat, hingga sejarah daerah semua bisa kamu jelajahi bersama Arunika, tempat belajar budaya yang seru, interaktif, dan penuh warna!</p>
                         <div className="absolute -top-3 -right-3">
                             <Image src={petik} alt="_" width={27} height={23} />
                         </div>
                     </div>
-                    <Link href={"/"} className="bg-primary-blue hover:bg-primary-blue-hover flex items-center justify-center gap-3 rounded-full py-1 pr-1 pl-4 font-normal text-white transition-colors">
+                    <Link href={"/"} className="bg-primary-blue hover:bg-primary-blue-hover flex items-center justify-center gap-3 rounded-full py-1 pr-1 pl-4 font-normal text-white transition-colors dark:bg-blue-600 dark:hover:bg-blue-700">
                         Mulai Jelajah{" "}
-                        <span className="text-primary-blue flex h-9 w-9 items-center justify-center rounded-full bg-white transition-colors">
+                        <span className="text-primary-blue flex h-9 w-9 items-center justify-center rounded-full bg-white transition-colors dark:bg-gray-800 dark:text-blue-600">
                             <ArrowUpRight size={28} />
                         </span>
                     </Link>

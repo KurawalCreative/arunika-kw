@@ -56,45 +56,32 @@ const features = [
 
 const FeaturesSection = () => {
     return (
-        <section className="max-w-7xl mx-auto py-20 px-4">
-            <div className="flex flex-col md:flex-row gap-12">
+        <section className="mx-auto max-w-7xl px-4 py-20">
+            <div className="flex flex-col gap-12 md:flex-row">
                 {/* Kiri */}
                 <div className="flex-1">
-                    <h1 className="font-semibold text-3xl leading-snug">
-                        Belajar budaya dengan{" "}
-                        <span className="text-primary-blue">
-                            cara baru yang seru, interaktif, dan cerdas!
-                        </span>
+                    <h1 className="text-3xl leading-snug font-semibold text-gray-900 dark:text-white">
+                        Belajar budaya dengan <span className="text-primary-blue dark:text-blue-400">cara baru yang seru, interaktif, dan cerdas!</span>
                     </h1>
-                    <p className="mt-2 font-medium text-text-secondary leading-relaxed">
-                        Setiap fitur di Arunika dirancang agar anak-anak bisa menjelajahi
-                        kekayaan budaya Indonesia sambil bermain dan berimajinasi.
-                    </p>
-                    <Link
-                        href="/"
-                        className="mt-4 inline-flex items-center gap-3 bg-primary-blue text-white rounded-full pl-5 pr-2 py-2 font-medium hover:bg-primary-blue-hover transition-all"
-                    >
+                    <p className="text-text-secondary mt-2 leading-relaxed font-medium dark:text-gray-300">Setiap fitur di Arunika dirancang agar anak-anak bisa menjelajahi kekayaan budaya Indonesia sambil bermain dan berimajinasi.</p>
+                    <Link href="/" className="bg-primary-blue hover:bg-primary-blue-hover mt-4 inline-flex items-center gap-3 rounded-full py-2 pr-2 pl-5 font-medium text-white transition-all dark:bg-blue-600 dark:hover:bg-blue-700">
                         Menjelajah Nusantara
-                        <span className="bg-white text-primary-blue w-8 h-8 flex items-center justify-center rounded-full">
+                        <span className="text-primary-blue flex h-8 w-8 items-center justify-center rounded-full bg-white dark:bg-gray-800 dark:text-blue-400">
                             <ArrowUpRight size={22} />
                         </span>
                     </Link>
                 </div>
 
                 {/* Kanan */}
-                <div className="flex-2/6 grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="grid flex-2/6 grid-cols-1 gap-6 sm:grid-cols-2">
                     {features.map((f) => (
                         <div key={f.id} className="flex items-start gap-4">
-                            <div
-                                className={`w-12 h-12 ${f.color} rounded-lg flex items-center justify-center shrink-0`}
-                            >
+                            <div className={`h-12 w-12 ${f.color} dark:bg-opacity-20 flex shrink-0 items-center justify-center rounded-lg`}>
                                 <Image src={f.icon} alt={f.title} width={28} height={28} />
                             </div>
                             <div>
-                                <h3 className="text-lg font-semibold">{f.title}</h3>
-                                <p className="text-font-secondary text-sm mt-1 leading-snug">
-                                    {f.desc}
-                                </p>
+                                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{f.title}</h3>
+                                <p className="text-font-secondary mt-1 text-sm leading-snug dark:text-gray-400">{f.desc}</p>
                             </div>
                         </div>
                     ))}

@@ -24,23 +24,23 @@ const KnowUsSection = () => {
             <div className="flex w-full flex-wrap lg:flex-nowrap">
                 <div className="flex-1">
                     <div className="max-w-xl">
-                        <h1 className="text-text-primary text-3xl leading-snug font-bold">
-                            Mari Jelajahi Kekayaan <span className="text-primary-blue">Budaya Indonesia</span> & Pelajari <span className="text-secondary-green">Cerita menarik</span> di Baliknya
+                        <h1 className="text-text-primary text-3xl leading-snug font-bold dark:text-white">
+                            Mari Jelajahi Kekayaan <span className="text-primary-blue dark:text-blue-400">Budaya Indonesia</span> & Pelajari <span className="text-secondary-green dark:text-green-400">Cerita menarik</span> di Baliknya
                         </h1>
-                        <p className="text-text-secondary text-font-secondary py-6 text-xl">Temukan cara seru belajar budaya lewat dongeng, sejarah, dan interaksi digital yang membuat anak-anak mencintai tanah airnya sejak dini.</p>
+                        <p className="text-text-secondary text-font-secondary py-6 text-xl dark:text-gray-300">Temukan cara seru belajar budaya lewat dongeng, sejarah, dan interaksi digital yang membuat anak-anak mencintai tanah airnya sejak dini.</p>
 
                         <div className="relative">
-                            <Link href={"/"} className="hover:bg-primary-blue-hover bg-primary-blue flex w-fit items-center justify-center gap-3 rounded-full py-1 pr-1 pl-4 font-normal text-white">
+                            <Link href={"/"} className="hover:bg-primary-blue-hover bg-primary-blue flex w-fit items-center justify-center gap-3 rounded-full py-1 pr-1 pl-4 font-normal text-white dark:bg-blue-600 dark:hover:bg-blue-700">
                                 Mulai Petualangan
-                                <span className="text-primary-blue flex h-9 w-9 items-center justify-center rounded-full bg-white">
+                                <span className="text-primary-blue flex h-9 w-9 items-center justify-center rounded-full bg-white dark:bg-gray-800 dark:text-blue-600">
                                     <ArrowUpRight size={28} />
                                 </span>
                             </Link>
                             <div className="absolute bottom-12 left-70">
-                                <div className="absolute top-2 left-0 flex h-32 w-24 -rotate-15 flex-col items-center bg-white p-1 shadow-lg">
+                                <div className="absolute top-2 left-0 flex h-32 w-24 -rotate-15 flex-col items-center bg-white p-1 shadow-lg dark:bg-gray-800">
                                     <Image src={minangkabauDance} alt="minangkabau-dance" className="relative top-0 h-25 w-24 object-cover" />
                                 </div>
-                                <div className="absolute top-2 left-4 flex h-32 w-24 rotate-15 flex-col items-center bg-white p-1 shadow-lg">
+                                <div className="absolute top-2 left-4 flex h-32 w-24 rotate-15 flex-col items-center bg-white p-1 shadow-lg dark:bg-gray-800">
                                     <Image src={reogDance} alt="reog-dance" className="h-25 w-24 object-cover" />
                                 </div>
                             </div>
@@ -50,52 +50,52 @@ const KnowUsSection = () => {
                 <div className="flex-1 lg:ml-12">
                     <div className="grid grid-cols-3 gap-4">
                         {/* Atas */}
-                        <div className="bg-gray-background relative col-span-3 flex flex-col justify-center overflow-hidden rounded-xl shadow-sm md:h-62">
+                        <div className="bg-gray-background relative col-span-3 flex flex-col justify-center overflow-hidden rounded-xl shadow-sm md:h-62 dark:bg-gray-800">
                             <div className="absolute inset-6 top-0 right-0">
                                 <Image src={mapSvg} alt="map-dark" fill draggable={false} className="object-cover" />
                                 <div className="relative h-full">
                                     <div className="absolute right-0 bottom-0 px-4 text-end">
                                         <div className="relative bottom-21 -left-32">
-                                            <div className="absolute top-6 left-0 flex h-32 w-24 -rotate-10 flex-col items-center bg-white p-1 shadow-lg">
+                                            <div className="absolute top-6 left-0 flex h-32 w-24 -rotate-10 flex-col items-center bg-white p-1 shadow-lg dark:bg-gray-800">
                                                 <Image src={minangkabauDance} alt="minangkabau-dance" className="relative top-0 h-25 w-24 object-cover" />
                                             </div>
-                                            <div className="absolute top-2 left-4 flex h-32 w-24 -rotate-5 flex-col items-center bg-white p-1 shadow-lg">
+                                            <div className="absolute top-2 left-4 flex h-32 w-24 -rotate-5 flex-col items-center bg-white p-1 shadow-lg dark:bg-gray-800">
                                                 <Image src={reogDance} alt="reog-dance" className="h-25 w-24 object-cover" />
                                             </div>
                                         </div>
 
-                                        <div className="pointer-events-none absolute right-0 bottom-4 z-0 h-24 w-96 rounded-xl bg-linear-to-l from-stone-50 via-stone-50/70 to-transparent blur-3xl" />
-                                        <h1 className="text-text-primary relative z-10 text-lg font-semibold">
-                                            Jelajahi <span className="text-accent-coral">Peta Interaktif Nusantara</span>
+                                        <div className="pointer-events-none absolute right-0 bottom-4 z-0 h-24 w-96 rounded-xl bg-linear-to-l from-stone-50 via-stone-50/70 to-transparent blur-3xl dark:from-gray-700 dark:via-gray-700/70" />
+                                        <h1 className="text-text-primary relative z-10 text-lg font-semibold dark:text-white">
+                                            Jelajahi <span className="text-accent-coral dark:text-red-400">Peta Interaktif Nusantara</span>
                                         </h1>
-                                        <p className="text-text-secondary relative z-10 mt-1 w-110 text-sm">Temukan keunikan setiap daerah lewat peta interaktif yang seru! Dari pakaian adat, tarian tradisional, hingga cerita rakyat.</p>
+                                        <p className="text-text-secondary relative z-10 mt-1 w-110 text-sm dark:text-gray-300">Temukan keunikan setiap daerah lewat peta interaktif yang seru! Dari pakaian adat, tarian tradisional, hingga cerita rakyat.</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                         {/* Kiri bawah */}
-                        <div className="bg-gray-background relative col-span-1 flex flex-col items-center justify-end rounded-2xl p-4 shadow-sm">
+                        <div className="bg-gray-background relative col-span-1 flex flex-col items-center justify-end rounded-2xl p-4 shadow-sm dark:bg-gray-800">
                             <div className="flex w-full items-end justify-center gap-2">
                                 {leaders.map((l) => (
                                     <div key={l.rank} className="flex flex-col items-center">
                                         <div className={`relative flex w-12 items-center justify-center ${l.rank === 1 ? "h-26" : l.rank === 2 ? "h-20" : "h-16"}`} style={{ backgroundColor: l.color }}>
                                             <span className="absolute bottom-2 text-sm font-bold text-white">{l.rank}</span>
                                         </div>
-                                        <p className="text-text-primary mt-2 text-sm font-bold">{l.name}</p>
-                                        <p className="text-text-secondary mt-0.5 text-xs">{l.score} pts</p>
+                                        <p className="text-text-primary mt-2 text-sm font-bold dark:text-white">{l.name}</p>
+                                        <p className="text-text-secondary mt-0.5 text-xs dark:text-gray-400">{l.score} pts</p>
                                     </div>
                                 ))}
                             </div>
                         </div>
 
                         {/* Kanan bawah */}
-                        <div className="bg-gray-background relative col-span-2 h-full overflow-hidden rounded-2xl p-4 shadow-sm">
+                        <div className="bg-gray-background relative col-span-2 h-full overflow-hidden rounded-2xl p-4 shadow-sm dark:bg-gray-800">
                             <div className="text-start">
-                                <h1 className="text-text-primary text-lg font-semibold">
-                                    Belajar budaya <span className="text-accent-coral">bareng yuk!</span>
+                                <h1 className="text-text-primary text-lg font-semibold dark:text-white">
+                                    Belajar budaya <span className="text-accent-coral dark:text-red-400">bareng yuk!</span>
                                 </h1>
-                                <p className="text-text-secondary mt-1 text-sm">
+                                <p className="text-text-secondary mt-1 text-sm dark:text-gray-300">
                                     Yuk kenali budaya Indonesia dengan <br /> cara yang asyik!
                                 </p>
                             </div>
