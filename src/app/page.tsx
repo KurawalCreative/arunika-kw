@@ -1,5 +1,7 @@
 "use client";
 
+import { Suspense } from "react";
+import FooterSection from "@/components/footer";
 import AdventagesSection from "@/components/landing-page/adventage";
 import CtaSection from "@/components/landing-page/cta";
 import FeaturesSection from "@/components/landing-page/features";
@@ -12,7 +14,9 @@ import NavbarArunika from "@/components/navbar";
 export default function Home() {
     return (
         <>
-            <NavbarArunika />
+            <Suspense fallback={<div className="h-16" />}>
+                <NavbarArunika />
+            </Suspense>
             <HeroSection />
             <AdventagesSection />
             <KnowUsSection />
@@ -20,6 +24,7 @@ export default function Home() {
             <HowItWorksSection />
             <FeaturesSection />
             <CtaSection />
+            <FooterSection />
         </>
     );
 }

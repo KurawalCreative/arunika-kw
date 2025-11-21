@@ -41,20 +41,20 @@ const photo = [
 
 const WhatCanLearnSection = () => {
     return (
-        <section className="mx-auto w-full max-w-7xl py-20">
-            <div className="flex w-full">
+        <section className="mx-auto w-full max-w-7xl px-4 py-20">
+            <div className="flex w-full flex-col gap-8 lg:flex-row lg:gap-0">
                 <div className="flex-1">
                     <div className="max-w-xl">
-                        <h1 className="text-3xl font-semibold text-gray-900 dark:text-white">
+                        <h1 className="text-2xl font-semibold text-gray-900 sm:text-3xl dark:text-white">
                             Apa yang bisa kamu <span className="text-primary-blue dark:text-blue-400">pelajari disini?</span>
                         </h1>
-                        <p className="text-text-secondary mt-2 text-xl dark:text-gray-300">
+                        <p className="text-text-secondary mt-2 text-lg sm:text-xl dark:text-gray-300">
                             Temukan keindahan budaya Indonesia lewat cara belajar yang <span className="text-secondary-green dark:text-green-400">seru, interaktif, dan penuh warna.</span>
                         </p>
                     </div>
                 </div>
                 <div className="flex-1">
-                    <p className="text-text-muted text-lg dark:text-gray-400">Dari pakaian adat hingga bahasa daerah, setiap halaman membawa kamu mengenal kisah dan makna di balik tradisi Nusantara. Yuk, jelajahi dan temukan betapa kayanya Indonesia dari Sabang sampai Merauke!</p>
+                    <p className="text-text-muted text-base sm:text-lg dark:text-gray-400">Dari pakaian adat hingga bahasa daerah, setiap halaman membawa kamu mengenal kisah dan makna di balik tradisi Nusantara. Yuk, jelajahi dan temukan betapa kayanya Indonesia dari Sabang sampai Merauke!</p>
                 </div>
             </div>
             <div className="mx-auto mt-12 max-w-5xl">

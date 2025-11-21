@@ -20,14 +20,14 @@ const height = (rank: number) => (rank === 1 ? "h-36" : rank === 2 ? "h-28" : "h
 
 const KnowUsSection = () => {
     return (
-        <section className="mx-auto flex w-full max-w-7xl py-20">
-            <div className="flex w-full flex-wrap lg:flex-nowrap">
-                <div className="flex-1">
+        <section className="mx-auto flex w-full max-w-7xl px-4 py-20">
+            <div className="flex w-full flex-col lg:flex-row">
+                <div className="mb-12 flex-1 lg:mb-0">
                     <div className="max-w-xl">
-                        <h1 className="text-text-primary text-3xl leading-snug font-bold dark:text-white">
+                        <h1 className="text-text-primary text-2xl leading-snug font-bold sm:text-3xl dark:text-white">
                             Mari Jelajahi Kekayaan <span className="text-primary-blue dark:text-blue-400">Budaya Indonesia</span> & Pelajari <span className="text-secondary-green dark:text-green-400">Cerita menarik</span> di Baliknya
                         </h1>
-                        <p className="text-text-secondary text-font-secondary py-6 text-xl dark:text-gray-300">Temukan cara seru belajar budaya lewat dongeng, sejarah, dan interaksi digital yang membuat anak-anak mencintai tanah airnya sejak dini.</p>
+                        <p className="text-text-secondary text-font-secondary py-6 text-lg sm:text-xl dark:text-gray-300">Temukan cara seru belajar budaya lewat dongeng, sejarah, dan interaksi digital yang membuat anak-anak mencintai tanah airnya sejak dini.</p>
 
                         <div className="relative">
                             <Link href={"/"} className="hover:bg-primary-blue-hover bg-primary-blue flex w-fit items-center justify-center gap-3 rounded-full py-1 pr-1 pl-4 font-normal text-white dark:bg-blue-600 dark:hover:bg-blue-700">

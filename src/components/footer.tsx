@@ -3,36 +3,36 @@ import Link from "next/link";
 
 const FooterSection = () => {
     return (
-        <footer className="bg-text-primary w-full text-white">
+        <footer className="w-full border-t border-gray-200 bg-gray-50 text-gray-900 dark:border-neutral-700 dark:bg-gray-900 dark:text-gray-100">
             {/* Container utama */}
-            <div className="mx-auto grid max-w-7xl grid-cols-1 gap-8 px-6 py-12 md:grid-cols-3">
+            <div className="mx-auto grid max-w-7xl grid-cols-1 gap-8 px-4 py-8 sm:py-12 md:grid-cols-3">
                 {/* Brand / Logo */}
                 <div>
-                    <h2 className="text-2xl font-bold tracking-wide">Arunika</h2>
-                    <p className="mt-3 text-sm leading-relaxed text-gray-300">Membawa cahaya di setiap langkah digitalmu — platform kreatif untuk desain dan pengalaman digital yang bermakna.</p>
+                    <h2 className="text-xl font-bold tracking-wide text-gray-900 sm:text-2xl dark:text-gray-100">Arunika</h2>
+                    <p className="mt-3 text-sm leading-relaxed text-gray-600 dark:text-gray-400">Membawa cahaya di setiap langkah digitalmu — platform kreatif untuk desain dan pengalaman digital yang bermakna.</p>
                 </div>
 
                 {/* Navigasi cepat */}
-                <div className="text-end">
-                    <h3 className="mb-3 text-lg font-semibold">Navigasi</h3>
-                    <ul className="space-y-2 text-gray-300">
+                <div className="text-left md:text-end">
+                    <h3 className="mb-3 text-base font-semibold text-gray-900 sm:text-lg dark:text-gray-100">Navigasi</h3>
+                    <ul className="space-y-2 text-sm text-gray-600 sm:text-base dark:text-gray-400">
                         <li>
-                            <Link href="/" className="hover:text-green-lime-dark transition">
+                            <Link href="/" className="hover:text-green-lime-dark transition dark:hover:text-green-400">
                                 Beranda
                             </Link>
                         </li>
                         <li>
-                            <Link href="/about" className="hover:text-green-lime-dark transition">
+                            <Link href="/about" className="hover:text-green-lime-dark transition dark:hover:text-green-400">
                                 Tentang
                             </Link>
                         </li>
                         <li>
-                            <Link href="/projects" className="hover:text-green-lime-dark transition">
+                            <Link href="/projects" className="hover:text-green-lime-dark transition dark:hover:text-green-400">
                                 Proyek
                             </Link>
                         </li>
                         <li>
-                            <Link href="/contact" className="hover:text-green-lime-dark transition">
+                            <Link href="/contact" className="hover:text-green-lime-dark transition dark:hover:text-green-400">
                                 Kontak
                             </Link>
                         </li>
@@ -40,26 +40,26 @@ const FooterSection = () => {
                 </div>
 
                 {/* Sosial media */}
-                <div className="text-end">
-                    <h3 className="mb-3 text-lg font-semibold">Terhubung</h3>
-                    <div className="flex items-center justify-end gap-4">
-                        <Link href="mailto:hello@arunika.com" className="hover:text-green-lime-dark transition">
-                            <Mail size={20} />
+                <div className="text-left md:text-end">
+                    <h3 className="mb-3 text-base font-semibold text-gray-900 sm:text-lg dark:text-gray-100">Terhubung</h3>
+                    <div className="flex items-center justify-start gap-4 md:justify-end">
+                        <Link href="mailto:hello@arunika.com" className="hover:text-green-lime-dark transition dark:hover:text-green-400">
+                            <Mail size={18} className="sm:h-5 sm:w-5" />
                         </Link>
-                        <Link href="#" className="hover:text-green-lime-dark transition">
-                            <Facebook size={20} />
+                        <Link href="#" className="hover:text-green-lime-dark transition dark:hover:text-green-400">
+                            <Facebook size={18} className="sm:h-5 sm:w-5" />
                         </Link>
-                        <Link href="#" className="hover:text-green-lime-dark transition">
-                            <Instagram size={20} />
+                        <Link href="#" className="hover:text-green-lime-dark transition dark:hover:text-green-400">
+                            <Instagram size={18} className="sm:h-5 sm:w-5" />
                         </Link>
-                        <Link href="#" className="hover:text-green-lime-dark transition">
-                            <Twitter size={20} />
+                        <Link href="#" className="hover:text-green-lime-dark transition dark:hover:text-green-400">
+                            <Twitter size={18} className="sm:h-5 sm:w-5" />
                         </Link>
                     </div>
                 </div>
             </div>
 
-            <div className="border-t border-white/20 py-4 text-center text-sm text-gray-400">© {new Date().getFullYear()} Arunika. All rights reserved.</div>
+            <div className="border-t border-gray-200 py-4 text-center text-xs text-gray-500 sm:text-sm dark:border-gray-700 dark:text-gray-500">© {new Date().getFullYear()} Arunika. All rights reserved.</div>
         </footer>
     );
 };

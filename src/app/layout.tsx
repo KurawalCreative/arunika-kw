@@ -5,6 +5,7 @@ import "./globals.css";
 
 import { ThemeProvider } from "@/components/theme-provider";
 import NextAuthProvider from "@/components/next-auth-session-provider";
+import SmoothScroll from "@/components/smooth-scroll";
 
 const manrope = Manrope({
     subsets: ["latin"],
@@ -17,18 +18,15 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({
     children,
-    params,
 }: Readonly<{
     children: React.ReactNode;
-    params: Promise<{ locale: string }>;
 }>) {
-    const { locale } = await params.catch(() => ({ locale: "en" }));
-
     return (
-        <html lang={locale} suppressHydrationWarning>
+        <html lang="id" suppressHydrationWarning>
             <body className={`${manrope.className} dark:bg-foreground text-font-primary dark:text-background antialiased`}>
                 <NextAuthProvider>
                     <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
+                        <SmoothScroll />
                         {children}
                     </ThemeProvider>
                 </NextAuthProvider>

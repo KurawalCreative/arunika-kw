@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 
 import petaInteraktif from "@/assets/svg/peta-interaktif.svg";
@@ -55,11 +56,31 @@ const features = [
 ];
 
 const FeaturesSection = () => {
+    const containerVariants = {
+        hidden: { opacity: 0 },
+        visible: {
+            opacity: 1,
+            transition: {
+                staggerChildren: 0.1,
+                delayChildren: 0.2,
+            },
+        },
+    };
+
+    const itemVariants = {
+        hidden: { opacity: 0, y: 20 },
+        visible: {
+            opacity: 1,
+            y: 0,
+            transition: { duration: 0.5 },
+        },
+    };
+
     return (
         <section className="mx-auto max-w-7xl px-4 py-20">
             <div className="flex flex-col gap-12 md:flex-row">
                 {/* Kiri */}
-                <div className="flex-1">
+                <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="flex-1">
                     <h1 className="text-3xl leading-snug font-semibold text-gray-900 dark:text-white">
                         Belajar budaya dengan <span className="text-primary-blue dark:text-blue-400">cara baru yang seru, interaktif, dan cerdas!</span>
                     </h1>
@@ -70,12 +91,12 @@ const FeaturesSection = () => {
                             <ArrowUpRight size={22} />
                         </span>
                     </Link>
-                </div>
+                </motion.div>
 
                 {/* Kanan */}
-                <div className="grid flex-2/6 grid-cols-1 gap-6 sm:grid-cols-2">
+                <motion.div variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true }} className="grid flex-2/6 grid-cols-1 gap-6 sm:grid-cols-2">
                     {features.map((f) => (
-                        <div key={f.id} className="flex items-start gap-4">
+                        <motion.div key={f.id} variants={itemVariants} className="flex items-start gap-4">
                             <div className={`h-12 w-12 ${f.color} dark:bg-opacity-20 flex shrink-0 items-center justify-center rounded-lg`}>
                                 <Image src={f.icon} alt={f.title} width={28} height={28} />
                             </div>
@@ -83,9 +104,9 @@ const FeaturesSection = () => {
                                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{f.title}</h3>
                                 <p className="text-font-secondary mt-1 text-sm leading-snug dark:text-gray-400">{f.desc}</p>
                             </div>
-                        </div>
+                        </motion.div>
                     ))}
-                </div>
+                </motion.div>
             </div>
         </section>
     );
