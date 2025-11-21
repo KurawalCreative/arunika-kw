@@ -6,14 +6,14 @@ type MapType = maplibregl.Map;
 type StyleSpecification = maplibregl.StyleSpecification;
 import "maplibre-gl/dist/maplibre-gl.css";
 import { FeatureCollection, Feature } from "geojson";
-import { getChannelBySlug } from "@/app/[locale]/(page)/jelajahi-nusantara/actions";
+import { getChannelBySlug } from "@/app/(page)/jelajahi-nusantara/actions";
 import indonesia from "@/assets/coordinates/id.json";
 import { useTheme } from "next-themes";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, RefreshCw, Languages, Utensils, Palette, MapPin } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
-import { useRouter } from "@/i18n/navigation";
+import { useRouter } from "next/navigation";
 
 const InteractiveMap = () => {
     const mapContainer = useRef<HTMLDivElement | null>(null);

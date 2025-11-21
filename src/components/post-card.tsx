@@ -5,7 +5,7 @@ import { Heart, MoreVertical, Loader2, MessageCircle, Trash2, Forward } from "lu
 import Image from "next/image";
 import { Channel, Post, PostImage, User } from "@/generated/prisma/client";
 import CommentsSection from "./comment-section";
-import { Link } from "@/i18n/navigation";
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";

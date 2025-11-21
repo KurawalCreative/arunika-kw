@@ -1,6 +1,5 @@
 import { motion, useScroll, useTransform } from "motion/react";
 import { useRef } from "react";
-import { useTranslations } from "next-intl";
 
 import Link from "next/link";
 import Image from "next/image";
@@ -20,9 +19,7 @@ import { ArrowUpRight } from "lucide-react";
 
 const HeroSection = () => {
     const ref = useRef(null);
-    const t = useTranslations("HomePage");
-
-    const title = t.raw("title");
+    const title = "Temukan Cerita & <highlight>Warisan Budaya Nusantara</highlight> Lewat Imajinasi Tanpa Batas";
     const parts = title.split(/<highlight>|<\/highlight>/g);
 
     const { scrollYProgress } = useScroll({
@@ -72,13 +69,13 @@ const HeroSection = () => {
                         )}
                     </h1>
                     <div className="relative max-w-[749px] text-center">
-                        <p className="relative">{t("description")}</p>
+                        <p className="relative">Dari dongeng ajaib, pakaian adat, hingga sejarah daerah semua bisa kamu jelajahi bersama Arunika, tempat belajar budaya yang seru, interaktif, dan penuh warna!</p>
                         <div className="absolute -top-3 -right-3">
                             <Image src={petik} alt="_" width={27} height={23} />
                         </div>
                     </div>
                     <Link href={"/"} className="bg-primary-blue hover:bg-primary-blue-hover flex items-center justify-center gap-3 rounded-full py-1 pr-1 pl-4 font-normal text-white transition-colors">
-                        {t("button")}{" "}
+                        Mulai Jelajah{" "}
                         <span className="text-primary-blue flex h-9 w-9 items-center justify-center rounded-full bg-white transition-colors">
                             <ArrowUpRight size={28} />
                         </span>

@@ -1,13 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { signIn } from "next-auth/react";
 import AuthCarousel from "@/components/auth-carousel";
 import { Button } from "@/components/ui/button";
 
-export default function LoginPage() {
+function LoginForm() {
     const router = useRouter();
     const searchParams = useSearchParams();
 
@@ -119,5 +119,13 @@ export default function LoginPage() {
                 <AuthCarousel />
             </section>
         </main>
+    );
+}
+
+export default function LoginPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <LoginForm />
+        </Suspense>
     );
 }

@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { LogIn, Loader2, Hash, ArrowRight, MessageSquare, Users, Zap } from "lucide-react";
 import { getChannels } from "./actions";
 import { Channel } from "@/generated/prisma/client";
-import { Link } from "@/i18n/navigation";
+import Link from "next/link";
 import { useChannelPage } from "@/hooks/useChannelPage";
 import KomunitasHeader from "@/components/komunitas-header";
 import KomunitasPostCard from "@/components/komunitas-post-card";

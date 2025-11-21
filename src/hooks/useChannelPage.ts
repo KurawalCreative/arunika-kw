@@ -4,8 +4,8 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import axios, { AxiosProgressEvent } from "axios";
-import { getChannelBySlug, getPost, getPresignedUrl, storePost, toggleLike, deletePost, searchPosts } from "@/app/[locale]/(page)/komunitas/[channel]/actions";
-import { getComments, createComment, createReply, deleteComment, deleteReply } from "@/app/[locale]/(page)/komunitas/[channel]/[postId]/actions";
+import { getChannelBySlug, getPost, getPresignedUrl, storePost, toggleLike, deletePost, searchPosts } from "@/app/(page)/komunitas/[channel]/actions";
+import { getComments, createComment, createReply, deleteComment, deleteReply } from "@/app/(page)/komunitas/[channel]/[postId]/actions";
 import { Channel, Post, PostImage, User } from "@/generated/prisma/client";
 
 export function useChannelPage() {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useCallback } from "react";
+import { useRef, useState, useCallback, Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -617,7 +617,9 @@ export default function PhotoBoothPage() {
 
     return (
         <>
-            <NavbarArunika />
+            <Suspense fallback={<div>Loading...</div>}>
+                <NavbarArunika />
+            </Suspense>
             <div className="container mx-auto mt-24 max-w-7xl p-4">
                 <div className="mb-6">
                     <h1 className="mb-2 text-3xl font-bold">Photo Booth</h1>

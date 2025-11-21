@@ -4,14 +4,13 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "./mode-toggle";
-import LocaleSwitcher from "./locale-switcher";
 import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler";
 import { Menu, X, LogOut } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import Image from "next/image";
 import { authClient } from "@/lib/auth-client";
 import logo from "@/assets/svg/logo.svg";
-import { usePathname } from "@/i18n/navigation";
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -146,7 +145,6 @@ export default function NavbarArunika() {
                         <div className="flex items-center space-x-2">
                             {/* Show only above md */}
                             <div className="hidden items-center space-x-2 md:flex">
-                                <LocaleSwitcher />
                                 <AnimatedThemeToggler />
                                 {session ? (
                                     <DropdownMenu>
@@ -247,10 +245,6 @@ export default function NavbarArunika() {
                                 {/* Locale, Theme, Profile di Mobile */}
                                 <div className="mt-8 space-y-3 border-t border-gray-200 pt-6 dark:border-neutral-700">
                                     <div className="flex w-full flex-col items-end justify-end gap-3">
-                                        <div className="flex w-full items-center justify-between gap-2">
-                                            <span className="text-xs font-medium text-gray-600 dark:text-gray-400">Bahasa</span>
-                                            <LocaleSwitcher />
-                                        </div>
                                         <div className="flex w-full items-center justify-between gap-2">
                                             <span className="text-xs font-medium text-gray-600 dark:text-gray-400">Tema</span>
                                             <AnimatedThemeToggler />

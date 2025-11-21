@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Mail, ArrowLeft } from "lucide-react";
 
-export default function VerifyRequestPage() {
+function VerifyRequestForm() {
     const searchParams = useSearchParams();
     const [email, setEmail] = useState<string>("");
 
@@ -71,5 +71,13 @@ export default function VerifyRequestPage() {
                 </div>
             </section>
         </main>
+    );
+}
+
+export default function VerifyRequestPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <VerifyRequestForm />
+        </Suspense>
     );
 }
