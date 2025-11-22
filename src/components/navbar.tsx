@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "./mode-toggle";
@@ -52,13 +52,20 @@ const DropdownList = [
 ];
 
 export default function NavbarArunika() {
+    return (
+        <Suspense fallback={<div />}>
+            <Navbar />
+        </Suspense>
+    );
+}
+
+function Navbar() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isMobileDropdownOpen, setIsMobileDropdownOpen] = useState(false);
     const [session, setSession] = useState<any>(null);
     const [showLogoutDialog, setShowLogoutDialog] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
     const pathname = usePathname();
-    const searchParams = useSearchParams();
     const isKomunitasPage = !!pathname.match(/\/komunitas/i);
 
     useEffect(() => {
@@ -85,8 +92,7 @@ export default function NavbarArunika() {
     };
 
     const getLoginUrl = () => {
-        const currentPath = pathname + (searchParams.toString() ? `?${searchParams.toString()}` : "");
-        return `/login?callbackUrl=${encodeURIComponent(currentPath)}`;
+        return `/login?callbackUrl=${encodeURIComponent(pathname)}`;
     };
 
     return (

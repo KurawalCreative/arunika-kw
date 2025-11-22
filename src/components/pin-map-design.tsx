@@ -16,7 +16,7 @@ const PinMapDesign = ({ src, className }: PinMapDesignProps) => {
 
                     <foreignObject x="25" y="25" width="50" height="50">
                         <div className="flex h-full w-full rounded-full">
-                            <Image src={src} alt="pinmap" className="rounded-full object-cover" sizes="(max-width: 640px) 24px, (max-width: 768px) 36px, 50px" />
+                            <Image src={src} alt="pinmap" className="flex-1 rounded-full object-cover" sizes="400px" />
                         </div>
                     </foreignObject>
                 </svg>

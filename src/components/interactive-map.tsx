@@ -52,8 +52,8 @@ const InteractiveMap = () => {
                 version: 8,
                 sources: { "base-tiles": { type: "raster", tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"], tileSize: 256 } },
                 layers: [
-                    { id: "background", type: "background", paint: { "background-color": "#ffffff" } },
-                    { id: "base-map", type: "raster", source: "base-tiles", paint: { "raster-opacity": 0 } },
+                    { id: "background", type: "background", paint: { "background-color": theme === "dark" ? "#1f2937" : "#ffffff" } },
+                    { id: "base-map", type: "raster", source: "base-tiles", paint: { "raster-opacity": theme === "dark" ? 0.3 : 0 } },
                 ],
             } as unknown as StyleSpecification,
             center: [118, -2],
@@ -168,17 +168,33 @@ const InteractiveMap = () => {
             map.remove();
             mapRef.current = null;
         };
-    }, []);
+    }, [theme]);
 
     useEffect(() => {
         if (!mapRef.current) return;
+
         try {
-            mapRef.current.setPaintProperty("background", "background-color", theme === "dark" ? "#111827" : "#ffffff");
-        } catch {}
+            // Update background color
+            mapRef.current.setPaintProperty("background", "background-color", theme === "dark" ? "#1f2937" : "#ffffff");
+
+            // Update base map opacity for dark mode
+            mapRef.current.setPaintProperty("base-map", "raster-opacity", theme === "dark" ? 0.3 : 0);
+
+            // Update outline color for better visibility in dark mode
+            mapRef.current.setPaintProperty("indo-outline", "line-color", theme === "dark" ? "#ffffff" : "#ffffff");
+            mapRef.current.setPaintProperty("indo-outline", "line-width", theme === "dark" ? 1.5 : 1.2);
+
+            // Update indo-highlight layer if it exists
+            try {
+                mapRef.current.setPaintProperty("indo-highlight", "fill-outline-color", theme === "dark" ? "#ffffff" : "#fff");
+            } catch {}
+        } catch (error) {
+            console.warn("Failed to update map theme:", error);
+        }
     }, [theme]);
 
     return (
-        <div className="relative flex aspect-square w-full max-w-7xl overflow-hidden rounded-xl sm:h-[500px]">
+        <div className="relative flex aspect-square w-full max-w-7xl overflow-hidden rounded-xl bg-white shadow-lg sm:h-[500px] dark:bg-gray-800">
             <div className="absolute top-2 right-4 z-10 flex flex-col gap-2 sm:top-4">
                 <div className="flex items-center gap-2">
                     <div className="relative w-full lg:w-80">
@@ -211,7 +227,7 @@ const InteractiveMap = () => {
                 </div>
                 {/* Dropdown hasil pencarian provinsi */}
                 {search.length > 0 && (
-                    <div className="mt-2 w-80 rounded-lg border border-gray-200 bg-white shadow-lg dark:border-gray-800 dark:bg-gray-900">
+                    <div className="mt-2 w-80 rounded-lg border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-800">
                         <ul className="max-h-60 overflow-y-auto">
                             {(() => {
                                 // Ambil daftar provinsi dari geojson
@@ -224,12 +240,12 @@ const InteractiveMap = () => {
                                 });
                                 const filteredProvinces = search.length > 0 ? provinceFeatures.filter((p) => p.name.toLowerCase().includes(search.toLowerCase())) : [];
                                 if (filteredProvinces.length === 0) {
-                                    return <li className="px-4 py-2 text-sm text-gray-400">Tidak ditemukan</li>;
+                                    return <li className="px-4 py-2 text-sm text-gray-400 dark:text-gray-500">Tidak ditemukan</li>;
                                 }
                                 return filteredProvinces.map(({ name, feature }) => (
                                     <li
                                         key={name}
-                                        className="cursor-pointer px-4 py-2 text-sm hover:bg-orange-50 dark:hover:bg-orange-900/30"
+                                        className="cursor-pointer px-4 py-2 text-sm text-gray-900 hover:bg-orange-50 dark:text-gray-100 dark:hover:bg-orange-900/30"
                                         onMouseDown={() => {
                                             setSelectedProvince(name);
                                             setDescription(`Provinsi ${name} memiliki kekayaan budaya, bahasa, dan tradisi khas Indonesia.`);
@@ -276,11 +292,11 @@ const InteractiveMap = () => {
                 )}
             </div>
 
-            <div ref={mapContainer} className="h-full w-full cursor-default" />
+            <div ref={mapContainer} className="h-full w-full cursor-default bg-gray-100 dark:bg-gray-800" />
 
             {selectedProvince && (
-                <div className="absolute bottom-0.5 left-0.5 max-w-[250px] rounded-lg bg-white/90 p-3 text-sm shadow-sm backdrop-blur-sm transition-all duration-300 dark:bg-gray-900/85">
-                    <h3 className="mb-1 text-base font-semibold">{selectedProvince}</h3>
+                <div className="absolute bottom-0.5 left-0.5 max-w-[250px] rounded-lg bg-white/90 p-3 text-sm shadow-sm backdrop-blur-sm sm:max-w-[300px] dark:bg-gray-800/90">
+                    <h3 className="mb-1 text-base font-semibold text-gray-900 dark:text-white">{selectedProvince}</h3>
                     <p className="text-[13px] leading-relaxed text-gray-700 dark:text-gray-300">
                         {(() => {
                             if (isPending) return "Memuat...";
@@ -308,7 +324,7 @@ const InteractiveMap = () => {
             )}
 
             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-                <DialogContent className="flex max-h-[90vh] max-w-2xl flex-col">
+                <DialogContent className="flex max-h-[90vh] max-w-2xl flex-col bg-white dark:bg-gray-900">
                     <DialogHeader className="shrink-0">
                         <div className="mb-4 flex items-center justify-center gap-4">
                             <div className="rounded-full bg-linear-to-br from-orange-400 via-pink-500 to-red-500 p-4 text-4xl text-white shadow-lg dark:from-orange-500 dark:via-pink-600 dark:to-red-600">🌴</div>
@@ -328,7 +344,7 @@ const InteractiveMap = () => {
                                 return (
                                     <div className="py-6 text-center">
                                         <p className="text-gray-600 dark:text-gray-400">
-                                            Kamu akan menjelajahi budaya dari <span className="text-lg font-medium">{selectedProvince || "provinsi"}</span>. Temukan cerita, bahasa, dan tradisi yang kaya.
+                                            Kamu akan menjelajahi budaya dari <span className="text-lg font-medium text-gray-900 dark:text-white">{selectedProvince || "provinsi"}</span>. Temukan cerita, bahasa, dan tradisi yang kaya.
                                         </p>
                                     </div>
                                 );
