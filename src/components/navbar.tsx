@@ -174,7 +174,7 @@ function Navbar() {
                             {/* Show only above md */}
                             <div className="hidden items-center space-x-2 md:flex">
                                 <AnimatedThemeToggler />
-                                {session ? (
+                                {/* {session ? (
                                     <DropdownMenu>
                                         <DropdownMenuTrigger asChild>
                                             <Button variant="ghost" className="relative h-8 w-8 rounded-full">
@@ -202,7 +202,7 @@ function Navbar() {
                                     <Link href={getLoginUrl()} className="bg-primary-blue hover:bg-primary-blue-hover hidden items-center rounded-full px-4 py-2 text-sm font-medium text-white shadow-sm transition lg:inline-flex dark:bg-blue-600 dark:hover:bg-blue-700">
                                         Masuk
                                     </Link>
-                                )}
+                                )} */}
                             </div>
 
                             {/* Hamburger */}
@@ -293,7 +293,7 @@ function Navbar() {
                                         </div>
                                     </div>
 
-                                    {session ? (
+                                    {/* {session ? (
                                         <Button
                                             variant="outline"
                                             onClick={() => {
@@ -308,7 +308,7 @@ function Navbar() {
                                         <Link href={getLoginUrl()} onClick={closeMobileMenu} className="block w-full rounded-full bg-blue-600 px-5 py-3 text-center text-sm font-medium text-white shadow-sm transition hover:bg-blue-700">
                                             Masuk
                                         </Link>
-                                    )}
+                                    )} */}
                                 </div>
                             </div>
                         </motion.div>

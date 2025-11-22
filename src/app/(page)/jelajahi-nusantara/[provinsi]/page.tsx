@@ -12,6 +12,318 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import provinsiData from "@/assets/provinsi.json";
 
+const pakaianAdatData = {
+    total: 38,
+    by_provinsi: {
+        Aceh: [
+            {
+                id: "ulee_balang",
+                name: "Ulee Balang (Aceh)",
+                provinsi: "Aceh",
+            },
+        ],
+        "Sumatera Barat": [
+            {
+                id: "bundo_kanduang",
+                name: "Bundo Kanduang (Sumatera Barat)",
+                provinsi: "Sumatera Barat",
+            },
+        ],
+        "Sumatera Utara": [
+            {
+                id: "ulos",
+                name: "Ulos (Sumatera Utara)",
+                provinsi: "Sumatera Utara",
+            },
+        ],
+        "Sumatera Selatan": [
+            {
+                id: "aesan_gede",
+                name: "Aesan Gede (Sumatera Selatan)",
+                provinsi: "Sumatera Selatan",
+            },
+        ],
+        "Kepulauan Riau": [
+            {
+                id: "teluk_belanga",
+                name: "Teluk Belanga (Kepulauan Riau)",
+                provinsi: "Kepulauan Riau",
+            },
+        ],
+        Riau: [
+            {
+                id: "kebaya_laboh_kurung",
+                name: "Kebaya Laboh dan Kurung Cekak Musang (Riau)",
+                provinsi: "Riau",
+            },
+        ],
+        Bengkulu: [
+            {
+                id: "baju_betabur",
+                name: "Baju Betabur (Bengkulu)",
+                provinsi: "Bengkulu",
+            },
+        ],
+        Jambi: [
+            {
+                id: "baju_kurung_jambi",
+                name: "Baju Kurung (Jambi)",
+                provinsi: "Jambi",
+            },
+        ],
+        "Bangka Belitung": [
+            {
+                id: "paksian",
+                name: "Paksian (Bangka Belitung)",
+                provinsi: "Bangka Belitung",
+            },
+        ],
+        Lampung: [
+            {
+                id: "tulang_bawang",
+                name: "Tulang Bawang (Lampung)",
+                provinsi: "Lampung",
+            },
+        ],
+        Banten: [
+            {
+                id: "pangsi",
+                name: "Pangsi (Banten)",
+                provinsi: "Banten",
+            },
+        ],
+        "DKI Jakarta": [
+            {
+                id: "kebaya_encim",
+                name: "Kebaya Encim (DKI Jakarta)",
+                provinsi: "DKI Jakarta",
+            },
+        ],
+        "Jawa Barat": [
+            {
+                id: "kebaya_sunda",
+                name: "Kebaya Sunda (Jawa Barat)",
+                provinsi: "Jawa Barat",
+            },
+        ],
+        "Daerah Istimewa Yogyakarta": [
+            {
+                id: "kesatrian_ageng",
+                name: "Kesatrian Ageng (DI Yogyakarta)",
+                provinsi: "Daerah Istimewa Yogyakarta",
+            },
+        ],
+        "Jawa Tengah": [
+            {
+                id: "jawi_jangkep",
+                name: "Jawi Jangkep (Jawa Tengah)",
+                provinsi: "Jawa Tengah",
+            },
+        ],
+        "Jawa Timur": [
+            {
+                id: "pesaan",
+                name: "Pesa’an (Jawa Timur)",
+                provinsi: "Jawa Timur",
+            },
+        ],
+        Bali: [
+            {
+                id: "payas_agung",
+                name: "Payas Agung (Bali)",
+                provinsi: "Bali",
+            },
+        ],
+        "Nusa Tenggara Barat": [
+            {
+                id: "pegon",
+                name: "Pegon (Nusa Tenggara Barat)",
+                provinsi: "Nusa Tenggara Barat",
+            },
+        ],
+        "Nusa Tenggara Timur": [
+            {
+                id: "amarasi",
+                name: "Amarasi (Nusa Tenggara Timur)",
+                provinsi: "Nusa Tenggara Timur",
+            },
+        ],
+        "Kalimantan Barat": [
+            {
+                id: "king_bibinge_baba",
+                name: "King Bibinge dan King Baba (Kalimantan Barat)",
+                provinsi: "Kalimantan Barat",
+            },
+        ],
+        "Kalimantan Tengah": [
+            {
+                id: "upak_nyamu",
+                name: "Upak Nyamu (Kalimantan Tengah)",
+                provinsi: "Kalimantan Tengah",
+            },
+        ],
+        "Kalimantan Utara": [
+            {
+                id: "taa_sapei_sapaq",
+                name: "Ta’a dan Sapei Sapaq (Kalimantan Utara)",
+                provinsi: "Kalimantan Utara",
+            },
+        ],
+        "Kalimantan Selatan": [
+            {
+                id: "bagajah_gamuling",
+                name: "Bagajah Gamuling (Kalimantan Selatan)",
+                provinsi: "Kalimantan Selatan",
+            },
+        ],
+        "Kalimantan Timur": [
+            {
+                id: "kustin",
+                name: "Kustin (Kalimantan Timur)",
+                provinsi: "Kalimantan Timur",
+            },
+        ],
+        "Sulawesi Barat": [
+            {
+                id: "pattuqduq_towaine",
+                name: "Pattuqduq Towaine (Sulawesi Barat)",
+                provinsi: "Sulawesi Barat",
+            },
+        ],
+        "Sulawesi Tengah": [
+            {
+                id: "nggembe",
+                name: "Nggembe (Sulawesi Tengah)",
+                provinsi: "Sulawesi Tengah",
+            },
+        ],
+        "Sulawesi Utara": [
+            {
+                id: "laku_tepu",
+                name: "Laku Tepu (Sulawesi Utara)",
+                provinsi: "Sulawesi Utara",
+            },
+        ],
+        "Sulawesi Tenggara": [
+            {
+                id: "babu_nggawi",
+                name: "Babu Nggawi (Sulawesi Tenggara)",
+                provinsi: "Sulawesi Tenggara",
+            },
+        ],
+        "Sulawesi Selatan": [
+            {
+                id: "baju_bodo",
+                name: "Baju Bodo (Sulawesi Selatan)",
+                provinsi: "Sulawesi Selatan",
+            },
+        ],
+        Gorontalo: [
+            {
+                id: "biliu_makuta",
+                name: "Biliu dan Makuta (Gorontalo)",
+                provinsi: "Gorontalo",
+            },
+        ],
+        Maluku: [
+            {
+                id: "cele",
+                name: "Cele (Maluku)",
+                provinsi: "Maluku",
+            },
+        ],
+        "Maluku Utara": [
+            {
+                id: "manteren_lamo",
+                name: "Manteren Lamo (Maluku Utara)",
+                provinsi: "Maluku Utara",
+            },
+        ],
+        "Papua Barat": [
+            {
+                id: "ewer",
+                name: "Ewer (Papua Barat)",
+                provinsi: "Papua Barat",
+            },
+        ],
+        Papua: [
+            {
+                id: "koteka_holim",
+                name: "Koteka (Papua)",
+                provinsi: "Papua",
+            },
+        ],
+        "Papua Selatan": [
+            {
+                id: "pummi",
+                name: "Pummi (Papua Selatan)",
+                provinsi: "Papua Selatan",
+            },
+        ],
+        "Papua Tengah": [
+            {
+                id: "yokal",
+                name: "Yokal (Papua Tengah)",
+                provinsi: "Papua Tengah",
+            },
+        ],
+        "Papua Pegunungan": [
+            {
+                id: "holim_dani",
+                name: "Holim (Papua Pegunungan)",
+                provinsi: "Papua Pegunungan",
+            },
+        ],
+        "Papua Barat Daya": [
+            {
+                id: "ewer_tehit",
+                name: "Ewer Tehit (Papua Barat Daya)",
+                provinsi: "Papua Barat Daya",
+            },
+        ],
+    },
+    all_ids: [
+        "ulee_balang",
+        "bundo_kanduang",
+        "ulos",
+        "aesan_gede",
+        "teluk_belanga",
+        "kebaya_laboh_kurung",
+        "baju_betabur",
+        "baju_kurung_jambi",
+        "paksian",
+        "tulang_bawang",
+        "pangsi",
+        "kebaya_encim",
+        "kebaya_sunda",
+        "kesatrian_ageng",
+        "jawi_jangkep",
+        "pesaan",
+        "payas_agung",
+        "pegon",
+        "amarasi",
+        "king_bibinge_baba",
+        "upak_nyamu",
+        "taa_sapei_sapaq",
+        "bagajah_gamuling",
+        "kustin",
+        "pattuqduq_towaine",
+        "nggembe",
+        "laku_tepu",
+        "babu_nggawi",
+        "baju_bodo",
+        "biliu_makuta",
+        "cele",
+        "manteren_lamo",
+        "ewer",
+        "koteka_holim",
+        "pummi",
+        "yokal",
+        "holim_dani",
+        "ewer_tehit",
+    ],
+};
+
 const detailBadges = ["Wisata Alam", "Kulinari Khas", "Komunitas Lokal", "Warisan Budaya"];
 
 const templateBlueprints = [
@@ -59,6 +371,18 @@ const formatProvinceName = (slug?: string) => {
         .join(" ");
 };
 
+const getPakaianId = (bajuName: string): string | undefined => {
+    for (const province in pakaianAdatData.by_provinsi) {
+        const items = pakaianAdatData.by_provinsi[province];
+        for (const item of items) {
+            if (item.name.startsWith(bajuName + " (")) {
+                return item.id;
+            }
+        }
+    }
+    return undefined;
+};
+
 export default function Page() {
     const params = useParams();
     const rawProvince = params?.provinsi;
@@ -75,7 +399,7 @@ export default function Page() {
     const [isProcessing, setIsProcessing] = useState(false);
     const [showAll, setShowAll] = useState(false);
     const [selectedBajuIndex, setSelectedBajuIndex] = useState(0);
-    const [selectedAPI, setSelectedAPI] = useState<"qwen">("qwen");
+    const [selectedAPI, setSelectedAPI] = useState<"qwen" | "modal">("qwen");
     const [uploadProgress, setUploadProgress] = useState(0);
     const [isBuilding, setIsBuilding] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -181,6 +505,10 @@ export default function Page() {
             formData.append("image", selectedFile);
             const prompt = `Apply the traditional clothing "${selectedBaju}" from ${provinceName} to this image.`;
             formData.append("prompt", prompt);
+            if (selectedAPI === "modal") {
+                const pakaianId = getPakaianId(selectedBaju);
+                formData.append("pakaian_id", pakaianId || "ulee_balang");
+            }
 
             const response = await axios.post(`/api/process-image-${selectedAPI}`, formData, {
                 onUploadProgress: (progressEvent) => {
@@ -342,6 +670,13 @@ export default function Page() {
                                             )}
                                         </CardContent>
                                         <CardFooter className="-mt-8 flex flex-wrap gap-1 px-6 pb-4">
+                                            <div className="mr-4 flex items-center gap-2">
+                                                <label className="text-sm dark:text-gray-200">API:</label>
+                                                <select value={selectedAPI} onChange={(e) => setSelectedAPI(e.target.value as "modal" | "qwen")} className="rounded border px-2 py-1 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-white">
+                                                    <option value="qwen">Qwen</option>
+                                                    <option value="modal">Modal</option>
+                                                </select>
+                                            </div>
                                             <Button size="default" variant="default" className="rounded-md" onClick={handleProcessTryOn} disabled={isProcessing}>
                                                 {isProcessing ? (isBuilding ? (downloadProgress > 0 ? `Loading... ${downloadProgress}%` : "Sedang memproses gambar...") : `Uploading... ${uploadProgress}%`) : "Proses Gambar"}
                                             </Button>

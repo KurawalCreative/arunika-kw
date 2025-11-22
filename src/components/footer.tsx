@@ -17,23 +17,23 @@ const FooterSection = () => {
                     <h3 className="mb-3 text-base font-semibold text-gray-900 sm:text-lg dark:text-gray-100">Navigasi</h3>
                     <ul className="space-y-2 text-sm text-gray-600 sm:text-base dark:text-gray-400">
                         <li>
+                            <Link href="/komunitas" className="hover:text-green-lime-dark transition dark:hover:text-green-400">
+                                Komunitas
+                            </Link>
+                        </li>
+                        <li>
                             <Link href="/" className="hover:text-green-lime-dark transition dark:hover:text-green-400">
                                 Beranda
                             </Link>
                         </li>
                         <li>
-                            <Link href="/about" className="hover:text-green-lime-dark transition dark:hover:text-green-400">
+                            <Link href="/jelajahi-nusantara" className="hover:text-green-lime-dark transition dark:hover:text-green-400">
+                                Jelajahi Nusantara
+                            </Link>
+                        </li>
+                        <li>
+                            <Link href="/tentang" className="hover:text-green-lime-dark transition dark:hover:text-green-400">
                                 Tentang
-                            </Link>
-                        </li>
-                        <li>
-                            <Link href="/projects" className="hover:text-green-lime-dark transition dark:hover:text-green-400">
-                                Proyek
-                            </Link>
-                        </li>
-                        <li>
-                            <Link href="/contact" className="hover:text-green-lime-dark transition dark:hover:text-green-400">
-                                Kontak
                             </Link>
                         </li>
                     </ul>
