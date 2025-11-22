@@ -115,7 +115,7 @@ export default function KomunitasPostCard({
 
     return (
         <>
-            <div className="group rounded-lg bg-white p-4 transition-all hover:bg-gray-50 dark:border-slate-700 dark:bg-slate-800/50 dark:hover:border-slate-600 dark:hover:shadow-none">
+            <div className="group rounded-lg border border-slate-200 bg-white p-4 transition-all hover:bg-gray-50 dark:border-slate-800 dark:bg-slate-900/60 dark:hover:border-slate-600 dark:hover:shadow-none">
                 <div onClick={handleCommentSectionToggle} className="cursor-pointer">
                     {/* Header */}
                     <div className="mb-4 flex w-full items-center justify-between">
@@ -267,7 +267,7 @@ export default function KomunitasPostCard({
             </div>
 
             <div className="mx-auto w-full max-w-3xl last:hidden">
-                <hr className="rounded-full border-[1.5px] px-4" />
+                <hr className="rounded-full border-[1.5px] border-slate-200 px-4 dark:border-slate-700" />
             </div>
         </>
     );

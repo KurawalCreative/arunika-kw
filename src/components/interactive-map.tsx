@@ -1,13 +1,13 @@
 "use client";
 
-import { memo, useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import maplibregl from "maplibre-gl";
 type MapType = maplibregl.Map;
 type StyleSpecification = maplibregl.StyleSpecification;
 import "maplibre-gl/dist/maplibre-gl.css";
 import { FeatureCollection, Feature, Position } from "geojson";
-import { getChannelBySlug } from "@/app/(page)/jelajahi-nusantara/actions";
 import indonesia from "@/assets/coordinates/id.json";
+import provinsi from "@/assets/provinsi.json";
 import { useTheme } from "next-themes";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -66,7 +66,6 @@ const InteractiveMap = () => {
     const [dialogOpen, setDialogOpen] = useState(false);
     const [selectedProvince, setSelectedProvince] = useState<string | null>(null);
     const [description, setDescription] = useState<string | null>(null);
-    const [isPending, startTransition] = useTransition();
     const [showMoreInModal, setShowMoreInModal] = useState(false);
     const [isTouchDevice, setIsTouchDevice] = useState(false);
     const isTouchRef = useRef(false);
@@ -134,8 +133,23 @@ const InteractiveMap = () => {
         },
         [focusProvinceOnMap],
     );
-    // Client-side cache untuk channel by slug
-    const channelCache = useRef<Map<string, any>>(new Map());
+    // Map provinsi data
+    const provinsiMap = useMemo(() => {
+        const map = new Map<string, any>();
+        provinsi.forEach((p) => {
+            const slug = p.name.toLowerCase().replace(/\s+/g, "-");
+            map.set(slug, {
+                name: p.name,
+                description: p.deskripsi,
+                deskripsi2: p.deskripsi,
+                bahasa: p.bahasa.join(", "),
+                kuliner: p.kuliner.join(", "),
+                budaya: p.budaya.join(", "),
+                wisata: p.wisata.join(", "),
+            });
+        });
+        return map;
+    }, []);
 
     useEffect(() => {
         dialogOpenRef.current = dialogOpen;
@@ -225,22 +239,13 @@ const InteractiveMap = () => {
                     map.getCanvas().style.cursor = "pointer";
                     map.setFilter("indo-highlight", ["==", "NAME_1", name]);
                     setSelectedProvince(name);
-                    // Ambil slug dari nama provinsi
+                    // Ambil data dari file provinsi
                     const slug = name.toLowerCase().replace(/\s+/g, "-");
-                    const cached = channelCache.current.get(slug);
-                    if (cached) {
-                        setDescription(cached.deskripsi2 ?? cached.description ?? `Provinsi ${name} ...`);
+                    const channel = provinsiMap.get(slug);
+                    if (channel) {
+                        setDescription(channel.deskripsi2 ?? channel.description ?? `Provinsi ${name} memiliki kekayaan budaya, bahasa, dan tradisi khas Indonesia.`);
                     } else {
-                        startTransition(() => {
-                            getChannelBySlug(slug).then((ch) => {
-                                if (ch) {
-                                    channelCache.current.set(slug, ch);
-                                    setDescription(ch.deskripsi2 ?? ch.description ?? `Provinsi ${name} ...`);
-                                } else {
-                                    setDescription(`Provinsi ${name} ...`);
-                                }
-                            });
-                        });
+                        setDescription(`Provinsi ${name} memiliki kekayaan budaya, bahasa, dan tradisi khas Indonesia.`);
                     }
                 });
             });
@@ -249,22 +254,13 @@ const InteractiveMap = () => {
                 const name = e.features?.[0]?.properties?.NAME_1 as string | undefined;
                 if (!name) return;
                 setSelectedProvince(name);
-                // Ambil slug dari nama provinsi
+                // Ambil data dari file provinsi
                 const slug = name.toLowerCase().replace(/\s+/g, "-");
-                const cached = channelCache.current.get(slug);
-                if (cached) {
-                    setDescription(cached.deskripsi2 ?? cached.description ?? `Provinsi ${name} ...`);
+                const channel = provinsiMap.get(slug);
+                if (channel) {
+                    setDescription(channel.deskripsi2 ?? channel.description ?? `Provinsi ${name} ...`);
                 } else {
-                    startTransition(() => {
-                        getChannelBySlug(slug).then((ch) => {
-                            if (ch) {
-                                channelCache.current.set(slug, ch);
-                                setDescription(ch.deskripsi2 ?? ch.description ?? `Provinsi ${name} ...`);
-                            } else {
-                                setDescription(`Provinsi ${name} ...`);
-                            }
-                        });
-                    });
+                    setDescription(`Provinsi ${name} ...`);
                 }
                 dialogOpenRef.current = true;
                 setDialogOpen(true);
@@ -361,9 +357,8 @@ const InteractiveMap = () => {
                                 <h3 className="mb-1 text-base font-semibold text-gray-900 dark:text-white">{selectedProvince}</h3>
                                 <p className="text-[13px] text-gray-700 dark:text-gray-300">
                                     {(() => {
-                                        if (isPending) return "Memuat...";
                                         const slug = selectedProvince.toLowerCase().replace(/\s+/g, "-");
-                                        const channel = channelCache.current.get(slug);
+                                        const channel = provinsiMap.get(slug);
                                         let desc = channel?.deskripsi2 ?? channel?.description ?? description ?? "";
                                         if (desc.length > 100) desc = desc.slice(0, 100) + "...";
                                         return desc;
@@ -371,7 +366,7 @@ const InteractiveMap = () => {
                                 </p>
                                 {(() => {
                                     const slug = selectedProvince.toLowerCase().replace(/\s+/g, "-");
-                                    const channel = channelCache.current.get(slug);
+                                    const channel = provinsiMap.get(slug);
                                     if (!channel) return null;
                                     return (
                                         <div className="mt-2 space-y-1 text-xs text-gray-500 dark:text-gray-400">
@@ -400,7 +395,7 @@ const InteractiveMap = () => {
                                 <div className="flex-1 overflow-y-auto px-6 pb-6">
                                     {(() => {
                                         const slug = selectedProvince ? selectedProvince.toLowerCase().replace(/\s+/g, "-") : "";
-                                        const channel = slug ? channelCache.current.get(slug) : null;
+                                        const channel = slug ? provinsiMap.get(slug) : null;
                                         if (!channel) {
                                             return (
                                                 <div className="py-6 text-center">
