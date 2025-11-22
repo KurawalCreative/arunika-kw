@@ -97,7 +97,7 @@ function Navbar() {
 
     return (
         <>
-            <nav className={`fixed top-0 right-0 left-0 z-50 bg-white/80 backdrop-blur-md transition-all duration-200 dark:bg-neutral-800/80 ${isScrolled && !isKomunitasPage ? "border-b border-gray-200 shadow-sm dark:border-neutral-700" : ""} ${isKomunitasPage ? "border-b dark:border-neutral-700" : ""}`}>
+            <nav className={`fixed top-0 right-0 left-0 z-50 bg-gray-50 backdrop-blur-md transition-all duration-200 dark:bg-neutral-800/80 ${isScrolled && !isKomunitasPage ? "border-b border-gray-200 shadow-sm dark:border-neutral-700" : ""} ${isKomunitasPage ? "border-b dark:border-neutral-700" : ""}`}>
                 <motion.div layoutId="nav-width" className={`mx-auto w-full px-4 sm:px-6 ${!isKomunitasPage ? "max-w-7xl" : ""}`} transition={{ type: "spring", stiffness: 120, damping: 20 }}>
                     <div className="relative flex h-16 items-center justify-between sm:h-16">
                         {/* Logo */}

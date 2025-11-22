@@ -14,17 +14,17 @@ const statsData = [
 
 export default function Stats() {
     return (
-        <div className="relative bg-white">
-            <div className="flex gap-6 justify-center px-6 flex-wrap">
+        <div className="relative bg-white dark:bg-gray-900">
+            <div className="flex gap-4 md:gap-6 justify-center px-4 md:px-6 flex-wrap py-8">
                 {statsData.map((item, index) => (
                     <motion.div
                         key={index}
-                        className="bg-white rounded-lg shadow-md p-8 w-full sm:w-80 text-center hover:shadow-lg transition-shadow"
+                        className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 md:p-8 w-full sm:w-64 md:w-80 text-center hover:shadow-lg transition-shadow border border-gray-100 dark:border-gray-700"
                         initial={{ opacity: 0, y: -50 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8, delay: index * 0.2 }}
                     >
-                        <div className="w-30 h-30 mx-auto mb-4 relative">
+                        <div className="w-24 h-24 md:w-30 md:h-30 mx-auto mb-4 relative">
                             <Image
                                 src={item.image}
                                 alt={item.title}
@@ -32,8 +32,8 @@ export default function Stats() {
                                 className="object-cover rounded-full"
                             />
                         </div>
-                        <h2 className="text-2xl font-bold text-accent-coral mb-2">{item.title}</h2>
-                        <p className="text-sm text-gray-700">{item.desc}</p>
+                        <h2 className="text-xl md:text-2xl font-bold text-accent-coral dark:text-orange-400 mb-2">{item.title}</h2>
+                        <p className="text-xs md:text-sm text-gray-700 dark:text-gray-300">{item.desc}</p>
                     </motion.div>
                 ))}
             </div>

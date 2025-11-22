@@ -1,6 +1,6 @@
 "use client";
 
-import { getChannels } from "@/app/(page)/komunitas/actions";
+import { getChannels } from "@/app/komunitas/actions";
 import { ChevronDown, ChevronRight, Hash, Home, Trophy, Loader2 } from "lucide-react";
 import { Channel } from "@/generated/prisma/client";
 import { useEffect, useState } from "react";

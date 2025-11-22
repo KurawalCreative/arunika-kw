@@ -13,7 +13,6 @@ import NavbarArunika from "@/components/navbar";
 export default function Home() {
     return (
         <>
-            <NavbarArunika />
             <HeroSection />
             <AdventagesSection />
             <KnowUsSection />
@@ -21,7 +20,6 @@ export default function Home() {
             <HowItWorksSection />
             <FeaturesSection />
             <CtaSection />
-            <FooterSection />
         </>
     );
 }
