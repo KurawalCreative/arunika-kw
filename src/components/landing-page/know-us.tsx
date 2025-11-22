@@ -74,10 +74,10 @@ const KnowUsSection = () => {
 
                         {/* Kiri bawah */}
                         <div className="bg-gray-background relative col-span-1 flex flex-col items-center justify-end rounded-2xl p-4 shadow-sm dark:bg-gray-800">
-                            <div className="flex w-full items-end justify-between gap-3 text-center">
+                            <div className="flex w-full items-end justify-between gap-1 text-center">
                                 {leaders.map((l) => (
-                                    <div key={l.rank} className="flex min-w-[68px] flex-col items-center gap-1 text-[11px] leading-tight sm:min-w-0 sm:flex-1 sm:text-sm">
-                                        <div className={`relative flex w-full max-w-12 items-center justify-center ${l.rank === 1 ? "h-26" : l.rank === 2 ? "h-20" : "h-16"}`} style={{ backgroundColor: l.color }}>
+                                    <div key={l.rank} className="flex w-full max-w-12 flex-1 flex-col items-center gap-1 text-[11px] leading-tight sm:min-w-0 sm:flex-1 sm:text-sm">
+                                        <div className={`relative flex w-full items-center justify-center ${l.rank === 1 ? "h-26" : l.rank === 2 ? "h-20" : "h-16"}`} style={{ backgroundColor: l.color }}>
                                             <span className="absolute bottom-2 text-sm font-bold text-white">{l.rank}</span>
                                         </div>
                                         <p className="text-text-primary mt-2 font-bold dark:text-white">{l.name}</p>
