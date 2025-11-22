@@ -3,6 +3,7 @@
 import { ReactNode } from "react";
 import AppSidebar from "@/components/app-sidebar";
 import AppRightSidebar from "@/components/app-right-sidebar";
+import NavbarArunika from "@/components/navbar";
 
 export default function Layout({ children }: { children: ReactNode }) {
     return (
@@ -10,6 +11,7 @@ export default function Layout({ children }: { children: ReactNode }) {
             {/* <div className="flex min-h-screen flex-1 bg-white transition-colors dark:bg-slate-950"> */}
             <div className="flex flex-1 flex-col lg:flex-row">
                 <AppSidebar />
+                <NavbarArunika />
                 {/* <main className="flex-1 px-4 sm:px-6 lg:px-8"> */}
                 <>{children}</>
                 {/* </main> */}

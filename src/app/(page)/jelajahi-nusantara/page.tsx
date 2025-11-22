@@ -10,6 +10,17 @@ import illustrationMapDark from "@/assets/images/illustration-map-dark.jpeg";
 export default function JelajahiNusantaraPage() {
     return (
         <section className="flex min-h-screen flex-1 flex-col items-center bg-white pt-20 dark:bg-gray-900">
+            {/* Intro headline above map */}
+            <div className="w-full">
+                <div className="mx-auto w-full max-w-7xl px-4 sm:px-6">
+                    <motion.div className="mb-6 flex flex-col gap-3 text-center lg:text-left" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45 }}>
+                        <p className="text-xs font-semibold tracking-[0.4em] text-sky-500 uppercase dark:text-sky-300">Peta Interaktif</p>
+                        <h1 className="text-3xl font-semibold text-gray-900 sm:text-4xl dark:text-white">Jelajahi Nusantara dengan cara baru</h1>
+                        <p className="text-sm text-gray-600 dark:text-gray-300">Selusuri kebudayaan dan cerita di tiap provinsi: mulai dari peta detail hingga rekomendasi kegiatan lokal, semuanya terintegrasi di satu layar.</p>
+                    </motion.div>
+                </div>
+            </div>
+
             {/* Map Section */}
             <InteractiveMap />
 

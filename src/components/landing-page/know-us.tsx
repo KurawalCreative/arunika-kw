@@ -16,8 +16,6 @@ const leaders = [
     { rank: 3, name: "Sinta", score: 750, color: "#FF6B6B" },
 ];
 
-const height = (rank: number) => (rank === 1 ? "h-36" : rank === 2 ? "h-28" : "h-24");
-
 const KnowUsSection = () => {
     return (
         <section className="mx-auto flex w-full max-w-7xl px-4 py-20">
@@ -30,7 +28,7 @@ const KnowUsSection = () => {
                         <p className="text-text-secondary text-font-secondary py-6 text-lg sm:text-xl dark:text-gray-300">Temukan cara seru belajar budaya lewat dongeng, sejarah, dan interaksi digital yang membuat anak-anak mencintai tanah airnya sejak dini.</p>
 
                         <div className="relative">
-                            <Link href={"/"} className="hover:bg-primary-blue-hover bg-primary-blue flex w-fit items-center justify-center gap-3 rounded-full py-1 pr-1 pl-4 font-normal text-white dark:bg-blue-600 dark:hover:bg-blue-700">
+                            <Link href="/" className="hover:bg-primary-blue-hover bg-primary-blue flex w-fit items-center justify-center gap-3 rounded-full py-1 pr-1 pl-4 font-normal text-white dark:bg-blue-600 dark:hover:bg-blue-700">
                                 Mulai Petualangan
                                 <span className="text-primary-blue flex h-9 w-9 items-center justify-center rounded-full bg-white dark:bg-gray-800 dark:text-blue-600">
                                     <ArrowUpRight size={28} />
@@ -76,13 +74,13 @@ const KnowUsSection = () => {
 
                         {/* Kiri bawah */}
                         <div className="bg-gray-background relative col-span-1 flex flex-col items-center justify-end rounded-2xl p-4 shadow-sm dark:bg-gray-800">
-                            <div className="flex w-full items-end justify-center gap-2">
+                            <div className="flex w-full items-end justify-between gap-3 text-center">
                                 {leaders.map((l) => (
-                                    <div key={l.rank} className="flex flex-col items-center">
-                                        <div className={`relative flex w-12 items-center justify-center ${l.rank === 1 ? "h-26" : l.rank === 2 ? "h-20" : "h-16"}`} style={{ backgroundColor: l.color }}>
+                                    <div key={l.rank} className="flex min-w-[68px] flex-col items-center gap-1 text-[11px] leading-tight sm:min-w-0 sm:flex-1 sm:text-sm">
+                                        <div className={`relative flex w-full max-w-12 items-center justify-center ${l.rank === 1 ? "h-26" : l.rank === 2 ? "h-20" : "h-16"}`} style={{ backgroundColor: l.color }}>
                                             <span className="absolute bottom-2 text-sm font-bold text-white">{l.rank}</span>
                                         </div>
-                                        <p className="text-text-primary mt-2 text-sm font-bold dark:text-white">{l.name}</p>
+                                        <p className="text-text-primary mt-2 font-bold dark:text-white">{l.name}</p>
                                         <p className="text-text-secondary mt-0.5 text-xs dark:text-gray-400">{l.score} pts</p>
                                     </div>
                                 ))}

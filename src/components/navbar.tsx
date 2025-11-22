@@ -20,7 +20,6 @@ import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMe
 const NavbarList = [
     { label: "Komunitas", href: "/komunitas" },
     { label: "Tentang", href: "/tentang" },
-    { label: "Kontak", href: "/kontak" },
 ];
 
 const DropdownList = [
@@ -38,7 +37,6 @@ const DropdownList = [
         items: [
             { label: "Tentang Kami", href: "/tentang-kami", description: "Kenali lebih dekat tim kami" },
             { label: "Karier", href: "/karier", description: "Bergabung dengan tim kami" },
-            { label: "Kontak", href: "/kontak", description: "Hubungi kami untuk informasi" },
         ],
     },
     {
@@ -162,7 +160,7 @@ function Navbar() {
                                     {NavbarList.map((link, i) => (
                                         <NavigationMenuItem key={i}>
                                             <NavigationMenuLink asChild>
-                                                <Link href={link.href} aria-current={isActive(link.href) ? "page" : undefined} className={`inline-flex h-9 items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-all ${isActive(link.href) ? "font-semibold text-sky-700 underline underline-offset-4" : "text-gray-700 hover:bg-blue-50 dark:text-gray-300 dark:hover:bg-blue-950/50 dark:hover:text-blue-400"}`}>
+                                                <Link href={link.href} aria-current={isActive(link.href) ? "page" : undefined} className={`inline-flex h-9 items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-all ${isActive(link.href) ? "font-semibold text-sky-700" : "text-gray-700 hover:bg-blue-50 dark:text-gray-300 dark:hover:bg-blue-950/50 dark:hover:text-blue-400"}`}>
                                                     {link.label}
                                                 </Link>
                                             </NavigationMenuLink>

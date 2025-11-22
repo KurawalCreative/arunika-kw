@@ -68,7 +68,7 @@ const HeroSection = () => {
 
                 <motion.div style={{ y: blurY }} className="dark:bg-foreground pointer-events-none absolute -top-16 left-1/2 h-[72vh] w-full max-w-[1400px] -translate-x-1/2 rounded-[50%] bg-[#fffefe] blur-3xl sm:-top-20 md:-top-24 lg:-top-28" />
 
-                <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 1, delay: 1 }} className="absolute top-[14%] right-[7%]">
+                <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 1, delay: 1 }} className="absolute top-[14%] right-[7%] md:right-[14%] lg:right-[20%]">
                     <svg width="106" height="126" viewBox="0 0 106 126" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <motion.path
                             d="M1.5 93.7454C34.5652 143.627 69.9253 124.071 73.6696 93.7454C77.1796 65.3186 51.906 50.0689 36.4728 51.9765C21.7903 53.7913 21.2125 72.0027 34.5652 72.0027C50.8149 72.0027 58 51.9765 62.5 47.435"
