@@ -372,7 +372,7 @@ const formatProvinceName = (slug?: string) => {
 };
 
 const getPakaianId = (bajuName: string): string | undefined => {
-    for (const province in pakaianAdatData.by_provinsi) {
+    for (const province of Object.keys(pakaianAdatData.by_provinsi) as (keyof typeof pakaianAdatData.by_provinsi)[]) {
         const items = pakaianAdatData.by_provinsi[province];
         for (const item of items) {
             if (item.name.startsWith(bajuName + " (")) {
