@@ -364,18 +364,20 @@ export default function Page() {
                                         {previewReady ? (
                                             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                                                 <DialogTrigger asChild>
-                                                    <img src={processedImageURL ?? ""} alt="Edited preview" className="h-full w-full rounded-2xl object-contain cursor-pointer" />
+                                                    <img src={processedImageURL ?? ""} alt="Edited preview" className="h-full w-full cursor-pointer rounded-2xl object-contain" />
                                                 </DialogTrigger>
                                                 <DialogContent className="max-w-4xl">
                                                     <div className="flex flex-col items-center gap-4">
                                                         <img src={processedImageURL ?? ""} alt="Full Edited preview" className="max-h-[70vh] max-w-full object-contain" />
                                                         <div className="flex gap-2">
-                                                            <Button onClick={() => {
-                                                                const link = document.createElement('a');
-                                                                link.href = processedImageURL ?? "";
-                                                                link.download = 'edited-image.png';
-                                                                link.click();
-                                                            }}>
+                                                            <Button
+                                                                onClick={() => {
+                                                                    const link = document.createElement("a");
+                                                                    link.href = processedImageURL ?? "";
+                                                                    link.download = "edited-image.png";
+                                                                    link.click();
+                                                                }}
+                                                            >
                                                                 Download
                                                             </Button>
                                                             <Button variant="outline" onClick={() => setDialogOpen(false)}>
