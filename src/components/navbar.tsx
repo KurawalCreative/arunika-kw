@@ -67,6 +67,11 @@ function Navbar() {
     const [isScrolled, setIsScrolled] = useState(false);
     const pathname = usePathname();
     const isKomunitasPage = !!pathname.match(/\/komunitas/i);
+    const isActive = (href: string) => {
+        if (!pathname) return false;
+        if (href === "/") return pathname === href;
+        return pathname === href || pathname.startsWith(href + "/") || pathname.startsWith(href);
+    };
 
     useEffect(() => {
         const handleScroll = () => setIsScrolled(window.scrollY > 10);
@@ -97,7 +102,7 @@ function Navbar() {
 
     return (
         <>
-            <nav className={`fixed top-0 right-0 left-0 z-50 bg-gray-50 backdrop-blur-md transition-all duration-200 dark:bg-neutral-800/80 ${isScrolled && !isKomunitasPage ? "border-b border-gray-200 shadow-sm dark:border-neutral-700" : ""} ${isKomunitasPage ? "border-b dark:border-neutral-700" : ""}`}>
+            <nav className={`fixed top-0 right-0 left-0 z-50 bg-gray-50 backdrop-blur-md transition-all duration-200 dark:bg-gray-900/80 ${isScrolled && !isKomunitasPage ? "border-b border-gray-200 shadow-sm dark:border-gray-700" : ""} ${isKomunitasPage ? "border-b dark:border-gray-700" : ""}`}>
                 <motion.div layoutId="nav-width" className={`mx-auto w-full px-4 sm:px-6 ${!isKomunitasPage ? "max-w-7xl" : ""}`} transition={{ type: "spring", stiffness: 120, damping: 20 }}>
                     <div className="relative flex h-16 items-center justify-between sm:h-16">
                         {/* Logo */}
@@ -111,8 +116,10 @@ function Navbar() {
                         <div className="absolute top-1/2 left-1/2 hidden -translate-x-1/2 -translate-y-1/2 lg:flex">
                             <NavigationMenu>
                                 <NavigationMenuList className="space-x-2">
-                                    <NavigationMenuItem>
-                                        <NavigationMenuTrigger className="hover:text-primary-blue bg-transparent text-sm font-medium text-gray-700 hover:bg-blue-50 dark:text-gray-300 dark:hover:bg-blue-950/50 dark:hover:text-blue-400">Fitur</NavigationMenuTrigger>
+                                    {/* <NavigationMenuItem>
+                                        <NavigationMenuTrigger className="hover:text-primary-blue bg-transparent text-sm font-medium text-gray-700 hover:bg-blue-50 dark:text-gray-300 dark:hover:bg-blue-950/50 dark:hover:text-blue-400">
+                                            <>Fitur</>
+                                        </NavigationMenuTrigger>
                                         <NavigationMenuContent>
                                             <div className="grid w-[800px] gap-3 p-6 md:grid-cols-3">
                                                 {DropdownList.map((section) => (
@@ -134,13 +141,31 @@ function Navbar() {
                                                 ))}
                                             </div>
                                         </NavigationMenuContent>
+                                    </NavigationMenuItem> */}
+
+                                    <NavigationMenuItem>
+                                        <NavigationMenuLink asChild>
+                                            <Link
+                                                href={"/jelajahi-nusantara"}
+                                                aria-current={isActive("/jelajahi-nusantara") ? "page" : undefined}
+                                                className={`inline-flex h-9 items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-all ${isActive("/jelajahi-nusantara") ? "bg-sky-600 text-white shadow-md" : "text-gray-700 hover:bg-blue-50 dark:text-gray-300 dark:hover:bg-blue-950/50 dark:hover:text-blue-400"}`}
+                                            >
+                                                <span className="inline-flex items-center gap-2">
+                                                    <span className="sr-only">Jelajahi Nusantara</span>
+                                                    <span className="mr-1 h-2 w-2 rounded-full bg-white/90" aria-hidden />
+                                                    <span className="truncate">Jelajahi Nusantara</span>
+                                                </span>
+                                            </Link>
+                                        </NavigationMenuLink>
                                     </NavigationMenuItem>
 
-                                    {NavbarList.map((link) => (
-                                        <NavigationMenuItem key={link.href}>
-                                            <Link href={link.href} className="hover:text-primary-blue inline-flex h-9 items-center justify-center rounded-md px-4 py-2 text-sm font-medium text-gray-700 hover:bg-blue-50 dark:text-gray-300 dark:hover:bg-blue-950/50 dark:hover:text-blue-400">
-                                                {link.label}
-                                            </Link>
+                                    {NavbarList.map((link, i) => (
+                                        <NavigationMenuItem key={i}>
+                                            <NavigationMenuLink asChild>
+                                                <Link href={link.href} aria-current={isActive(link.href) ? "page" : undefined} className={`inline-flex h-9 items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-all ${isActive(link.href) ? "font-semibold text-sky-700 underline underline-offset-4" : "text-gray-700 hover:bg-blue-50 dark:text-gray-300 dark:hover:bg-blue-950/50 dark:hover:text-blue-400"}`}>
+                                                    {link.label}
+                                                </Link>
+                                            </NavigationMenuLink>
                                         </NavigationMenuItem>
                                     ))}
                                 </NavigationMenuList>
@@ -197,7 +222,7 @@ function Navbar() {
                 {isMobileMenuOpen && (
                     <>
                         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm" onClick={closeMobileMenu} />
-                        <motion.div initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }} transition={{ type: "spring", damping: 25, stiffness: 200 }} className="fixed top-0 right-0 bottom-0 z-50 w-full overflow-y-auto bg-white shadow-2xl sm:w-80 dark:bg-neutral-900">
+                        <motion.div initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }} transition={{ type: "spring", damping: 25, stiffness: 200 }} className="fixed top-0 right-0 bottom-0 z-50 w-full overflow-y-auto bg-white shadow-2xl sm:w-80 dark:bg-gray-900">
                             <div className="p-6">
                                 <div className="mb-8 flex items-center justify-between">
                                     <span className="text-lg font-semibold text-gray-900 dark:text-gray-100">Menu</span>
@@ -242,7 +267,7 @@ function Navbar() {
                                     </div>
 
                                     {NavbarList.map((link) => (
-                                        <Link key={link.href} href={link.href} onClick={closeMobileMenu} className="block rounded-lg px-4 py-3 font-medium text-gray-900 hover:bg-blue-50 dark:text-gray-100 dark:hover:bg-blue-950/50 dark:hover:text-blue-400">
+                                        <Link key={link.href} href={link.href} onClick={closeMobileMenu} aria-current={isActive(link.href) ? "page" : undefined} className={`block rounded-lg px-4 py-3 font-medium transition ${isActive(link.href) ? "bg-sky-100 text-sky-700" : "text-gray-900 hover:bg-blue-50 dark:text-gray-100 dark:hover:bg-blue-950/50 dark:hover:text-blue-400"}`}>
                                             {link.label}
                                         </Link>
                                     ))}
@@ -282,7 +307,7 @@ function Navbar() {
 
             {/* Logout Dialog */}
             <Dialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
-                <DialogContent className="sm:max-w-[425px] dark:bg-neutral-900 dark:text-gray-100">
+                <DialogContent className="sm:max-w-[425px] dark:bg-gray-900 dark:text-gray-100">
                     <DialogHeader>
                         <DialogTitle>Konfirmasi Logout</DialogTitle>
                         <DialogDescription className="dark:text-gray-400">Apakah Anda yakin ingin keluar dari akun Anda?</DialogDescription>

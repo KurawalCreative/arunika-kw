@@ -28,7 +28,7 @@ const SquarePinMap = ({ src, className }: SquarePinMapProps) => {
 
                 <foreignObject x="15" y="15" width="110" height="105">
                     <div className="flex h-full w-full overflow-hidden rounded-md">
-                        <Image src={src} alt="pin map" className="h-full w-full flex-1 object-cover" sizes="400px" />
+                        <Image src={src} alt="pin map" className="h-full w-full flex-1 object-fill" sizes="250px" />
                     </div>
                 </foreignObject>
             </svg>
