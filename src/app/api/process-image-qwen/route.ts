@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
 
         const response = await axios.post("https://qwen.aikit.club/v1/images/edits", qwenFormData, {
             headers: {
-                Authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjI3ZGUyYzVlLTYzZDYtNDU2MC1iNmQ3LTI2MDk0NDhjZmJmNiIsImxhc3RfcGFzc3dvcmRfY2hhbmdlIjoxNzU5ODg4MzE5LCJleHAiOjE3NjQyOTE1NzF9.neN3WDwvZR4eHQRhrXm9NODCuEUcXnj4CILWEbr4iY8",
+                Authorization: `Bearer ${process.env.QWEN_ACCESS_TOKEN}`,
                 "Content-Type": "multipart/form-data",
             },
         });
