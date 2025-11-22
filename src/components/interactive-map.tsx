@@ -165,6 +165,7 @@ const InteractiveMap = () => {
                 kuliner: p.kuliner.join(", "),
                 budaya: p.budaya.join(", "),
                 wisata: p.wisata.join(", "),
+                baju_adat: p.baju_adat.join(", "),
             });
         });
         return map;
@@ -381,6 +382,7 @@ const InteractiveMap = () => {
                                             {channel.kuliner && <div>Kuliner: {channel.kuliner}</div>}
                                             {channel.budaya && <div>Budaya: {channel.budaya}</div>}
                                             {channel.wisata && <div>Wisata: {channel.wisata}</div>}
+                                            {channel.baju_adat && <div>Baju Adat: {channel.baju_adat}</div>}
                                         </div>
                                     );
                                 })()}
@@ -400,7 +402,14 @@ const InteractiveMap = () => {
                                     <p className="text-gray-600 dark:text-gray-400">
                                         Kamu akan menjelajahi budaya dari <span className="text-lg font-medium text-gray-900 dark:text-white">{selectedProvince || "provinsi"}</span>. Temukan cerita, bahasa, dan tradisi yang kaya.
                                     </p>
-                                    <p className="text-sm text-blue-600 dark:text-blue-400">Coba baju adat dengan foto kamu! Bisa pakai foto kucing atau hewan lucu lainnya juga loh.</p>
+                                    {(() => {
+                                        const slug = selectedProvince?.toLowerCase().replace(/\s+/g, "-");
+                                        const channel = slug ? provinsiMap.get(slug) : null;
+                                        if (channel?.baju_adat) {
+                                            return <p className="text-sm text-blue-600 dark:text-blue-400">Baju adat khas: {channel.baju_adat}. Coba baju adat dengan foto kamu! Bisa pakai foto kucing atau hewan lucu lainnya juga loh.</p>;
+                                        }
+                                        return <p className="text-sm text-blue-600 dark:text-blue-400">Coba baju adat dengan foto kamu! Bisa pakai foto kucing atau hewan lucu lainnya juga loh.</p>;
+                                    })()}
                                 </div>
 
                                 <DialogFooter className="mt-4 shrink-0 border-t border-slate-100/70 bg-white/90 px-4 py-4 sm:px-6 dark:border-slate-800/70 dark:bg-slate-950/90">

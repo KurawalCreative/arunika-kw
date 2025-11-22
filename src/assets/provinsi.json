@@ -5,10 +5,11 @@
         "pulau": "Sumatra",
         "luas": 57956,
         "penduduk": 5520000,
-        "bahasa": ["Bahasa Aceh", "Bahasa Gayo", "Bahasa Aneuk Jamee", "Bahasa Singkil", "Bahasa Alas", "Bahasa Tamiang", "Bahasa Kluet", "Bahasa Devayan", "Bahasa Sigulai", "Bahasa Pakpak", "Bahasa Haloban", "Bahasa Lekon", "Bahasa Nias"],
+        "bahasa": ["Bahasa Aceh", "Bahasa Gayo", "Bahasa Aneuk Jamee", "Bahasa Singkil", "Bahasa Alas", "Bahasa Kluet", "Bahasa Devayan", "Bahasa Sigulai", "Bahasa Pakpak", "Bahasa Haloban", "Bahasa Lekon", "Bahasa Nias"],
         "budaya": ["Tari Saman", "Seudati", "Adat Perkawinan Aceh", "Budaya Bercocok Tanam", "Pamali (Pantangan Adat)"],
         "kuliner": ["Sie Ruboh", "Mie Aceh", "Kuah Beulangong", "Ayam Tangkap", "Peudada"],
         "wisata": ["Masjid Raya Baiturrahman", "Pantai Lhoknga", "Gunung Leuser", "Kraton Aceh Darussalam", "Pulau Weh"],
+        "baju_adat": ["Ulee Balang"],
         "deskripsi": "Aceh adalah provinsi otonomi khusus yang terletak di ujung utara Pulau Sumatra. Dikenal sebagai Serambi Mekah, Aceh memiliki sejarah panjang sebagai pusat peradaban Islam di Nusantara dan kaya akan kearifan lokal, seni budaya, serta keindahan alamnya."
     },
     {
@@ -21,6 +22,7 @@
         "budaya": ["Tari Tortor", "Gondang Batak", "Rumah Bolon", "Upacara Mangongkal Holi", "Fahombo (Lompat Batu)"],
         "kuliner": ["Arsik", "Mie Gomak", "Soto Medan", "Babi Panggang Karo", "Sambal Tuktuk"],
         "wisata": ["Danau Toba", "Bukit Lawang", "Istana Maimun", "Air Terjun Sipisopiso", "Berastagi"],
+        "baju_adat": ["Ulos"],
         "deskripsi": "Sumatera Utara adalah provinsi multietnis di Pulau Sumatra yang kaya akan keberagaman budaya, terutama dari suku Batak, Nias, dan Melayu. Provinsi ini terkenal dengan Danau Toba—danau vulkanik terbesar di dunia—serta kekayaan alam, kuliner khas, dan tradisi adat yang masih lestari hingga kini."
     },
     {
@@ -33,6 +35,7 @@
         "budaya": ["Rumah Gadang", "Tari Piring", "Tari Payung", "Randai", "Tabuik"],
         "kuliner": ["Rendang", "Sate Padang", "Dendeng Balado", "Ayam Pop", "Gulai Itiak"],
         "wisata": ["Danau Singkarak", "Lembah Harau", "Istano Basa Pagaruyuang", "Pantai Air Manis", "Ngarai Sianok"],
+        "baju_adat": ["Bundo Kanduang"],
         "deskripsi": "Sumatera Barat adalah provinsi di pesisir barat Pulau Sumatra yang dikenal sebagai pusat budaya Minangkabau. Provinsi ini memiliki kekayaan adat matrilineal, kuliner legendaris seperti rendang, serta panorama alam menakjubkan seperti Lembah Harau dan Danau Singkarak."
     },
     {
@@ -45,6 +48,7 @@
         "budaya": ["Tari Zapin", "Tari Makan Sirih", "Randai", "Upacara Bakar Tongkang", "Adat Melayu"],
         "kuliner": ["Gulai Ikan Patin", "Mie Sagu", "Asidah", "Kue Bangkit", "Laksamana Mengamuk"],
         "wisata": ["Candi Muara Takus", "Taman Nasional Tesso Nilo", "Danau Tajwid", "Pantai Rupat", "Istana Siak Sri Indrapura"],
+        "baju_adat": ["Kebaya Laboh"],
         "deskripsi": "Riau adalah provinsi di pesisir timur Pulau Sumatra yang menjadi pusat kebudayaan Melayu. Kaya akan sumber daya alam seperti minyak dan gas, Riau juga menyimpan warisan sejarah, kuliner khas berbasis ikan dan sagu, serta destinasi alam dan budaya yang memadukan tradisi Melayu, Minangkabau, dan etnis lainnya."
     },
     {
@@ -57,6 +61,7 @@
         "budaya": ["Tari Sekapur Sirih", "Tari Selampit Delapan", "Rumah Panjang", "Adat Melayu Jambi", "Upacara Adat Mendudukkan"],
         "kuliner": ["Pempek Jambi", "Gulai Tempoyak Ikan Patin", "Nasi Gemuk", "Kue Gandus", "Lempok Durian"],
         "wisata": ["Taman Nasional Kerinci Seblat", "Candi Muaro Jambi", "Danau Sipin", "Gunung Kerinci", "Tangga Seribu"],
+        "baju_adat": ["Baju Kurung Jambi"],
         "deskripsi": "Jambi adalah provinsi di bagian tengah Pulau Sumatra yang kaya akan warisan sejarah Melayu dan keragaman etnis. Dikenal dengan situs Candi Muaro Jambi—kompleks candi Hindu-Buddha terluas di Asia Tenggara—serta keindahan alam seperti Gunung Kerinci dan Taman Nasional Kerinci Seblat, provinsi ini juga memiliki kuliner khas berbasis ikan sungai dan durian."
     },
     {
@@ -69,6 +74,7 @@
         "budaya": ["Tari Tanggai", "Tari Gending Sriwijaya", "Rumah Limas", "Adat Basemah", "Adat Palembang"],
         "kuliner": ["Pempek", "Tekwan", "Model", "Laksan", "Mie Celor"],
         "wisata": ["Jembatan Ampera", "Sungai Musi", "Kambang Iwak", "Taman Purbakala Kerajaan Sriwijaya", "Danau Ranau"],
+        "baju_adat": ["Aesan Gede"],
         "deskripsi": "Sumatera Selatan adalah provinsi yang berpusat di kota Palembang, bekas ibu kota kerajaan maritim Sriwijaya. Dikenal sebagai pusat peradaban Melayu kuno, provinsi ini terkenal dengan kuliner ikonik seperti pempek, arsitektur Rumah Limas, serta kekayaan alam seperti Sungai Musi dan Danau Ranau yang memadukan sejarah, budaya, dan keindahan lanskap."
     },
     {
@@ -81,6 +87,7 @@
         "budaya": ["Tari Andun", "Tari Bidadari", "Upacara Tabot", "Rumah Adat Ruma Bengkuluk", "Adat Rejang"],
         "kuliner": ["Pendap", "Lemprang", "Kue Putri Salju Bengkulu", "Gaguduh", "Tempoyak Ikan Baung"],
         "wisata": ["Benteng Marlborough", "Danau Dendam Tak Sudah", "Pantai Panjang", "Rumah Pengasingan Bung Karno", "Gunung Nanua"],
+        "baju_adat": ["Baju Betabur"],
         "deskripsi": "Bengkulu adalah provinsi di pesisir barat Pulau Sumatra yang kaya akan keberagaman etnis seperti Rejang, Serawai, dan Melayu. Dikenal dengan upacara Tabot yang bernuansa Syiah-Islam serta sejarah sebagai tempat pengasingan Presiden Soekarno, provinsi ini menawarkan bentang alam pesisir, benteng kolonial Inggris, dan kuliner berbahan dasar ikan serta rempah khas."
     },
     {
@@ -93,6 +100,7 @@
         "budaya": ["Tari Sigeh Penguten", "Tari Jajar", "Rumah Adat Nuwo Balak", "Adat Pepadun", "Adat Saibatin"],
         "kuliner": ["Seruit", "Pindang Patin", "Engkak", "Kue Lapis Legit Lampung", "Umbu"],
         "wisata": ["Taman Nasional Way Kambas", "Pantai Pasir Putih", "Krakatau", "Gunung Anak Krakatau", "Danau Ranau (bagian selatan)"],
+        "baju_adat": ["Tulang Bawang"],
         "deskripsi": "Lampung adalah provinsi paling selatan di Pulau Sumatra yang menjadi gerbang utama Pulau Jawa melalui Pelabuhan Bakauheni. Kaya akan keberagaman etnis akibat transmigrasi, provinsi ini mempertahankan budaya asli Lampung seperti adat Pepadun dan Saibatin, serta terkenal dengan Taman Nasional Way Kambas sebagai habitat gajah sumatra dan cula satu, serta keindahan alam Krakatau dan kuliner berbasis ikan sungai."
     },
     {
@@ -105,6 +113,7 @@
         "budaya": ["Tari Campak", "Tari Sekapur Sirih", "Upacara Adat Nganggung", "Rumah Adat Belitung", "Adat Melayu Bangka Belitung"],
         "kuliner": ["Mie Bangka", "Lempah Kuning", "Siput Gonggong", "Kerupuk Ikan Belitung", "Kue Delagi"],
         "wisata": ["Pantai Tanjung Tinggi", "Pantai Parai Tenggiri", "Danau Kaolin", "Pulau Lengkuas", "Kampung Ahok (Belitung Timur)"],
+        "baju_adat": ["Paksian"],
         "deskripsi": "Kepulauan Bangka Belitung adalah provinsi kepulauan di lepas pantai timur Pulau Sumatra, terkenal sebagai penghasil timah terbesar di Indonesia. Provinsi ini memiliki kekayaan budaya Melayu yang dipadu dengan pengaruh Tionghoa, terutama etnis Hakka, serta panorama pantai berpasir putih dan batu granit raksasa yang menjadi latar film 'Laskar Pelangi'."
     },
     {
@@ -117,6 +126,7 @@
         "budaya": ["Tari Zapin", "Tari Makan Sirih", "Upacara Mandi Safar", "Rumah Melayu", "Adat Melayu Kepulauan Riau"],
         "kuliner": ["Gonggong", "Otak-Otak", "Soto Ikan", "Lakse", "Kue Bangkit"],
         "wisata": ["Pulau Bintan", "Pulau Batam", "Pulau Penyengat", "Pantai Trikora", "Tanjung Pinang Heritage Area"],
+        "baju_adat": ["Teluk Belanga"],
         "deskripsi": "Kepulauan Riau adalah provinsi maritim di perairan Selat Malaka dan Laut Cina Selatan, terdiri dari ribuan pulau strategis dekat Singapura dan Malaysia. Sebagai pusat peradaban Melayu klasik dan bekas pusat Kesultanan Riau-Lingga, provinsi ini kaya akan warisan budaya, kuliner laut khas, serta menjadi kawasan ekonomi dan pariwisata terpadu seperti Batam dan Bintan."
     },
     {
@@ -129,6 +139,7 @@
         "budaya": ["Tari Topeng Betawi", "Lenong", "Ondel-ondel", "Gambang Kromong", "Adat Betawi"],
         "kuliner": ["Kerak Telor", "Soto Betawi", "Nasi Uduk", "Gabus Pucung", "Kue Cucur"],
         "wisata": ["Monumen Nasional (Monas)", "Kota Tua Jakarta", "Taman Mini Indonesia Indah", "Pulau Seribu", "Masjid Istiqlal"],
+        "baju_adat": ["Kebaya Encim"],
         "deskripsi": "DKI Jakarta adalah ibu kota negara Republik Indonesia sekaligus pusat pemerintahan, ekonomi, dan budaya nasional. Meski wilayahnya kecil, Jakarta merupakan kota metropolitan multietnis yang mempertahankan warisan budaya Betawi, sambil menjadi rumah bagi jutaan penduduk dari seluruh Nusantara. Ikon seperti Monas, Kota Tua, dan kuliner khas Betawi menjadi identitas khas provinsi ini."
     },
     {
@@ -141,6 +152,7 @@
         "budaya": ["Tari Jaipongan", "Wayang Golek", "Angklung", "Rumah Adat Julang Ngapak", "Adat Sunda"],
         "kuliner": ["Sate Maranggi", "Nasi Timbel", "Karedok", "Colenak", "Batagor"],
         "wisata": ["Tangkuban Perahu", "Kawah Putih", "Situ Patenggang", "Candi Cangkuang", "Taman Safari Indonesia"],
+        "baju_adat": ["Kebaya Sunda"],
         "deskripsi": "Jawa Barat adalah provinsi dengan penduduk terbanyak di Indonesia, rumah bagi masyarakat Sunda yang kaya akan tradisi. Dikenal dengan seni Jaipongan, alat musik Angklung yang diakui UNESCO, serta kuliner khas berbahan sayur mentah dan sambal, provinsi ini menawarkan keindahan alam pegunungan, perkebunan teh, dan situs budaya yang tersebar dari Bandung hingga Priangan Timur."
     },
     {
@@ -153,6 +165,7 @@
         "budaya": ["Wayang Kulit", "Tari Gambyong", "Rumah Adat Joglo", "Upacara Sekaten", "Adat Jawa"],
         "kuliner": ["Gudeg", "Tahu Gimbal", "Lumpia Semarang", "Nasi Liwet", "Soto Kudus"],
         "wisata": ["Candi Borobudur", "Candi Prambanan", "Kepulauan Karimunjawa", "Taman Nasional Gunung Merbabu", "Lawang Sewu"],
+        "baju_adat": ["Jawi Jangkep"],
         "deskripsi": "Jawa Tengah adalah provinsi di tengah Pulau Jawa yang menjadi pusat peradaban Jawa klasik. Rumah bagi Candi Borobudur dan Prambanan—dua situs warisan dunia UNESCO—provinsi ini kaya akan tradisi Jawa seperti wayang kulit, tari Gambyong, dan adat keraton. Kuliner seperti gudeg Yogyakarta (dalam wilayah budaya Jawa Tengah) dan lumpia Semarang mencerminkan akulturasi budaya lokal dan Tionghoa."
     },
     {
@@ -165,6 +178,7 @@
         "budaya": ["Tari Bedhaya", "Wayang Kulit", "Upacara Garebeg", "Rumah Adat Joglo", "Adat Keraton Yogyakarta"],
         "kuliner": ["Gudeg", "Bakpia Pathok", "Oseng Mercon", "Soto Kadipiro", "Kue Cenil"],
         "wisata": ["Candi Prambanan", "Taman Sari", "Malioboro", "Pantai Parangtritis", "Gunung Merapi"],
+        "baju_adat": ["Kesatrian Ageng"],
         "deskripsi": "Daerah Istimewa Yogyakarta adalah provinsi istimewa di selatan Pulau Jawa yang dipimpin oleh Sultan Hamengkubuwono sebagai kepala daerah. Dikenal sebagai pusat budaya Jawa yang autentik, Yogyakarta menjadi rumah bagi Keraton Ngayogyakarta, Candi Prambanan, serta tradisi seni dan pendidikan yang kuat. Gudeg, Malioboro, dan semangat keistimewaannya menjadikan provinsi ini simbol ketahanan budaya dan sejarah nasional."
     },
     {
@@ -177,6 +191,7 @@
         "budaya": ["Tari Reog Ponorogo", "Wayang Kulit", "Karapan Sapi", "Rumah Adat Joglo", "Upacara Yadnya Kasada"],
         "kuliner": ["Rujak Cingur", "Sate Ayam Madura", "Lontong Balap", "Rawon", "Pecel"],
         "wisata": ["Gunung Bromo", "Taman Nasional Baluran", "Pulau Madura", "Candi Penataran", "Kawah Ijen"],
+        "baju_adat": ["Pesa'an"],
         "deskripsi": "Jawa Timur adalah provinsi terluas di Pulau Jawa dengan keberagaman etnis seperti Jawa, Madura, Tengger, dan Osing. Dikenal dengan Reog Ponorogo—tarian topeng berat yang diakui warisan budaya nasional—serta keindahan alam seperti Gunung Bromo dan Kawah Ijen, provinsi ini juga terkenal dengan kuliner khas seperti rawon dan rujak cingur yang kaya rempah dan rasa."
     },
     {
@@ -189,6 +204,7 @@
         "budaya": ["Debus", "Tari Cokek", "Rampak Bedug", "Rumah Adat Banten", "Adat Kesultanan Banten"],
         "kuliner": ["Sate Bandeng", "Rabeg", "Pasung", "Kue Cucur Banten", "Emping Melinjo"],
         "wisata": ["Keraton Kaibon", "Masjid Agung Banten", "Pantai Anyer", "Pantai Carita", "Taman Nasional Ujung Kulon"],
+        "baju_adat": ["Pangsi"],
         "deskripsi": "Banten adalah provinsi di ujung barat Pulau Jawa yang dikenal sebagai bekas pusat Kesultanan Banten, salah satu kerajaan Islam terbesar di Nusantara. Provinsi ini memadukan warisan sejarah Islam, seni bela diri mistis Debus, kuliner khas seperti sate bandeng, serta keindahan alam pesisir Anyer-Carita dan Taman Nasional Ujung Kulon—rumah terakhir bagi badak Jawa yang kritis."
     },
     {
@@ -201,6 +217,7 @@
         "budaya": ["Tari Kecak", "Tari Legong", "Ogoh-Ogoh", "Upacara Ngaben", "Arsitektur Bali"],
         "kuliner": ["Babi Guling", "Bebek Betutu", "Lawar", "Sate Lilit", "Jaja Bali"],
         "wisata": ["Pura Tanah Lot", "Pura Ulun Danu Bratan", "Pantai Kuta", "Tegallalang Rice Terrace", "Gunung Batur"],
+        "baju_adat": ["Payas Agung"],
         "deskripsi": "Bali adalah provinsi yang terkenal di dunia sebagai destinasi wisata utama Indonesia, dikenal dengan keindahan alam, seni, dan kehidupan spiritual berbasis agama Hindu Dharma. Masyarakat Bali mempertahankan tradisi melalui upacara adat, tarian sakral seperti Kecak dan Legong, serta arsitektur pura dan rumah yang khas. Kuliner seperti babi guling dan bebek betutu menjadi bagian tak terpisahkan dari identitas budayanya."
     },
     {
@@ -213,6 +230,7 @@
         "budaya": ["Tari Gandrung", "Peresean", "Upacara Bau Nyale", "Rumah Adat Bale Lumbung", "Adat Sasak"],
         "kuliner": ["Ayam Taliwang", "Plecing Kangkung", "Sate Pusut", "Bebek Peking NTB", "Jaje Tujak"],
         "wisata": ["Gunung Rinjani", "Pantai Senggigi", "Gili Trawangan", "Taman Nasional Gunung Tambora", "Pura Lingsar"],
+        "baju_adat": ["Pegon"],
         "deskripsi": "Nusa Tenggara Barat terdiri dari dua pulau utama: Lombok dan Sumbawa. Provinsi ini kaya akan keberagaman budaya, terutama suku Sasak di Lombok dan suku Bima di Sumbawa. Dikenal dengan Gunung Rinjani—salah satu gunung tertinggi di Indonesia—serta destinasi wisata bahari seperti Gili Trawangan, NTB juga terkenal dengan kuliner pedas seperti Ayam Taliwang dan tradisi unik seperti Peresean (bertarung dengan rotan) dan Bau Nyale (festival menangkap cacing laut)."
     },
     {
@@ -225,6 +243,7 @@
         "budaya": ["Tari Caci", "Tenun Ikat", "Rumah Adat Musalaki", "Upacara Reba", "Adat Suku Dawan"],
         "kuliner": ["Se'i", "Jagung Bose", "Kolo", "Ikan Kuah Asam", "Kue Bale"],
         "wisata": ["Taman Nasional Komodo", "Pulau Padar", "Danau Kelimutu", "Pantai Lasiana", "Rumah Adat Wae Rebo"],
+        "baju_adat": ["Amarasi"],
         "deskripsi": "Nusa Tenggara Timur adalah provinsi kepulauan yang terdiri dari ratusan pulau, termasuk Flores, Sumba, Timor, Rote, dan Komodo. Dikenal sebagai habitat asli komodo—hewan purba yang dilindungi—serta keajaiban alam seperti Danau Kelimutu dengan tiga warna airnya, NTT juga kaya akan keberagaman budaya suku-suku lokal seperti Manggarai, Dawan, dan Rote, yang masih mempertahankan tradisi tenun ikat, tarian perang Caci, dan rumah adat unik."
     },
     {
@@ -237,6 +256,7 @@
         "budaya": ["Tari Monong", "Tari Gantar", "Rumah Panjang Dayak", "Upacara Bebalung", "Adat Dayak dan Melayu"],
         "kuliner": ["Bubur Pedas", "Asam Pedas Ikan Patin", "Laksa Pontianak", "Kue Cucur", "Kepiau"],
         "wisata": ["Tugu Khatulistiwa", "Danau Sentarum", "Taman Nasional Gunung Palung", "Pantai Pasir Panjang", "Rumah Radakng (Rumah Panjang)"],
+        "baju_adat": ["King Bibinge"],
         "deskripsi": "Kalimantan Barat adalah provinsi di bagian barat Pulau Kalimantan yang berbatasan langsung dengan Malaysia. Dikenal sebagai wilayah dengan keberagaman etnis Dayak, Melayu, dan Tionghoa, provinsi ini memiliki warisan budaya yang kaya seperti tarian penyembuhan Monong dan arsitektur Rumah Panjang Dayak. Tugu Khatulistiwa di Pontianak menjadi ikon geografis, sementara Danau Sentarum dan Taman Nasional Gunung Palung menawarkan keanekaragaman hayati yang luar biasa."
     },
     {
@@ -249,6 +269,7 @@
         "budaya": ["Tari Tambun dan Bungai", "Upacara Tiwah", "Rumah Betang", "Musik Karungut", "Adat Kaharingan"],
         "kuliner": ["Kalumpe", "Pahiwang", "Kenta", "Uwai Lawas", "Pulut Lepet"],
         "wisata": ["Taman Nasional Tanjung Puting", "Danau Sembuluh", "Bukit Tangkiling", "Rumah Betang Balawa", "Kahayan River"],
+        "baju_adat": ["Upak Nyamu"],
         "deskripsi": "Kalimantan Tengah adalah provinsi yang didominasi hutan hujan tropis dan sungai-sungai besar seperti Kahayan dan Kapuas. Sebagai pusat kebudayaan Dayak Ngaju, provinsi ini mempertahankan tradisi Kaharingan—kepercayaan asli Dayak—melalui upacara Tiwah (penguburan ulang) dan arsitektur Rumah Betang (rumah panjang komunal). Taman Nasional Tanjung Puting, rumah bagi orangutan dan bekantan, menjadi destinasi ekowisata dunia yang ikonik."
     },
     {
@@ -261,6 +282,7 @@
         "budaya": ["Tari Baksa Kembang", "Madihin", "Rumah Bubungan Tinggi", "Upacara Aruh", "Adat Banjar"],
         "kuliner": ["Soto Banjar", "Pepes Ikan Haruan", "Ketupat Kandangan", "Pisang Gapit", "Gangan Asam Hulu"],
         "wisata": ["Pasar Terapung Lok Baintan", "Danau Tapin", "Taman Nasional Tanjung Puting (bagian selatan)", "Masjid Sultan Suriansyah", "Gunung Batung"],
+        "baju_adat": ["Bagajah Gamuling"],
         "deskripsi": "Kalimantan Selatan adalah provinsi yang kaya akan jaringan sungai, terutama Sungai Barito dan Martapura, yang membentuk identitas budaya Banjar. Dikenal dengan Pasar Terapung Lok Baintan—warisan tradisi jual beli di atas perahu—serta kuliner khas seperti Soto Banjar yang harum rempah, provinsi ini memadukan warisan Kesultanan Banjar, seni Madihin (puisi lisan), dan arsitektur Rumah Bubungan Tinggi yang megah."
     },
     {
@@ -273,6 +295,7 @@
         "budaya": ["Tari Kancet Ledo", "Tari Hudoq", "Rumah Lamin", "Upacara Erau", "Adat Kutai dan Dayak"],
         "kuliner": ["Ayam Cincane", "Pais Patin", "Amplang", "Bubur Pedas Samarinda", "Nasi Kuning Samarinda"],
         "wisata": ["Taman Nasional Kayan Mentarang", "Danau Semayang", "Pulau Derawan", "Kutai Kartanegara Palace (Kedaton)", "Air Terjun Tanah Merah"],
+        "baju_adat": ["Kustin"],
         "deskripsi": "Kalimantan Timur adalah provinsi kaya sumber daya alam, terutama batu bara dan gas bumi, yang juga menjadi lokasi calon ibu kota negara baru, Nusantara. Di tengah pesatnya pembangunan, provinsi ini tetap mempertahankan warisan budaya Kutai—kerajaan tertua di Indonesia—dan suku Dayak melalui upacara Erau, Rumah Lamin, serta tarian sakral seperti Kancet Ledo. Keindahan alamnya mencakup gugusan Pulau Derawan yang terkenal hingga mancanegara dan hutan hujan tropis di Pegunungan Kayan."
     },
     {
@@ -285,6 +308,7 @@
         "budaya": ["Tari Ganalung", "Tari Lundayeh", "Rumah Adat Baluk", "Upacara Adat Tidung", "Adat Tidung dan Dayak"],
         "kuliner": ["Sambal Ubur-Ubur", "Pais Ikan", "Kue Cincin", "Bubur Pedas Tarakan", "Pisang Salai"],
         "wisata": ["Pulau Bunyu", "Taman Nasional Kayan Mentarang (bagian utara)", "Bukit Labuan", "Pantai Amal", "Danau Lalut Birai"],
+        "baju_adat": ["Ta'a"],
         "deskripsi": "Kalimantan Utara adalah provinsi termuda dan terluas di kawasan Kalimantan, berbatasan langsung dengan Malaysia Timur (Sabah). Dibentuk pada tahun 2012, provinsi ini dihuni oleh suku-suku asli seperti Tidung, Bulungan, dan Dayak Kenyah. Kaya akan keindahan alam maritim seperti Pulau Bunyu dan Pantai Amal, serta hutan hujan tropis di Pegunungan Kayan, Kalimantan Utara juga dikenal dengan kerajinan tenun dan tradisi adat yang masih lestari di tengah pembangunan perbatasan."
     },
     {
@@ -297,6 +321,7 @@
         "budaya": ["Tari Kabasaran", "Tari Maengket", "Kolintang", "Rumah Adat Walewangko", "Adat Minahasa"],
         "kuliner": ["Tinutuan (Bubur Manado)", "Cakalang Fufu", "Pisang Goroho", "Sambal Roa", "Klappertaart"],
         "wisata": ["Bunaken National Marine Park", "Gunung Lokon", "Pantai Pal", "Danau Linow", "Taman Nasional Bogani Nani Wartabone"],
+        "baju_adat": ["Laku Tepu"],
         "deskripsi": "Sulawesi Utara adalah provinsi di ujung utara Pulau Sulawesi yang terkenal dengan keindahan alam bawah lautnya di Taman Nasional Bunaken—salah satu destinasi menyelam terbaik di dunia. Masyarakatnya yang multietnis, terutama Minahasa, Sangir, dan Bolaang Mongondow, memiliki tradisi kuat seperti tari perang Kabasaran dan musik kolintang. Kuliner khasnya seperti tinutuan dan cakalang fufu mencerminkan kekayaan hasil laut dan pertanian daerah tropis."
     },
     {
@@ -309,6 +334,7 @@
         "budaya": ["Tari Moraego", "Tari Tadulako", "Rumah Adat Souraja", "Upacara Tambora", "Adat Kaili dan Pamona"],
         "kuliner": ["Uta Kalo", "Palumara", "Kaledo", "Binte Biluhuta", "Kue Puga"],
         "wisata": ["Taman Nasional Lore Lindu", "Pantai Tanjung Karang", "Danau Poso", "Pulau Togean", "Bukit Karuwesi"],
+        "baju_adat": ["Nggembe"],
         "deskripsi": "Sulawesi Tengah adalah provinsi yang terletak di jantung Pulau Sulawesi, dikenal dengan keberagaman etnis seperti Kaili, Pamona, dan Banggai. Provinsi ini memiliki warisan budaya yang kaya, termasuk tarian tradisional Moraego dan situs megalitik di Taman Nasional Lore Lindu. Keindahan alamnya mencakup Danau Poso—danau terdalam kedua di Indonesia—serta gugusan Pulau Togean yang menjadi surga bagi penyelam dan pecinta alam."
     },
     {
@@ -321,6 +347,7 @@
         "budaya": ["Tari Pakarena", "Tari Pajoge", "Rumah Adat Balla Lompoa", "Upacara Rambu Solo", "Adat Bugis-Makassar"],
         "kuliner": ["Coto Makassar", "Konro", "Pallubasa", "Sop Saudara", "Kapurung"],
         "wisata": ["Benteng Rotterdam", "Tana Toraja", "Pantai Losari", "Taman Nasional Bantimurung-Bulusaraung", "Pulau Samalona"],
+        "baju_adat": ["Baju Bodo"],
         "deskripsi": "Sulawesi Selatan adalah provinsi dengan populasi terbesar di kawasan Sulawesi, rumah bagi empat suku utama: Bugis, Makassar, Toraja, dan Mandar. Dikenal sebagai pusat maritim Nusantara sejak abad ke-17 melalui Kerajaan Gowa dan Bone, provinsi ini memadukan warisan budaya adat Bugis-Makassar yang egaliter dengan tradisi Toraja yang megah melalui upacara Rambu Solo. Kuliner khas seperti Coto Makassar dan Konro mencerminkan cita rasa gurih dan rempah khas Sulawesi, sementara Tana Toraja menjadi ikon wisata budaya dunia."
     },
     {
@@ -333,6 +360,7 @@
         "budaya": ["Tari Lulo", "Tari Balumpa", "Rumah Adat Malige", "Upacara Kasuwaria", "Adat Buton dan Tolaki"],
         "kuliner": ["Kaboko", "Sop Kambing Sultra", "Papeda", "Gelang Pisang", "Sinonggi"],
         "wisata": ["Pulau Wakatobi", "Benteng Keraton Buton", "Taman Nasional Rawa Aopa Watumohai", "Pantai Nambo", "Danau Napabale"],
+        "baju_adat": ["Babu Nggawi"],
         "deskripsi": "Sulawesi Tenggara adalah provinsi yang terdiri atas daratan Sulawesi bagian tenggara dan ratusan pulau, termasuk gugusan Wakatobi yang terkenal sebagai surga penyelaman dunia. Provinsi ini dihuni oleh beragam suku seperti Tolaki, Buton, dan Muna, yang mempertahankan tradisi adat melalui tari Lulo, arsitektur Benteng Keraton Buton—benteng terluas di dunia menurut Guinness World Records—dan sistem pemerintahan kesultanan yang unik. Keindahan alam bawah laut dan daratan menjadikannya destinasi ekowisata unggulan."
     },
     {
@@ -345,6 +373,7 @@
         "budaya": ["Tari Momontalo", "Tari Hulontalo", "Rumah Adat Dulohupa", "Upacara Adat Molontalo", "Adat Gorontalo"],
         "kuliner": ["Milu Siram", "Pilaw Pitahu", "Binte Biluhuta", "Sate Tuna Gorontalo", "Kue Apam"],
         "wisata": ["Benteng Otanaha", "Pantai Olele", "Danau Limboto", "Taman Nasional Bogani Nani Wartabone (bagian utara)", "Pulau Saronde"],
+        "baju_adat": ["Biliu"],
         "deskripsi": "Gorontalo adalah provinsi kecil di ujung utara Semenanjung Sulawesi yang dikenal sebagai 'Serambi Madinah' karena kuatnya akar Islam dan tradisi keilmuan. Masyarakatnya mempertahankan sistem adat *Molontalo*—gabungan adat dan syariah—melalui rumah adat Dulohupa yang juga berfungsi sebagai balai musyawarah. Keindahan alamnya mencakup Pantai Olele dengan terumbu karangnya, Danau Limboto yang legendaris, serta Pulau Saronde yang eksotis, menjadikan Gorontalo destinasi wisata yang terus berkembang."
     },
     {
@@ -357,6 +386,7 @@
         "budaya": ["Tari Patuddu", "Tari Pajoge Mandar", "Rumah Adat Boyang", "Upacara Passandeq", "Adat Mandar"],
         "kuliner": ["Jepa", "Golla Mandar", "Sambal Roa Mandar", "Kapurung", "Pandeang"],
         "wisata": ["Pantai Indah Mamuju", "Pantai Tanjung Dua", "Air Terjun Sampara", "Pulau Karampuang", "Taman Nasional Lore Lindu (bagian barat)"],
+        "baju_adat": ["Pattuqduq Towaine"],
         "deskripsi": "Sulawesi Barat adalah provinsi termuda di Pulau Sulawesi, resmi berdiri pada tahun 2004. Didominasi oleh suku Mandar—pelaut ulung yang dikenal sebagai 'Bajak Laut Timur' pada masa lalu—provinsi ini kaya akan tradisi maritim, seperti upacara Passandeq (peluncuran perahu sandeq) dan tari Patuddu. Dengan garis pantai yang panjang dan pulau-pulau kecil nan eksotis seperti Karampuang, Sulawesi Barat menawarkan potensi wisata bahari yang masih alami serta kuliner berbasis ikan laut dan sagu."
     },
     {
@@ -369,6 +399,7 @@
         "budaya": ["Tari Lenso", "Tari Cakalele", "Rumah Adat Baileo", "Upacara Pattimura", "Adat Negeri"],
         "kuliner": ["Papeda", "Ikan Kuah Kuning", "Nasi Kelapa", "Kohu-Kohu", "Sambal Colo-Colo"],
         "wisata": ["Pulau Banda Neira", "Benteng Victoria", "Pantai Natsepa", "Gunung Binaiya", "Taman Nasional Manusela"],
+        "baju_adat": ["Cele"],
         "deskripsi": "Maluku adalah provinsi kepulauan yang terletak di belahan timur Indonesia, dikenal sebagai 'Kepulauan Rempah' karena perannya dalam perdagangan cengkeh dan pala sejak abad ke-15. Masyarakatnya yang multietnis mempertahankan sistem adat 'Negeri' dan tradisi maritim melalui tari Cakalele (tari perang) dan musik tifa. Keindahan alamnya mencakup gugusan Banda Neira yang bersejarah, hutan hujan tropis di Pegunungan Manusela, serta kuliner berbasis ikan laut dan sagu seperti papeda dan colo-colo."
     },
     {
@@ -381,6 +412,7 @@
         "budaya": ["Tari Soya-Soya", "Tari Lenso Malut", "Rumah Adat Baileo", "Upacara Adat Tobelo", "Adat Kesultanan Ternate dan Tidore"],
         "kuliner": ["Gohu Ikan", "Nasi Kuning Ternate", "Pisang Mulut Janda", "Sambal Colo-Colo Utara", "Kue Lapis Malut"],
         "wisata": ["Benteng Oranje (Ternate)", "Benteng Tolukko", "Pulau Morotai", "Gunung Gamalama", "Pantai Pasir Panjang (Tidore)"],
+        "baju_adat": ["Manteren Lamo"],
         "deskripsi": "Maluku Utara adalah provinsi yang mencakup pulau-pulau utama seperti Halmahera, Ternate, dan Tidore—bekas pusat Kesultanan Ternate dan Tidore yang pernah menguasai perdagangan cengkeh dunia. Kaya akan sejarah maritim dan peradaban Islam di Indonesia timur, provinsi ini mempertahankan warisan budaya melalui tari Soya-Soya (tari perang Tobelo), arsitektur benteng kolonial, dan sistem adat kesultanan yang masih berfungsi. Keindahan alamnya mencakup Gunung Gamalama yang megah dan Pantai Pasir Panjang yang memesona."
     },
     {
@@ -393,6 +425,7 @@
         "budaya": ["Tari Perang", "Tari Yospan", "Rumah Honai", "Upacara Bakar Batu (Barapen)", "Adat Suku Pegunungan Tengah"],
         "kuliner": ["Papeda", "Ikan Bakar Manokwari", "Ulat Sagu", "Singkong Goreng Papua", "Pisang Bakar"],
         "wisata": ["Teluk Cenderawasih", "Pegunungan Jayawijaya", "Danau Sentani", "Taman Nasional Lorentz", "Pantai Base-G"],
+        "baju_adat": ["Koteka"],
         "deskripsi": "Papua adalah provinsi terluas di Indonesia, mencakup bagian barat Pulau Papua yang kaya akan keanekaragaman hayati dan budaya. Di huni oleh ratusan suku seperti Dani, Biak, dan Sentani, provinsi ini mempertahankan tradisi adat melalui upacara Bakar Batu, arsitektur Rumah Honai, dan tarian perang. Taman Nasional Lorentz—satu-satunya situs warisan dunia UNESCO di kawasan timur Indonesia—dan Pegunungan Jayawijaya dengan puncak salju abadinya menjadi keajaiban alam yang mendunia."
     },
     {
@@ -405,6 +438,7 @@
         "budaya": ["Tari Wor", "Patung Bisj (Asmat)", "Rumah Adat Kariwari", "Upacara Adat Marind", "Adat Suku Asmat dan Marind"],
         "kuliner": ["Sagu Bakar", "Ikan Asap Merauke", "Keladi Rebus", "Ulat Sagu", "Papeda"],
         "wisata": ["Taman Nasional Wasur", "Pantai Lampu Satu", "Sungai Maro", "Patung Kristus Raja (Merauke)", "Kampung Wisata Asmat"],
+        "baju_adat": ["Pummi"],
         "deskripsi": "Papua Selatan adalah provinsi baru yang dibentuk pada tahun 2022 di bagian selatan Pulau Papua, berbatasan langsung dengan Papua Nugini. Provinsi ini dihuni oleh suku-suku adat seperti Marind, Asmat, dan Muyu yang terkenal dengan seni ukir kayu, ritual adat, dan kehidupan berbasis rawa dan sungai. Taman Nasional Wasur—dijuluki 'Serengetinya Papua'—menjadi rumah bagi burung-burung endemik dan satwa liar, sementara kawasan Asmat dikenal sebagai pusat budaya seni pahat dunia."
     },
     {
@@ -417,6 +451,7 @@
         "budaya": ["Tari Suanggi", "Tari Perang Lembah Baliem", "Rumah Honai", "Upacara Bakar Batu (Barapen)", "Adat Suku Mee dan Yali"],
         "kuliner": ["Papeda", "Ikan Kuah Kuning Kamoro", "Ulat Sagu", "Pisang Rebus", "Daging Babi Panggang"],
         "wisata": ["Lembah Baliem", "Taman Nasional Lorentz (bagian tengah)", "Pantai Nirwana Nabire", "Danau Habbema", "Sungai Paniai"],
+        "baju_adat": ["Yokal"],
         "deskripsi": "Papua Tengah adalah provinsi hasil pemekaran yang mencakup wilayah jantung Pulau Papua, termasuk Lembah Baliem—rumah bagi suku Dani, Lani, dan Yali. Dikenal dengan tradisi Bakar Batu dan arsitektur Rumah Honai, provinsi ini menjadi simbol keberlangsungan budaya pegunungan tengah Papua. Keindahan alamnya mencakup Taman Nasional Lorentz, Danau Habbema di ketinggian, dan sistem danau Paniai yang memesona, menjadikannya destinasi utama bagi ekowisata dan antropologi."
     },
     {
@@ -429,6 +464,7 @@
         "budaya": ["Tari Perang Dani", "Tari Wanda", "Rumah Honai", "Upacara Bakar Batu (Barapen)", "Adat Suku Pegunungan Tengah"],
         "kuliner": ["Papeda", "Ulat Sagu", "Daging Babi Rebus", "Kentang Rebus", "Pisang Bakar"],
         "wisata": ["Lembah Baliem", "Puncak Trikora", "Danau Habema", "Gunung Wilhelmina", "Desa Adat Kurima"],
+        "baju_adat": ["Holim"],
         "deskripsi": "Papua Pegunungan adalah provinsi yang mencakup kawasan pegunungan tengah Pulau Papua, dengan Wamena sebagai pusatnya di Lembah Baliem. Provinsi ini dihuni terutama oleh suku Dani, Lani, dan Yali yang terkenal dengan tradisi Bakar Batu, penggunaan koteka, dan sistem adat yang kuat. Dikelilingi puncak-puncak bersalju seperti Trikora dan pemandangan lembah yang spektakuler, Papua Pegunungan menjadi destinasi utama bagi wisatawan yang ingin menyaksikan budaya asli Papua yang masih lestari."
     },
     {
@@ -441,6 +477,7 @@
         "budaya": ["Tari Cakalele Papua Barat Daya", "Tari Perang Arfak", "Rumah Adat Rumsram", "Upacara Adat Biak", "Adat Suku Biak dan Arfak"],
         "kuliner": ["Ikan Bakar Manokwari", "Papeda", "Sagu Lempeng", "Ulat Sagu", "Kue Sagu"],
         "wisata": ["Pulau Rumberpon", "Pantai Tanjung Sao", "Taman Nasional Teluk Cenderawasih (bagian barat)", "Gunung Arfak", "Danau Anggi"],
+        "baju_adat": ["Ewer Tehit"],
         "deskripsi": "Papua Barat Daya adalah provinsi termuda di Indonesia bagian timur, resmi dibentuk pada 2022 dengan Sorong sebagai ibu kotanya. Terletak di ujung barat Pulau Papua, provinsi ini menghadap ke Selat Dampier dan Laut Maluku, menjadikannya gerbang maritim penting. Masyarakatnya terdiri atas suku Biak, Arfak, dan Maibrat yang mempertahankan tradisi tari perang, musik tifa, dan arsitektur rumah panggung. Keindahan alamnya mencakup Pegunungan Arfak, Danau Anggi yang mistis, serta pulau-pulau tropis yang masih alami."
     },
     {
@@ -453,6 +490,7 @@
         "budaya": ["Tari Yosim Pancar", "Tari Suanggi", "Rumah Adat Rumsram", "Upacara Adat Bakar Batu", "Adat Suku Biak dan Doreri"],
         "kuliner": ["Papeda", "Ikan Kuah Kuning", "Sagu Bakar", "Ulat Sagu", "Kue Lontar"],
         "wisata": ["Raja Ampat", "Pantai Pasir Putih Manokwari", "Taman Nasional Teluk Cenderawasih", "Goa Jepang Manokwari", "Pegunungan Arfak"],
+        "baju_adat": ["Ewer"],
         "deskripsi": "Papua Barat adalah provinsi yang mencakup wilayah barat Pulau Papua, terkenal di dunia melalui Raja Ampat—salah satu pusat keanekaragaman hayati laut terkaya di planet ini. Meski wilayahnya dipersempit setelah pemekaran Papua Barat Daya, provinsi ini tetap menjadi destinasi unggulan ekowisata dan konservasi. Masyarakat adat Biak dan Doreri mempertahankan budaya maritim melalui tari Yosim Pancar, rumah Rumsram, dan sistem adat berbasis pelayaran tradisional."
     }
 ]
