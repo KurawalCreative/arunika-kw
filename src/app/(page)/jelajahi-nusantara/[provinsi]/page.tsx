@@ -75,7 +75,7 @@ export default function Page() {
     const [isProcessing, setIsProcessing] = useState(false);
     const [showAll, setShowAll] = useState(false);
     const [selectedBajuIndex, setSelectedBajuIndex] = useState(0);
-    const [selectedAPI, setSelectedAPI] = useState<"gemini" | "qwen">("gemini");
+    const [selectedAPI, setSelectedAPI] = useState<"qwen">("qwen");
     const [uploadProgress, setUploadProgress] = useState(0);
     const [isBuilding, setIsBuilding] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -342,13 +342,6 @@ export default function Page() {
                                             )}
                                         </CardContent>
                                         <CardFooter className="-mt-8 flex flex-wrap gap-1 px-6 pb-4">
-                                            <div className="mr-4 flex items-center gap-2">
-                                                <label className="text-sm">API:</label>
-                                                <select value={selectedAPI} onChange={(e) => setSelectedAPI(e.target.value as "gemini" | "qwen")} className="rounded border px-2 py-1 text-sm">
-                                                    <option value="gemini">Gemini</option>
-                                                    <option value="qwen">Qwen</option>
-                                                </select>
-                                            </div>
                                             <Button size="default" variant="default" className="rounded-md" onClick={handleProcessTryOn} disabled={isProcessing}>
                                                 {isProcessing ? (isBuilding ? (downloadProgress > 0 ? `Loading... ${downloadProgress}%` : "Sedang memproses gambar...") : `Uploading... ${uploadProgress}%`) : "Proses Gambar"}
                                             </Button>
@@ -360,14 +353,14 @@ export default function Page() {
 
                             <motion.div layoutId="preview-column" className="space-y-6">
                                 <Card className="flex flex-col items-center justify-center gap-3 rounded-3xl border border-dashed border-slate-200 bg-white/70 p-6 text-center text-slate-500 shadow-xl dark:border-slate-700 dark:bg-gray-900/60 dark:text-slate-300">
-                                    <div className="h-40 w-full rounded-2xl border border-slate-200 bg-slate-50 dark:border-slate-600 dark:bg-slate-800" aria-hidden>
+                                    <div className="w-full rounded-2xl border border-slate-200 bg-slate-50 dark:border-slate-600 dark:bg-slate-800" aria-hidden>
                                         {previewReady ? (
                                             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                                                 <DialogTrigger asChild>
-                                                    <img src={processedImageURL ?? ""} alt="Edited preview" className="h-full w-full cursor-pointer rounded-2xl object-contain" />
+                                                    <img src={processedImageURL ?? ""} alt="Edited preview" className="max-h-[40vh] w-full cursor-pointer rounded-2xl object-contain" />
                                                 </DialogTrigger>
-                                                <DialogContent className="max-w-4xl">
-                                                    <div className="flex flex-col items-center gap-4">
+                                                <DialogContent className="max-w-4xl dark:bg-gray-900">
+                                                    <div className="flex flex-col items-center gap-4 dark:text-white">
                                                         <img src={processedImageURL ?? ""} alt="Full Edited preview" className="max-h-[70vh] max-w-full object-contain" />
                                                         <div className="flex gap-2">
                                                             <Button
@@ -388,7 +381,7 @@ export default function Page() {
                                                 </DialogContent>
                                             </Dialog>
                                         ) : (
-                                            <div className="flex h-full flex-col items-center justify-center text-xs font-semibold tracking-[0.3em] text-slate-400 uppercase">
+                                            <div className="flex h-40 flex-col items-center justify-center text-xs font-semibold tracking-[0.3em] text-slate-400 uppercase">
                                                 <span>Edited Image</span>
                                                 <span className="mt-1 text-[0.55rem]">Menunggu proses</span>
                                             </div>

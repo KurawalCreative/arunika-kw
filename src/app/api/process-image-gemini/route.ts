@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
         const bytes = await imageFile.arrayBuffer();
         const base64Image = Buffer.from(bytes).toString("base64");
 
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const model = genAI.getGenerativeModel({ model: "gemini-pro-vision" });
 
         const imagePart = {
             inlineData: {
