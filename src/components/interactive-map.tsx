@@ -11,7 +11,7 @@ import provinsi from "@/assets/provinsi.json";
 import { useTheme } from "next-themes";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, RefreshCw, Languages, Utensils, Palette, MapPin } from "lucide-react";
+import { Search, RefreshCw } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -58,6 +58,7 @@ const InteractiveMap = () => {
     const mapRef = useRef<MapType | null>(null);
     const lastHovered = useRef<string | null>(null);
     const hoverFrame = useRef<number | null>(null);
+    const hoverDebounceRef = useRef<NodeJS.Timeout | null>(null);
     const dialogOpenRef = useRef(false);
     const router = useRouter();
 
@@ -66,7 +67,6 @@ const InteractiveMap = () => {
     const [dialogOpen, setDialogOpen] = useState(false);
     const [selectedProvince, setSelectedProvince] = useState<string | null>(null);
     const [description, setDescription] = useState<string | null>(null);
-    const [showMoreInModal, setShowMoreInModal] = useState(false);
     const [isTouchDevice, setIsTouchDevice] = useState(false);
     const isTouchRef = useRef(false);
 
@@ -116,7 +116,7 @@ const InteractiveMap = () => {
                         [minX, minY],
                         [maxX, maxY],
                     ],
-                    { padding: 20, maxZoom: 7 },
+                    { padding: 20, maxZoom: 6 },
                 );
             }
             mapRef.current.setFilter("indo-highlight", ["==", "NAME_1", entry.name]);
@@ -133,6 +133,25 @@ const InteractiveMap = () => {
         },
         [focusProvinceOnMap],
     );
+
+    const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearch(e.target.value);
+    }, []);
+
+    const handleRefresh = useCallback(() => {
+        if (mapRef.current) {
+            mapRef.current.fitBounds(
+                [
+                    [92, -12],
+                    [145, 8],
+                ],
+                { padding: 20, maxZoom: 6 },
+            );
+            mapRef.current.setFilter("indo-highlight", ["==", "NAME_1", ""]);
+            setSelectedProvince(null);
+            setDescription(null);
+        }
+    }, []);
     // Map provinsi data
     const provinsiMap = useMemo(() => {
         const map = new Map<string, any>();
@@ -184,7 +203,7 @@ const InteractiveMap = () => {
                 sources: { "base-tiles": { type: "raster", tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"], tileSize: 256 } },
                 layers: [
                     { id: "background", type: "background", paint: { "background-color": theme === "dark" ? "#0f172a" : "#f8fafc" } },
-                    { id: "base-map", type: "raster", source: "base-tiles", paint: { "raster-opacity": theme === "dark" ? 0.32 : 0.14 } },
+                    { id: "base-map", type: "raster", source: "base-tiles", paint: { "raster-opacity": theme === "dark" ? 0.2 : 0.1 } },
                 ],
             } as unknown as StyleSpecification,
             center: [118, -2],
@@ -217,8 +236,8 @@ const InteractiveMap = () => {
             const features = makeFeatures(indonesia as FeatureCollection);
             map.addSource("indonesia", { type: "geojson", data: { type: "FeatureCollection", features } });
 
-            map.addLayer({ id: "indo-fill", type: "fill", source: "indonesia", paint: { "fill-color": ["get", "color"], "fill-opacity": 0.9 } });
-            map.addLayer({ id: "indo-highlight", type: "fill", source: "indonesia", paint: { "fill-outline-color": "#fff", "fill-color": "#fff", "fill-opacity": 0.4 }, filter: ["==", "NAME_1", ""] });
+            map.addLayer({ id: "indo-fill", type: "fill", source: "indonesia", paint: { "fill-color": ["get", "color"], "fill-opacity": 0.7 } });
+            map.addLayer({ id: "indo-highlight", type: "fill", source: "indonesia", paint: { "fill-outline-color": "#fff", "fill-color": "#fff", "fill-opacity": 0.3 }, filter: ["==", "NAME_1", ""] });
             map.addLayer({ id: "indo-outline", type: "line", source: "indonesia", paint: { "line-color": "#fff", "line-width": 1.2 } });
 
             try {
@@ -238,15 +257,19 @@ const InteractiveMap = () => {
                     lastHovered.current = name;
                     map.getCanvas().style.cursor = "pointer";
                     map.setFilter("indo-highlight", ["==", "NAME_1", name]);
-                    setSelectedProvince(name);
-                    // Ambil data dari file provinsi
-                    const slug = name.toLowerCase().replace(/\s+/g, "-");
-                    const channel = provinsiMap.get(slug);
-                    if (channel) {
-                        setDescription(channel.deskripsi2 ?? channel.description ?? `Provinsi ${name} memiliki kekayaan budaya, bahasa, dan tradisi khas Indonesia.`);
-                    } else {
-                        setDescription(`Provinsi ${name} memiliki kekayaan budaya, bahasa, dan tradisi khas Indonesia.`);
-                    }
+                    // Debounce state updates
+                    if (hoverDebounceRef.current) clearTimeout(hoverDebounceRef.current);
+                    hoverDebounceRef.current = setTimeout(() => {
+                        setSelectedProvince(name);
+                        // Ambil data dari file provinsi
+                        const slug = name.toLowerCase().replace(/\s+/g, "-");
+                        const channel = provinsiMap.get(slug);
+                        if (channel) {
+                            setDescription(channel.deskripsi2 ?? channel.description ?? `Provinsi ${name} memiliki kekayaan budaya, bahasa, dan tradisi khas Indonesia.`);
+                        } else {
+                            setDescription(`Provinsi ${name} memiliki kekayaan budaya, bahasa, dan tradisi khas Indonesia.`);
+                        }
+                    }, 100); // 100ms debounce
                 });
             });
 
@@ -269,6 +292,8 @@ const InteractiveMap = () => {
             map.on("mouseleave", "indo-fill", () => {
                 if (hoverFrame.current) cancelAnimationFrame(hoverFrame.current);
                 hoverFrame.current = null;
+                if (hoverDebounceRef.current) clearTimeout(hoverDebounceRef.current);
+                hoverDebounceRef.current = null;
                 lastHovered.current = null;
                 map.getCanvas().style.cursor = "";
                 map.setFilter("indo-highlight", ["==", "NAME_1", ""]);
@@ -319,27 +344,9 @@ const InteractiveMap = () => {
                                     <span className="absolute top-1/2 left-3 -translate-y-1/2 text-gray-400 transition dark:text-gray-500">
                                         <Search size={16} />
                                     </span>
-                                    <Input placeholder="Cari provinsi..." inputMode="search" value={search} onChange={(e) => setSearch(e.target.value)} className={SEARCH_INPUT_CLASSES} />
+                                    <Input placeholder="Cari provinsi..." inputMode="search" value={search} onChange={handleSearchChange} className={SEARCH_INPUT_CLASSES} />
                                 </div>
-                                <Button
-                                    size="icon"
-                                    className={REFRESH_BUTTON_CLASSES}
-                                    aria-label="Reset Map"
-                                    onClick={() => {
-                                        if (mapRef.current) {
-                                            mapRef.current.fitBounds(
-                                                [
-                                                    [92, -12],
-                                                    [145, 8],
-                                                ],
-                                                { padding: 20, maxZoom: 6 },
-                                            );
-                                            mapRef.current.setFilter("indo-highlight", ["==", "NAME_1", ""]);
-                                            setSelectedProvince(null);
-                                            setDescription(null);
-                                        }
-                                    }}
-                                >
+                                <Button size="icon" className={REFRESH_BUTTON_CLASSES} aria-label="Reset Map" onClick={handleRefresh}>
                                     <RefreshCw size={18} />
                                 </Button>
                             </div>
@@ -381,98 +388,27 @@ const InteractiveMap = () => {
                         )}
                         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                             <DialogContent className={DIALOG_CONTENT_CLASSES}>
-                                <DialogHeader className="shrink-0 px-6 pt-6">
-                                    <div className="mb-4 flex items-center justify-center gap-4">
-                                        <div className="rounded-full bg-linear-to-br from-orange-400 via-pink-500 to-red-500 p-4 text-4xl text-white shadow-lg dark:from-orange-500 dark:via-pink-600 dark:to-red-600">🌴</div>
-                                        <div>
-                                            <DialogTitle className="text-2xl font-bold text-gray-900 dark:text-white">{selectedProvince ? `Budaya ${selectedProvince}` : "Jelajahi Budaya"}</DialogTitle>
-                                            <p className="mt-1 text-sm text-orange-600 dark:text-orange-400">Warisan Budaya Indonesia</p>
-                                        </div>
+                                <DialogHeader className="shrink-0 px-4 pt-6 sm:px-6">
+                                    <div className="mb-3 text-left">
+                                        <DialogTitle className="text-2xl font-bold text-gray-900 dark:text-white">{selectedProvince ? `Budaya ${selectedProvince}` : "Jelajahi Budaya"}</DialogTitle>
+                                        <p className="mt-1 text-sm text-blue-600 dark:text-blue-400">Warisan Budaya Indonesia</p>
                                     </div>
                                 </DialogHeader>
 
-                                {/* Scrollable Content */}
-                                <div className="flex-1 overflow-y-auto px-6 pb-6">
-                                    {(() => {
-                                        const slug = selectedProvince ? selectedProvince.toLowerCase().replace(/\s+/g, "-") : "";
-                                        const channel = slug ? provinsiMap.get(slug) : null;
-                                        if (!channel) {
-                                            return (
-                                                <div className="py-6 text-center">
-                                                    <p className="text-gray-600 dark:text-gray-400">
-                                                        Kamu akan menjelajahi budaya dari <span className="text-lg font-medium text-gray-900 dark:text-white">{selectedProvince || "provinsi"}</span>. Temukan cerita, bahasa, dan tradisi yang kaya.
-                                                    </p>
-                                                </div>
-                                            );
-                                        }
-
-                                        const fullDesc = channel.deskripsi2 ?? channel.description ?? "Tidak ada deskripsi.";
-                                        const shortDesc = fullDesc.length > 250 ? fullDesc.slice(0, 250) + "..." : fullDesc;
-
-                                        return (
-                                            <div className="space-y-4 px-6">
-                                                {/* Deskripsi */}
-                                                <div className="rounded-lg border border-orange-200 bg-linear-to-r from-orange-50 to-pink-50 p-4 dark:border-orange-900 dark:from-gray-800 dark:to-gray-900">
-                                                    <h3 className="mb-2 text-lg font-semibold text-gray-900 dark:text-white">{channel.name}</h3>
-                                                    <p className="text-sm leading-relaxed text-gray-700 dark:text-gray-300">{showMoreInModal ? fullDesc : shortDesc}</p>
-                                                    {fullDesc.length > 250 && (
-                                                        <button className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-orange-600 transition-colors hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300" type="button" onClick={() => setShowMoreInModal((v) => !v)}>
-                                                            {showMoreInModal ? "Sembunyikan" : "Selengkapnya"}
-                                                            {showMoreInModal ? "↑" : "↓"}
-                                                        </button>
-                                                    )}
-                                                </div>
-
-                                                {/* Detail Budaya */}
-                                                <div className="grid grid-cols-2 gap-3">
-                                                    {channel.bahasa && (
-                                                        <div className="rounded-lg border border-blue-200 bg-blue-50 p-3 dark:border-blue-800 dark:bg-blue-900/20">
-                                                            <div className="mb-2 flex items-center gap-2">
-                                                                <Languages size={18} className="text-blue-600 dark:text-blue-400" />
-                                                                <span className="text-sm font-semibold text-gray-900 dark:text-white">Bahasa</span>
-                                                            </div>
-                                                            <p className="text-xs text-gray-700 dark:text-gray-300">{channel.bahasa}</p>
-                                                        </div>
-                                                    )}
-                                                    {channel.kuliner && (
-                                                        <div className="rounded-lg border border-green-200 bg-green-50 p-3 dark:border-green-800 dark:bg-green-900/20">
-                                                            <div className="mb-2 flex items-center gap-2">
-                                                                <Utensils size={18} className="text-green-600 dark:text-green-400" />
-                                                                <span className="text-sm font-semibold text-gray-900 dark:text-white">Kuliner</span>
-                                                            </div>
-                                                            <p className="text-xs text-gray-700 dark:text-gray-300">{channel.kuliner}</p>
-                                                        </div>
-                                                    )}
-                                                    {channel.budaya && (
-                                                        <div className="rounded-lg border border-purple-200 bg-purple-50 p-3 dark:border-purple-800 dark:bg-purple-900/20">
-                                                            <div className="mb-2 flex items-center gap-2">
-                                                                <Palette size={18} className="text-purple-600 dark:text-purple-400" />
-                                                                <span className="text-sm font-semibold text-gray-900 dark:text-white">Budaya</span>
-                                                            </div>
-                                                            <p className="text-xs text-gray-700 dark:text-gray-300">{channel.budaya}</p>
-                                                        </div>
-                                                    )}
-                                                    {channel.wisata && (
-                                                        <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 dark:border-amber-800 dark:bg-amber-900/20">
-                                                            <div className="mb-2 flex items-center gap-2">
-                                                                <MapPin size={18} className="text-amber-600 dark:text-amber-400" />
-                                                                <span className="text-sm font-semibold text-gray-900 dark:text-white">Wisata</span>
-                                                            </div>
-                                                            <p className="text-xs text-gray-700 dark:text-gray-300">{channel.wisata}</p>
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        );
-                                    })()}
+                                {/* Simplified Content */}
+                                <div className="space-y-3 px-4 py-6 text-left sm:px-6">
+                                    <p className="text-gray-600 dark:text-gray-400">
+                                        Kamu akan menjelajahi budaya dari <span className="text-lg font-medium text-gray-900 dark:text-white">{selectedProvince || "provinsi"}</span>. Temukan cerita, bahasa, dan tradisi yang kaya.
+                                    </p>
+                                    <p className="text-sm text-blue-600 dark:text-blue-400">Coba baju adat dengan foto kamu! Bisa pakai foto kucing atau hewan lucu lainnya juga loh.</p>
                                 </div>
 
-                                <DialogFooter className="mt-4 shrink-0 border-t border-slate-100/70 bg-white/90 px-6 py-4 dark:border-slate-800/70 dark:bg-slate-950/90">
+                                <DialogFooter className="mt-4 shrink-0 border-t border-slate-100/70 bg-white/90 px-4 py-4 sm:px-6 dark:border-slate-800/70 dark:bg-slate-950/90">
                                     <div className="flex w-full gap-2">
                                         <Button variant="secondary" onClick={() => setDialogOpen(false)} className="flex-1">
                                             Batal
                                         </Button>
-                                        <Button onClick={() => router.push(`/jelajahi-nusantara/${selectedProvince?.toLowerCase().replace(/\s+/g, "-")}`)} className="flex-1 bg-linear-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600">
+                                        <Button onClick={() => router.push(`/jelajahi-nusantara/${selectedProvince?.toLowerCase().replace(/\s+/g, "-")}`)} className="flex-1 bg-blue-500 hover:bg-blue-600">
                                             Jelajahi Sekarang →
                                         </Button>
                                     </div>

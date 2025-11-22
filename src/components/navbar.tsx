@@ -27,7 +27,6 @@ const DropdownList = [
         title: "Konten",
         items: [
             { label: "Arunika AI", href: "/ai", description: "Asisten AI untuk budaya Nusantara" },
-            { label: "Peta Budaya", href: "/jelajahi-nusantara", description: "Jelajahi kebudayaan Indonesia" },
             { label: "Koleksi Interaktif", href: "/koleksi-interaktif", description: "Koleksi digital interaktif" },
             { label: "Photo Booth", href: "/photo-booth" },
         ],
@@ -111,7 +110,7 @@ function Navbar() {
                         </div>
 
                         {/* Desktop Navigation */}
-                        <div className="absolute top-1/2 left-1/2 hidden -translate-x-1/2 -translate-y-1/2 lg:flex">
+                        <div className="absolute top-1/2 left-1/2 hidden -translate-x-1/2 -translate-y-1/2 xl:flex">
                             <NavigationMenu>
                                 <NavigationMenuList className="space-x-2">
                                     {/* <NavigationMenuItem>
@@ -150,14 +149,14 @@ function Navbar() {
                                             >
                                                 <span className="inline-flex items-center gap-2">
                                                     <span className="sr-only">Jelajahi Nusantara</span>
-                                                    <span className="mr-1 h-2 w-2 rounded-full bg-white/90" aria-hidden />
+                                                    <span className="mr-1 h-2 w-2 rounded-full bg-sky-600/30" aria-hidden />
                                                     <span className="truncate">Jelajahi Nusantara</span>
                                                 </span>
                                             </Link>
                                         </NavigationMenuLink>
                                     </NavigationMenuItem>
 
-                                    {NavbarList.map((link, i) => (
+                                    {NavbarList.filter((link) => link.label !== "Komunitas").map((link, i) => (
                                         <NavigationMenuItem key={i}>
                                             <NavigationMenuLink asChild>
                                                 <Link href={link.href} aria-current={isActive(link.href) ? "page" : undefined} className={`inline-flex h-9 items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-all ${isActive(link.href) ? "font-semibold text-sky-700" : "text-gray-700 hover:bg-blue-50 dark:text-gray-300 dark:hover:bg-blue-950/50 dark:hover:text-blue-400"}`}>
@@ -207,7 +206,7 @@ function Navbar() {
                             </div>
 
                             {/* Hamburger */}
-                            <button className="rounded-md p-2 text-gray-700 transition hover:bg-gray-100 lg:hidden dark:text-gray-300 dark:hover:bg-neutral-800" onClick={() => setIsMobileMenuOpen((prev) => !prev)} aria-label="Toggle menu">
+                            <button className="rounded-md p-2 text-gray-700 transition hover:bg-gray-100 xl:hidden dark:text-gray-300 dark:hover:bg-neutral-800" onClick={() => setIsMobileMenuOpen((prev) => !prev)} aria-label="Toggle menu">
                                 {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
                             </button>
                         </div>
@@ -230,8 +229,16 @@ function Navbar() {
                                 </div>
 
                                 <div className="space-y-1">
-                                    {/* Fitur Dropdown */}
-                                    <div>
+                                    {/* Jelajahi Nusantara */}
+                                    <Link href="/jelajahi-nusantara" onClick={closeMobileMenu} aria-current={isActive("/jelajahi-nusantara") ? "page" : undefined} className={`block rounded-lg px-4 py-3 font-medium transition ${isActive("/jelajahi-nusantara") ? "bg-sky-100 text-sky-700" : "text-gray-900 hover:bg-blue-50 dark:text-gray-100 dark:hover:bg-blue-950/50 dark:hover:text-blue-400"}`}>
+                                        <span className="inline-flex items-center gap-2">
+                                            <span className="mr-1 h-2 w-2 rounded-full bg-sky-600" aria-hidden />
+                                            <span>Jelajahi Nusantara</span>
+                                        </span>
+                                    </Link>
+
+                                    {/* Fitur Dropdown - Commented out to hide */}
+                                    {/* <div>
                                         <button onClick={() => setIsMobileDropdownOpen(!isMobileDropdownOpen)} className="flex w-full items-center justify-between rounded-lg px-4 py-3 font-medium text-gray-900 hover:bg-blue-50 dark:text-gray-100 dark:hover:bg-blue-950/50 dark:hover:text-blue-400">
                                             <span>Fitur</span>
                                             <motion.svg width="20" height="20" viewBox="0 0 20 20" fill="none" animate={{ rotate: isMobileDropdownOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
@@ -262,13 +269,19 @@ function Navbar() {
                                                 </motion.div>
                                             )}
                                         </AnimatePresence>
-                                    </div>
+                                    </div> */}
 
-                                    {NavbarList.map((link) => (
+                                    {/* Komunitas - Commented out to hide */}
+                                    {/* {NavbarList.filter(link => link.label !== "Komunitas").map((link) => (
                                         <Link key={link.href} href={link.href} onClick={closeMobileMenu} aria-current={isActive(link.href) ? "page" : undefined} className={`block rounded-lg px-4 py-3 font-medium transition ${isActive(link.href) ? "bg-sky-100 text-sky-700" : "text-gray-900 hover:bg-blue-50 dark:text-gray-100 dark:hover:bg-blue-950/50 dark:hover:text-blue-400"}`}>
                                             {link.label}
                                         </Link>
-                                    ))}
+                                    ))} */}
+
+                                    {/* Tetap tampilkan Tentang */}
+                                    <Link href="/tentang" onClick={closeMobileMenu} aria-current={isActive("/tentang") ? "page" : undefined} className={`block rounded-lg px-4 py-3 font-medium transition ${isActive("/tentang") ? "bg-sky-100 text-sky-700" : "text-gray-900 hover:bg-blue-50 dark:text-gray-100 dark:hover:bg-blue-950/50 dark:hover:text-blue-400"}`}>
+                                        Tentang
+                                    </Link>
                                 </div>
 
                                 {/* Locale, Theme, Profile di Mobile */}
