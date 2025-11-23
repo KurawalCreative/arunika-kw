@@ -6,12 +6,12 @@ import logo from "@/assets/svg/logo.svg";
 
 const CtaSection = () => {
     return (
-        <section className="px-4 py-14">
+        <section className="rounded-md px-4 py-14">
             <div className="relative mx-auto w-full max-w-7xl overflow-hidden">
-                <div className="absolute -top-24 -left-24 z-10 -rotate-45 transform">
+                <div className="absolute -top-24 -left-24 z-10 -rotate-45 transform rounded-tl-md">
                     <Image alt="logo" src={logo} draggable="false" className="h-80 w-80" />
                 </div>
-                <div className="text-text-primary relative border-dashed rounded-xs border-[#345063] border-2 bg-white p-16 text-center dark:text-white">
+                <div className="text-text-primary relative rounded-md border-2 border-dashed border-[#345063] bg-white p-16 text-center dark:text-white">
                     <h1 className="text-2xl font-semibold text-gray-900 sm:text-3xl dark:text-white">
                         Siap Menjelajah <span className="text-primary-blue dark:text-blue-400">Budaya Nusantara?</span>
                     </h1>
@@ -20,7 +20,7 @@ const CtaSection = () => {
                         Menjelajah Nusantara
                     </Link>
                 </div>
-                <div className="absolute -bottom-24 -right-24 z-10 rotate-135 transform">
+                <div className="absolute -right-24 -bottom-24 z-10 rotate-135 transform">
                     <Image alt="logo" src={logo} draggable="false" className="h-80 w-80" />
                 </div>
             </div>
