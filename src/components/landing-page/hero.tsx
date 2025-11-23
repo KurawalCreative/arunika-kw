@@ -68,7 +68,7 @@ const HeroSection = () => {
 
                 <div className="relative mx-auto mb-48 flex max-w-7xl flex-col items-center justify-center gap-6 px-4 md:mb-40 lg:mb-32">
                     <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2 }} className="w-full max-w-6xl text-center text-2xl leading-tight font-extrabold text-gray-900 sm:text-3xl md:text-4xl lg:text-5xl dark:text-white">
-                        Dari Sabang hingga Merauke, setiap <span className="text-secondary-green">pakaian adat punya cerita</span>.
+                        Dari Sabang hingga Merauke, setiap <span className="text-secondary-green">pakaian adat punya cerita</span>
                     </motion.h1>
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.5 }} className="relative max-w-[749px] text-center">
                         {/* Paper Plane */}

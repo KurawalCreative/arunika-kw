@@ -11,7 +11,7 @@ import provinsi from "@/assets/provinsi.json";
 import { useTheme } from "next-themes";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, RefreshCw } from "lucide-react";
+import { Search, RefreshCw, Plus, Minus, Scan } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -310,16 +310,33 @@ const InteractiveMap = () => {
         };
     }, [theme]);
 
+    const handleZoomIn = () => {
+        if (!mapRef.current) return;
+        mapRef.current.zoomIn({ duration: 300 });
+    };
+
+    const handleZoomOut = () => {
+        if (!mapRef.current) return;
+        mapRef.current.zoomOut({ duration: 300 });
+    };
+
+    const handleResetView = () => {
+        if (!mapRef.current) return;
+        mapRef.current.fitBounds(
+            [
+                [95, -11], // Southwestern Indonesia (Aceh)
+                [141, 6], // Northeastern Indonesia (Papua)
+            ],
+            { padding: 40, duration: 500 },
+        );
+    };
+
     useEffect(() => {
         if (!mapRef.current) return;
 
         try {
             // Update background color
-            mapRef.current.setPaintProperty(
-                "background",
-                "background-color",
-                theme === "dark" ? "#1f2937" : "#f8fafc",
-            );
+            mapRef.current.setPaintProperty("background", "background-color", theme === "dark" ? "#1f2937" : "#f8fafc");
 
             // Update base map opacity for both modes
             mapRef.current.setPaintProperty("base-map", "raster-opacity", theme === "dark" ? 0.32 : 0.14);
@@ -373,9 +390,26 @@ const InteractiveMap = () => {
                         {/* Map */}
                         <div ref={mapContainer} className="h-full w-full cursor-default" />
 
+                        <div className="absolute top-4 left-4 z-50 flex flex-col gap-2">
+                            {/* Zoom In */}
+                            <button onClick={handleZoomIn} className="rounded-lg bg-white/80 p-2 shadow backdrop-blur transition hover:bg-white dark:bg-slate-800/70 dark:hover:bg-slate-800">
+                                <Plus size={20} className="text-slate-900 dark:text-white" />
+                            </button>
+
+                            {/* Zoom Out */}
+                            <button onClick={handleZoomOut} className="rounded-lg bg-white/80 p-2 shadow backdrop-blur transition hover:bg-white dark:bg-slate-800/70 dark:hover:bg-slate-800">
+                                <Minus size={20} className="text-slate-900 dark:text-white" />
+                            </button>
+
+                            {/* Reset / Fit All Map */}
+                            <button onClick={handleResetView} className="rounded-lg bg-white/80 p-2 shadow backdrop-blur transition hover:bg-white dark:bg-slate-800/70 dark:hover:bg-slate-800">
+                                <Scan size={20} className="text-slate-900 dark:text-white" />
+                            </button>
+                        </div>
+
                         {/* Tooltip info (desktop only) */}
                         {!isTouchDevice && selectedProvince && (
-                            <div className="absolute bottom-3 left-4 max-w-[280px] rounded-2xl border border-white/70 bg-white/90 p-4 text-sm text-slate-800 shadow-xl backdrop-blur transition dark:border-slate-700 dark:bg-slate-900/80 dark:text-gray-100">
+                            <div className="pointer-events-none absolute bottom-3 left-4 max-w-[280px] rounded-2xl border border-white/70 bg-white/90 p-4 text-sm text-slate-800 shadow-xl backdrop-blur transition dark:border-slate-700 dark:bg-slate-900/80 dark:text-gray-100">
                                 <h3 className="mb-1 text-base font-semibold text-gray-900 dark:text-white">{selectedProvince}</h3>
 
                                 <p className="text-[13px] text-gray-700 dark:text-gray-300">

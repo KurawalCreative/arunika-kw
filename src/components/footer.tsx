@@ -34,7 +34,7 @@ const FooterSection = () => {
     }, []);
 
     return (
-        <footer className="w-full border-t border-gray-200 bg-gray-50 text-gray-900 dark:border-neutral-700 dark:bg-gray-900 dark:text-gray-100">
+        <footer className="w-full border-t border-gray-200 bg-gray-50 text-text-primary dark:border-neutral-700 dark:bg-gray-900 dark:text-gray-100">
             <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-4 py-10 md:grid-cols-2">
                 {/* Kolom Kiri: Logo + Social */}
                 <div className="flex flex-col gap-4">
