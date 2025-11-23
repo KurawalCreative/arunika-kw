@@ -5,7 +5,6 @@ export async function POST(request: NextRequest) {
     try {
         const formData = await request.formData();
         const image = formData.get("image") as File;
-        const prompt = formData.get("prompt") as string;
         const pakaian_id = formData.get("pakaian_id") as string;
 
         if (!image) {
@@ -32,6 +31,10 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ image: data.url });
     } catch (error) {
         console.error("Error processing image with Modal:", error);
+        if (axios.isAxiosError(error) && error.response) {
+            console.error("Modal response:", error.response.data, error.response.status);
+            return NextResponse.json({ error: error.response.data?.errorMessage || "Modal API error" }, { status: error.response.status });
+        }
         return NextResponse.json({ error: "Failed to process image" }, { status: 500 });
     }
 }
