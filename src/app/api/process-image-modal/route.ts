@@ -12,12 +12,18 @@ export async function POST(request: NextRequest) {
         }
 
         // Get URLs from env and pick one randomly for round-robin
-        const urls = process.env.MODAL_URLS?.split(",") || ["https://ashr4cbuckc8sfw--pakaian-adat-generator-fastapi-app.modal.run"];
+        const urls = process.env.MODAL_URLS?.split(",");
+        if (!urls || urls.length === 0) {
+            return NextResponse.json({ error: "No Modal URLs configured" }, { status: 500 });
+        }
         const selectedUrl = urls[Math.floor(Math.random() * urls.length)];
 
         const modalFormData = new FormData();
         modalFormData.append("pakaian_id", pakaian_id);
         modalFormData.append("image", image);
+
+        const seed = Math.floor(Math.random() * 999) + 1;
+        modalFormData.append("seed", seed.toString());
 
         const response = await axios.post(`${selectedUrl}/generate`, modalFormData, {
             headers: {
