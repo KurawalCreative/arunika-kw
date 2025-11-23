@@ -71,7 +71,7 @@ const FooterSection = () => {
                 </div>
             </div>
 
-            <div className="border-t border-gray-200 py-4 text-center text-xs text-gray-500 sm:text-sm dark:border-gray-700 dark:text-gray-500">© {new Date().getFullYear()} Arunika. All rights reserved.</div>
+            <div className="border-t border-gray-200 py-4 text-center text-xs text-gray-500 sm:text-sm dark:border-gray-700 dark:text-gray-500">© {new Date().getFullYear()} Adatry. All rights reserved.</div>
         </footer>
     );
 };
