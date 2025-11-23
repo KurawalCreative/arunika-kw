@@ -32,9 +32,6 @@ const SquarePinMap = ({ src, className }: SquarePinMapProps) => {
                     </div>
                 </foreignObject>
             </svg>
-
-            {/* Bayangan lembut di bawah pin */}
-            <div className="absolute bottom-0 left-1/2 h-3 w-10 -translate-x-1/2 rounded-full bg-emerald-500/20 blur-md" />
         </div>
     );
 };

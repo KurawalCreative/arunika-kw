@@ -315,18 +315,22 @@ const InteractiveMap = () => {
 
         try {
             // Update background color
-            mapRef.current.setPaintProperty("background", "background-color", theme === "dark" ? "#0f172a" : "#f8fafc");
+            mapRef.current.setPaintProperty(
+                "background",
+                "background-color",
+                theme === "dark" ? "#1f2937" : "#f8fafc",
+            );
 
             // Update base map opacity for both modes
             mapRef.current.setPaintProperty("base-map", "raster-opacity", theme === "dark" ? 0.32 : 0.14);
 
             // Update outline color for better visibility in dark mode
-            mapRef.current.setPaintProperty("indo-outline", "line-color", theme === "dark" ? "#ffffff" : "#ffffff");
-            mapRef.current.setPaintProperty("indo-outline", "line-width", theme === "dark" ? 1.5 : 1.2);
+            mapRef.current.setPaintProperty("indo-outline", "line-color", theme === "dark" ? "#ffffff" : "#000000");
+            mapRef.current.setPaintProperty("indo-outline", "line-width", 1.5);
 
             // Update indo-highlight layer if it exists
             try {
-                mapRef.current.setPaintProperty("indo-highlight", "fill-outline-color", theme === "dark" ? "#ffffff" : "#fff");
+                mapRef.current.setPaintProperty("indo-highlight", "fill-outline-color", theme === "dark" ? "#ffffff" : "#ffffff");
             } catch {}
         } catch (error) {
             console.warn("Failed to update map theme:", error);
@@ -335,22 +339,28 @@ const InteractiveMap = () => {
 
     return (
         <div className="w-full">
-            <div className="mx-auto w-full max-w-7xl px-4 sm:px-6">
-                <div className="overflow-hidden rounded-4xl border border-slate-200 bg-linear-to-br from-slate-50 via-white to-white/80 p-4 shadow-[0_35px_80px_rgba(15,23,42,0.18)] dark:border-slate-700 dark:bg-linear-to-br dark:from-slate-900/80 dark:via-slate-900/95 dark:to-slate-900/90">
-                    <div className="relative aspect-4/3 w-full overflow-hidden rounded-2xl bg-white sm:h-[500px] dark:bg-slate-900">
+            <div className="mx-auto w-full max-w-7xl sm:px-6">
+                <div className="overflow-hidden dark:border-slate-700 dark:bg-linear-to-br dark:from-slate-900/80 dark:via-slate-900/95 dark:to-slate-900/90">
+                    <div className="relative aspect-4/3 w-full overflow-hidden rounded-xs bg-white sm:h-[500px] dark:bg-slate-900">
+                        {/* Background Panel */}
                         <div className="absolute inset-3 rounded-[26px] border border-white/70 bg-white/80 shadow-inner backdrop-blur dark:border-slate-800 dark:bg-slate-900/70" aria-hidden />
+
+                        {/* Search + Refresh */}
                         <div className="absolute top-3 right-4 z-10 flex flex-col gap-2 sm:top-4">
                             <div className="flex items-center gap-2">
                                 <div className="relative w-full lg:w-80">
                                     <span className="absolute top-1/2 left-3 -translate-y-1/2 text-gray-400 transition dark:text-gray-500">
                                         <Search size={16} />
                                     </span>
+
                                     <Input placeholder="Cari provinsi..." inputMode="search" value={search} onChange={handleSearchChange} className={SEARCH_INPUT_CLASSES} />
                                 </div>
+
                                 <Button size="icon" className={REFRESH_BUTTON_CLASSES} aria-label="Reset Map" onClick={handleRefresh}>
                                     <RefreshCw size={18} />
                                 </Button>
                             </div>
+
                             {hasSearchQuery && (
                                 <div className="mt-2 w-72 rounded-2xl border border-slate-200 bg-white/90 shadow-lg backdrop-blur dark:border-slate-700 dark:bg-slate-900/80">
                                     <ul className="max-h-60 overflow-y-auto">
@@ -359,23 +369,29 @@ const InteractiveMap = () => {
                                 </div>
                             )}
                         </div>
+
+                        {/* Map */}
                         <div ref={mapContainer} className="h-full w-full cursor-default" />
+
+                        {/* Tooltip info (desktop only) */}
                         {!isTouchDevice && selectedProvince && (
                             <div className="absolute bottom-3 left-4 max-w-[280px] rounded-2xl border border-white/70 bg-white/90 p-4 text-sm text-slate-800 shadow-xl backdrop-blur transition dark:border-slate-700 dark:bg-slate-900/80 dark:text-gray-100">
                                 <h3 className="mb-1 text-base font-semibold text-gray-900 dark:text-white">{selectedProvince}</h3>
+
                                 <p className="text-[13px] text-gray-700 dark:text-gray-300">
                                     {(() => {
                                         const slug = selectedProvince.toLowerCase().replace(/\s+/g, "-");
                                         const channel = provinsiMap.get(slug);
                                         let desc = channel?.deskripsi2 ?? channel?.description ?? description ?? "";
-                                        if (desc.length > 100) desc = desc.slice(0, 100) + "...";
-                                        return desc;
+                                        return desc.length > 100 ? desc.slice(0, 100) + "..." : desc;
                                     })()}
                                 </p>
+
                                 {(() => {
                                     const slug = selectedProvince.toLowerCase().replace(/\s+/g, "-");
                                     const channel = provinsiMap.get(slug);
                                     if (!channel) return null;
+
                                     return (
                                         <div className="mt-2 space-y-1 text-xs text-gray-500 dark:text-gray-400">
                                             {channel.bahasa && <div>Bahasa: {channel.bahasa}</div>}
@@ -388,40 +404,50 @@ const InteractiveMap = () => {
                                 })()}
                             </div>
                         )}
+
+                        {/* Dialog Detail */}
                         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                             <DialogContent className={DIALOG_CONTENT_CLASSES}>
+                                {/* Header */}
                                 <DialogHeader className="shrink-0 px-4 pt-6 sm:px-6">
                                     <div className="mb-3 text-left">
                                         <DialogTitle className="text-2xl font-bold text-gray-900 dark:text-white">{selectedProvince ? `Budaya ${selectedProvince}` : "Jelajahi Budaya"}</DialogTitle>
+
                                         <p className="mt-1 text-sm text-blue-600 dark:text-blue-400">Warisan Budaya Indonesia</p>
                                     </div>
                                 </DialogHeader>
 
-                                {/* Simplified Content */}
+                                {/* Content */}
                                 <div className="space-y-3 px-4 py-6 text-left sm:px-6">
                                     <p className="text-gray-600 dark:text-gray-400">
                                         Kamu akan menjelajahi budaya dari <span className="text-lg font-medium text-gray-900 dark:text-white">{selectedProvince || "provinsi"}</span>. Temukan cerita, bahasa, dan tradisi yang kaya.
                                     </p>
+
                                     {(() => {
                                         const slug = selectedProvince?.toLowerCase().replace(/\s+/g, "-");
                                         const channel = slug ? provinsiMap.get(slug) : null;
+
                                         if (channel?.baju_adat) {
                                             return <p className="text-sm text-blue-600 dark:text-blue-400">Baju adat khas: {channel.baju_adat}. Coba baju adat dengan foto kamu! Bisa pakai foto kucing atau hewan lucu lainnya juga loh.</p>;
                                         }
+
                                         return <p className="text-sm text-blue-600 dark:text-blue-400">Coba baju adat dengan foto kamu! Bisa pakai foto kucing atau hewan lucu lainnya juga loh.</p>;
                                     })()}
                                 </div>
 
+                                {/* Footer */}
                                 <DialogFooter className="mt-4 shrink-0 border-t border-slate-100/70 bg-white/90 px-4 py-4 sm:px-6 dark:border-slate-800/70 dark:bg-slate-950/90">
                                     <div className="flex w-full gap-2">
                                         <Button variant="secondary" onClick={() => setDialogOpen(false)} className="flex-1">
                                             Batal
                                         </Button>
+
                                         <Button onClick={() => router.push(`/jelajahi-nusantara/${selectedProvince?.toLowerCase().replace(/\s+/g, "-")}`)} className="flex-1 bg-blue-500 hover:bg-blue-600">
                                             Jelajahi Sekarang →
                                         </Button>
                                     </div>
                                 </DialogFooter>
+
                                 <DialogClose />
                             </DialogContent>
                         </Dialog>

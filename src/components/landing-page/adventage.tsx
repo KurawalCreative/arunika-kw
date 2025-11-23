@@ -48,25 +48,25 @@ const adventage = [
         id: 1,
         value: 38,
         color: "#5DD39E",
-        describe: "Provinsi dengan Certia Unik",
+        describe: "Provinsi dari Sabang sampai Merauke",
     },
     {
         id: 2,
         value: 700,
         color: "#3ABEFF",
-        describe: "Pakaian Adat Nusantara",
+        describe: "Pakaian Adat yang Bisa Dicoba",
     },
     {
         id: 3,
         value: 1340,
         color: "#FF8C42",
-        describe: "Suku & Tradisi",
+        describe: "Suku dengan Busana Khasnya",
     },
     {
         id: 4,
-        value: 1000,
+        value: 500,
         color: "#FF6B6B",
-        describe: "Kisah & Dongeng Rakyat",
+        describe: "Kisah & Makna di Setiap Jahitan",
     },
 ];
 
@@ -96,11 +96,11 @@ const AdventagesSection = () => {
             <motion.div variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true }} className="flex w-full flex-col justify-between gap-8 sm:flex-row sm:gap-4">
                 {adventage.map((v, i) => (
                     <motion.div key={i} variants={itemVariants} transition={{ duration: 0.5, ease: "easeOut" }} className="flex flex-1 flex-col items-center text-center">
-                        <h1 className="text-2xl font-semibold text-gray-900 sm:text-3xl dark:text-white">
+                        <h1 className="text-2xl font-semibold text-neutral-800 sm:text-3xl dark:text-neutral-100">
                             <AnimatedNumber targetValue={v.value} />
                         </h1>
                         <hr className="my-2 h-0.5 w-16 rounded-full border-none sm:w-20" style={{ backgroundColor: v.color }} />
-                        <p className="text-sm text-gray-700 sm:text-base dark:text-gray-300">{v.describe}</p>
+                        <p className="text-sm text-neutral-700 sm:text-base dark:text-neutral-100">{v.describe}</p>
                     </motion.div>
                 ))}
             </motion.div>

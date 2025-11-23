@@ -2,12 +2,16 @@ import Image from "next/image";
 import Link from "next/link";
 
 import ctaMap from "@/assets/svg/cta-map.svg";
+import logo from "@/assets/svg/logo.svg";
 
 const CtaSection = () => {
     return (
-        <section className="px-4 py-16 sm:py-20">
-            <div className="mx-auto w-full max-w-7xl">
-                <div className="text-text-primary text-center dark:text-white">
+        <section className="px-4 py-14">
+            <div className="relative mx-auto w-full max-w-7xl overflow-hidden">
+                <div className="absolute -top-24 -left-24 z-10 -rotate-45 transform">
+                    <Image alt="logo" src={logo} draggable="false" className="h-80 w-80" />
+                </div>
+                <div className="text-text-primary relative border-dashed rounded-xs border-[#345063] border-2 bg-white p-16 text-center dark:text-white">
                     <h1 className="text-2xl font-semibold text-gray-900 sm:text-3xl dark:text-white">
                         Siap Menjelajah <span className="text-primary-blue dark:text-blue-400">Budaya Nusantara?</span>
                     </h1>
@@ -15,6 +19,9 @@ const CtaSection = () => {
                     <Link href="/" className="bg-primary-blue hover:bg-primary-blue-hover mt-6 inline-flex items-center gap-3 rounded-full px-4 py-2 text-sm font-medium text-white transition-all sm:mt-4 sm:px-5 sm:text-base dark:bg-blue-600 dark:hover:bg-blue-700">
                         Menjelajah Nusantara
                     </Link>
+                </div>
+                <div className="absolute -bottom-24 -right-24 z-10 rotate-135 transform">
+                    <Image alt="logo" src={logo} draggable="false" className="h-80 w-80" />
                 </div>
             </div>
         </section>
