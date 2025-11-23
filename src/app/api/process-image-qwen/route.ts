@@ -16,9 +16,20 @@ export async function POST(request: NextRequest) {
         qwenFormData.append("image", imageFile);
         qwenFormData.append("prompt", prompt);
 
+        const tokens =
+            process.env.QWEN_ACCESS_TOKENS?.split(",")
+                .map((t) => t.trim())
+                .filter(Boolean) ?? [];
+        if (!tokens.length && process.env.QWEN_ACCESS_TOKEN) {
+            tokens.push(process.env.QWEN_ACCESS_TOKEN);
+        }
+        if (!tokens.length) {
+            throw new Error("No Qwen access token configured");
+        }
+        const selectedToken = tokens[Math.floor(Math.random() * tokens.length)];
         const response = await axios.post("https://qwen.aikit.club/v1/images/edits", qwenFormData, {
             headers: {
-                Authorization: `Bearer ${process.env.QWEN_ACCESS_TOKEN}`,
+                Authorization: `Bearer ${selectedToken}`,
                 "Content-Type": "multipart/form-data",
             },
         });
