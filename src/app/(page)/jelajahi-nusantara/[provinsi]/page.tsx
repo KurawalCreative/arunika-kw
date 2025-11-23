@@ -11,6 +11,9 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import provinsiData from "@/assets/provinsi.json";
+import CardCarousel from "@/components/provinsi/slide-card";
+import Hero from "@/components/provinsi/Hero";
+import RaniChatCompanion from "@/components/rani-chat-companion";
 
 const pakaianAdatData = {
     total: 38,
@@ -562,9 +565,9 @@ export default function Page() {
     };
 
     return (
-        <div className="mx-auto flex min-h-[calc(100vh-4rem)] w-full max-w-7xl flex-1 flex-col gap-8 px-4 py-6 md:px-6">
+        <div className="min-fit mx-auto flex w-full max-w-7xl flex-1 flex-col gap-8 px-4 py-6 md:px-6">
             <div className="relative overflow-hidden rounded-3xl border border-white/20 bg-linear-to-br from-sky-600/80 via-sky-500/70 to-cyan-400/70 p-10 text-white shadow-2xl dark:border-white/20 dark:from-sky-900/80 dark:via-sky-800/60 dark:to-slate-900/90">
-                <div className="relative z-10 max-w-3xl space-y-4">
+                {/* <div className="relative z-10 max-w-3xl space-y-4">
                     <p className="text-xs font-semibold tracking-[0.4em] text-white/70 uppercase">Jelajahi {provinceName}</p>
                     <h1 className="text-3xl leading-tight font-bold md:text-5xl">Ciptakan dokumentasi visual bertema {provinceName}</h1>
                     <p className="max-w-2xl text-base text-white/90 md:text-lg">Unggah apa pun—manusia, kucing, atau lanskap—lalu lihat langsung bagaimana tampilan tersebut disusun ulang agar cocok dengan nuansa {provinceName} sebelum kamu bagikan atau tampilkan.</p>
@@ -576,9 +579,9 @@ export default function Page() {
                             Jelajahi detail daerah
                         </Button>
                     </div>
-                </div>
+                </div> */}
+                <Hero provinceName={provinceName} description="" />
             </div>
-
             <div className="flex flex-wrap items-center justify-between gap-4 rounded-3xl border border-sky-300 bg-sky-100/70 p-4 text-sm font-semibold text-sky-900 dark:border-sky-700 dark:bg-sky-900/40 dark:text-sky-100">
                 <p className="flex-1">Mau langsung coba tampilan atau merasa perlu tahu detail daerah dulu?</p>
                 <div className="flex gap-2">
@@ -594,137 +597,168 @@ export default function Page() {
             <div className="space-y-6">
                 <AnimatePresence mode="wait">
                     {viewMode === "upload" ? (
-                        <motion.div ref={uploadSectionRef} className="grid gap-6 lg:grid-cols-[1.25fr_0.85fr]" key="upload" id="upload" initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -18 }} transition={{ duration: 0.35 }}>
-                            <motion.div className="space-y-4">
-                                <Card className="space-y-3 bg-white/80 p-0 shadow-xl dark:bg-gray-900/80">
-                                    <CardHeader className="px-6 pt-6">
-                                        <CardTitle>Sesi 1 · Unggah & Siapkan</CardTitle>
-                                        <CardDescription>Unggah foto apa pun—manusia, hewan, atau detail lokasi—lalu sesuaikan catatan singkat agar hasil try-on terasa personal.</CardDescription>
-                                    </CardHeader>
-                                    <CardContent className="px-6 pb-4">
-                                        <div className="flex min-h-[200px] flex-col items-center justify-center gap-2 rounded-3xl border border-dashed border-sky-200 bg-sky-50/60 p-4 dark:border-sky-600 dark:bg-sky-900/40">
-                                            {previewURL ? (
-                                                <div className="relative h-64 w-full overflow-hidden rounded-2xl bg-white shadow-inner">
-                                                    <img src={previewURL} alt="Preview Budaya" className="h-full w-full object-cover" />
-                                                    <Button variant="secondary" size="sm" className="absolute top-2 right-2 h-8 w-8 rounded-full p-0" onClick={clearUpload}>
-                                                        ✕
-                                                    </Button>
-                                                </div>
-                                            ) : (
-                                                <div className="flex flex-col items-center justify-center gap-2 text-center">
-                                                    <p className="text-lg font-semibold text-gray-700 dark:text-gray-200">Upload gambar di sini</p>
-                                                    <p className="text-sm text-gray-600 dark:text-gray-400">Klik untuk memilih file atau drag & drop</p>
-                                                    <input id="cultural-upload" type="file" accept="image/*" className="sr-only" onChange={handleFileChange} />
-                                                    <Button asChild variant="default" size="sm">
-                                                        <label htmlFor="cultural-upload" className="cursor-pointer">
-                                                            Pilih Gambar
-                                                        </label>
-                                                    </Button>
-                                                </div>
-                                            )}
-                                        </div>
-                                    </CardContent>
-                                    <CardFooter></CardFooter>
-                                </Card>
-
-                                <motion.div layoutId="template-panel" className="space-y-4">
-                                    <Card className="space-y-3 bg-white/90 p-0 shadow-xl dark:bg-gray-900/80">
+                        <motion.div ref={uploadSectionRef} key="upload" id="upload" initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -18 }} transition={{ duration: 0.35 }}>
+                            {/* Show upload section only if not processing and not ready */}
+                            {!isProcessing && !previewReady ? (
+                                <div className="grid gap-6 lg:grid-cols-2">
+                                    {/* Sesi 1 - Upload */}
+                                    <Card className="space-y-3 bg-white/80 p-0 shadow-xl dark:bg-gray-900/80">
                                         <CardHeader className="px-6 pt-6">
-                                            <CardTitle>Sesi 2 · Pilih Baju Adat Lain</CardTitle>
-                                            <CardDescription>Pilih baju adat dari daerah lain untuk inspirasi visual yang berbeda.</CardDescription>
+                                            <CardTitle>Sesi 1 · Unggah & Siapkan</CardTitle>
+                                            <CardDescription> Unggah fotomu lalu lihat langsung bagaimana tampilan tersebut disusun ulang agar cocok dengan nuansa {provinceName} sebelum kamu bagikan atau tampilkan.</CardDescription>
                                         </CardHeader>
-                                        <CardContent className="space-y-3 px-6 pb-4">
-                                            {displayedBaju.length === 0 ? (
-                                                <p className="text-sm text-gray-600 dark:text-gray-300">Baju adat dari daerah lain belum tersedia.</p>
-                                            ) : (
-                                                <>
-                                                    <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
-                                                        {displayedBaju.map((item, index) => (
-                                                            <Card key={`${item.province}-${index}`} className={`relative cursor-pointer p-3 transition-all duration-200 hover:shadow-md ${selectedBajuIndex === index ? "ring-primary/25 ring-1" : ""}`} onClick={() => setSelectedBajuIndex(index)}>
-                                                                {item.isCurrent && <div className="absolute inset-0 right-0 bottom-0 rounded-lg bg-linear-to-tl from-blue-500/30 from-1% to-transparent"></div>}
-                                                                <CardHeader className="p-0 pb-1">
-                                                                    <CardTitle className="text-xs font-semibold">{item.baju}</CardTitle>
-                                                                    <CardDescription className="text-[0.6rem]">dari daerah {item.province}</CardDescription>
-                                                                </CardHeader>
-                                                            </Card>
-                                                        ))}
+                                        <CardContent className="h-full space-y-4 px-6 pb-4">
+                                            <div className="flex h-full min-h-[200px] flex-col items-center justify-center gap-2 rounded-3xl border border-dashed border-sky-200 bg-sky-50/60 p-4 dark:border-sky-600 dark:bg-sky-900/40">
+                                                {previewURL ? (
+                                                    <div className="relative w-full overflow-hidden rounded-2xl bg-white shadow-inner">
+                                                        <img src={previewURL} alt="Preview Budaya" className="h-full w-full object-cover" />
+                                                        <Button variant="secondary" size="sm" className="absolute top-2 right-2 h-8 w-8 rounded-full p-0" onClick={clearUpload}>
+                                                            ✕
+                                                        </Button>
                                                     </div>
-                                                    {otherBajuAdat.length > 9 && (
-                                                        <div className="mt-4 flex justify-center">
-                                                            <button onClick={() => setShowAll(!showAll)} className="flex cursor-pointer items-center gap-2 text-sm text-gray-600 transition-colors hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200">
-                                                                {showAll ? (
-                                                                    <>
-                                                                        <span>Sembunyikan</span>
-                                                                        <ChevronUp className="h-4 w-4" />
-                                                                    </>
-                                                                ) : (
-                                                                    <>
-                                                                        <span>Lihat Selengkapnya</span>
-                                                                        <ChevronDown className="h-4 w-4" />
-                                                                    </>
-                                                                )}
-                                                            </button>
-                                                        </div>
-                                                    )}
-                                                </>
+                                                ) : (
+                                                    <div className="flex flex-col items-center justify-center gap-2 text-center">
+                                                        <p className="text-lg font-semibold text-gray-700 dark:text-gray-200">Upload gambar di sini</p>
+                                                        <p className="text-sm text-gray-600 dark:text-gray-400">Klik untuk memilih file atau drag & drop</p>
+                                                        <input id="cultural-upload" type="file" accept="image/*" className="sr-only" onChange={handleFileChange} />
+                                                        <Button asChild variant="default" size="sm">
+                                                            <label htmlFor="cultural-upload" className="cursor-pointer">
+                                                                Pilih Gambar
+                                                            </label>
+                                                        </Button>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+
+                                    {/* Sesi 2 - Pilih Baju Adat */}
+                                    <Card className="space-y-3 bg-white/80 p-0 shadow-xl dark:bg-gray-900/80">
+                                        <CardHeader className="px-6 pt-6">
+                                            <CardTitle>Sesi 2 · Pilih Baju Adat</CardTitle>
+                                            <CardDescription>
+                                                Pilih baju adat {} dari {provinceName} atau coba dari daerah lain.
+                                            </CardDescription>
+                                        </CardHeader>
+                                        <CardContent className="space-y-4 overflow-hidden px-6 pb-4">
+                                            <CardCarousel data={otherBajuAdat} selectedIndex={selectedBajuIndex} onSelectCard={setSelectedBajuIndex} />
+                                            <div className="flex flex-wrap gap-2">
+                                                <div className="flex items-center gap-2">
+                                                    <label className="text-sm dark:text-gray-200">API:</label>
+                                                    <select value={selectedAPI} onChange={(e) => setSelectedAPI(e.target.value as "modal" | "qwen")} className="rounded border px-2 py-1 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-white">
+                                                        <option value="qwen">Qwen</option>
+                                                        <option value="modal">Modal</option>
+                                                    </select>
+                                                </div>
+                                                <Button size="default" variant="default" className="rounded-md" onClick={handleProcessTryOn} disabled={isProcessing || !previewURL}>
+                                                    {isProcessing ? (isBuilding ? (downloadProgress > 0 ? `Loading... ${downloadProgress}%` : "Sedang memproses gambar...") : `Uploading... ${uploadProgress}%`) : "Proses Gambar"}
+                                                </Button>
+                                            </div>
+                                            {errorMessage && <p className="text-sm text-red-600">{errorMessage}</p>}
+                                            {!previewURL && <p className="text-xs text-gray-500 dark:text-gray-400">Upload gambar terlebih dahulu untuk memproses</p>}
+                                        </CardContent>
+                                    </Card>
+                                </div>
+                            ) : (
+                                /* Full width result section when processing or ready */
+                                <motion.div layoutId="preview-column" className="w-full" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} transition={{ duration: 0.4 }}>
+                                    <Card className="bg-white/80 p-0 shadow-xl dark:bg-gray-900/80">
+                                        <CardHeader className="px-6 pt-6">
+                                            <div className="flex items-center justify-between">
+                                                <div>
+                                                    <CardTitle>Hasil Transformasi</CardTitle>
+                                                    <CardDescription>{isProcessing ? "Sedang memproses gambar..." : "Lihat perbandingan sebelum dan sesudah"}</CardDescription>
+                                                </div>
+                                                {previewReady && (
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                        onClick={() => {
+                                                            setPreviewReady(false);
+                                                            setProcessedImageURL(null);
+                                                        }}
+                                                    >
+                                                        Coba Lagi
+                                                    </Button>
+                                                )}
+                                            </div>
+                                        </CardHeader>
+                                        <CardContent className="px-6 pb-6">
+                                            <div className="grid gap-6 md:grid-cols-2">
+                                                {/* Before Image */}
+                                                <div className="space-y-2">
+                                                    <p className="text-sm font-semibold text-gray-900 dark:text-white">Sebelum</p>
+                                                    <div className="relative h-[400px] w-full overflow-hidden rounded-xl border border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800">{previewURL && <img src={previewURL} alt="Original" className="h-full w-full object-contain" />}</div>
+                                                </div>
+
+                                                {/* After Image */}
+                                                <div className="space-y-2">
+                                                    <p className="text-sm font-semibold text-gray-900 dark:text-white">Sesudah</p>
+                                                    <div className="relative h-[400px] w-full overflow-hidden rounded-xl border border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800">
+                                                        {isProcessing ? (
+                                                            <div className="flex h-full flex-col items-center justify-center gap-3">
+                                                                <div className="border-primary-blue h-12 w-12 animate-spin rounded-full border-4 border-t-transparent"></div>
+                                                                <p className="text-sm font-semibold text-gray-600 dark:text-gray-400">{isBuilding ? (downloadProgress > 0 ? `Loading... ${downloadProgress}%` : "Memproses...") : `Upload... ${uploadProgress}%`}</p>
+                                                            </div>
+                                                        ) : previewReady && processedImageURL ? (
+                                                            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                                                                <DialogTrigger asChild>
+                                                                    <img src={processedImageURL} alt="Edited" className="h-full w-full cursor-pointer object-contain transition-transform hover:scale-105" />
+                                                                </DialogTrigger>
+                                                                <DialogContent className="max-w-4xl dark:bg-gray-900">
+                                                                    <div className="flex flex-col items-center gap-4 dark:text-white">
+                                                                        <img src={processedImageURL} alt="Full Edited preview" className="max-h-[70vh] max-w-full object-contain" />
+                                                                        <div className="flex gap-2">
+                                                                            <Button
+                                                                                onClick={() => {
+                                                                                    const link = document.createElement("a");
+                                                                                    link.href = processedImageURL;
+                                                                                    link.download = "edited-image.png";
+                                                                                    link.click();
+                                                                                }}
+                                                                            >
+                                                                                Download
+                                                                            </Button>
+                                                                            <Button variant="outline" onClick={() => setDialogOpen(false)}>
+                                                                                Close
+                                                                            </Button>
+                                                                        </div>
+                                                                    </div>
+                                                                </DialogContent>
+                                                            </Dialog>
+                                                        ) : (
+                                                            <div className="flex h-full flex-col items-center justify-center text-xs font-semibold text-gray-400">
+                                                                <span>Menunggu hasil...</span>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* Action Buttons */}
+                                            {previewReady && processedImageURL && (
+                                                <div className="mt-6 flex gap-3">
+                                                    <Button variant="default" className="flex-1" onClick={() => setDialogOpen(true)}>
+                                                        Lihat Full Size
+                                                    </Button>
+                                                    <Button
+                                                        variant="outline"
+                                                        className="flex-1"
+                                                        onClick={() => {
+                                                            const link = document.createElement("a");
+                                                            link.href = processedImageURL;
+                                                            link.download = "edited-image.png";
+                                                            link.click();
+                                                        }}
+                                                    >
+                                                        Download
+                                                    </Button>
+                                                </div>
                                             )}
                                         </CardContent>
-                                        <CardFooter className="-mt-8 flex flex-wrap gap-1 px-6 pb-4">
-                                            <div className="mr-4 flex items-center gap-2">
-                                                <label className="text-sm dark:text-gray-200">API:</label>
-                                                <select value={selectedAPI} onChange={(e) => setSelectedAPI(e.target.value as "modal" | "qwen")} className="rounded border px-2 py-1 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-white">
-                                                    <option value="qwen">Qwen</option>
-                                                    <option value="modal">Modal</option>
-                                                </select>
-                                            </div>
-                                            <Button size="default" variant="default" className="rounded-md" onClick={handleProcessTryOn} disabled={isProcessing}>
-                                                {isProcessing ? (isBuilding ? (downloadProgress > 0 ? `Loading... ${downloadProgress}%` : "Sedang memproses gambar...") : `Uploading... ${uploadProgress}%`) : "Proses Gambar"}
-                                            </Button>
-                                            {errorMessage && <p className="mt-2 text-sm text-red-600">{errorMessage}</p>}
-                                        </CardFooter>
                                     </Card>
                                 </motion.div>
-                            </motion.div>
-
-                            <motion.div layoutId="preview-column" className="space-y-6">
-                                <Card className="flex flex-col items-center justify-center gap-3 rounded-3xl border border-dashed border-slate-200 bg-white/70 p-6 text-center text-slate-500 shadow-xl dark:border-slate-700 dark:bg-gray-900/60 dark:text-slate-300">
-                                    <div className="w-full rounded-2xl border border-slate-200 bg-slate-50 dark:border-slate-600 dark:bg-slate-800" aria-hidden>
-                                        {previewReady ? (
-                                            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-                                                <DialogTrigger asChild>
-                                                    <img src={processedImageURL ?? ""} alt="Edited preview" className="max-h-[40vh] w-full cursor-pointer rounded-2xl object-contain" />
-                                                </DialogTrigger>
-                                                <DialogContent className="max-w-4xl dark:bg-gray-900">
-                                                    <div className="flex flex-col items-center gap-4 dark:text-white">
-                                                        <img src={processedImageURL ?? ""} alt="Full Edited preview" className="max-h-[70vh] max-w-full object-contain" />
-                                                        <div className="flex gap-2">
-                                                            <Button
-                                                                onClick={() => {
-                                                                    const link = document.createElement("a");
-                                                                    link.href = processedImageURL ?? "";
-                                                                    link.download = "edited-image.png";
-                                                                    link.click();
-                                                                }}
-                                                            >
-                                                                Download
-                                                            </Button>
-                                                            <Button variant="outline" onClick={() => setDialogOpen(false)}>
-                                                                Close
-                                                            </Button>
-                                                        </div>
-                                                    </div>
-                                                </DialogContent>
-                                            </Dialog>
-                                        ) : (
-                                            <div className="flex h-40 flex-col items-center justify-center text-xs font-semibold tracking-[0.3em] text-slate-400 uppercase">
-                                                <span>Edited Image</span>
-                                                <span className="mt-1 text-[0.55rem]">Menunggu proses</span>
-                                            </div>
-                                        )}
-                                    </div>
-                                    <p className="text-sm font-semibold text-slate-700 dark:text-slate-100">{isBuilding ? (downloadProgress > 0 ? `Loading... ${downloadProgress}%` : "Sedang memproses gambar...") : "Preview siap ketika proses selesai"}</p>
-                                </Card>
-                            </motion.div>
+                            )}
                         </motion.div>
                     ) : (
                         <motion.div ref={detailSectionRef} key="detail" initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -18 }} transition={{ duration: 0.35 }}>
@@ -834,6 +868,7 @@ export default function Page() {
                     )}
                 </AnimatePresence>
             </div>
+            <RaniChatCompanion />
         </div>
     );
 }

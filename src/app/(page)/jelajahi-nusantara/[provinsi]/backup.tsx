@@ -11,8 +11,6 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import provinsiData from "@/assets/provinsi.json";
-import CardCarousel from "@/components/provinsi/slide-card";
-import Hero from "@/components/provinsi/Hero";
 
 const pakaianAdatData = {
     total: 38,
@@ -31,46 +29,298 @@ const pakaianAdatData = {
                 provinsi: "Sumatera Barat",
             },
         ],
+        "Sumatera Utara": [
+            {
+                id: "ulos",
+                name: "Ulos (Sumatera Utara)",
+                provinsi: "Sumatera Utara",
+            },
+        ],
+        "Sumatera Selatan": [
+            {
+                id: "aesan_gede",
+                name: "Aesan Gede (Sumatera Selatan)",
+                provinsi: "Sumatera Selatan",
+            },
+        ],
+        "Kepulauan Riau": [
+            {
+                id: "teluk_belanga",
+                name: "Teluk Belanga (Kepulauan Riau)",
+                provinsi: "Kepulauan Riau",
+            },
+        ],
+        Riau: [
+            {
+                id: "kebaya_laboh_kurung",
+                name: "Kebaya Laboh dan Kurung Cekak Musang (Riau)",
+                provinsi: "Riau",
+            },
+        ],
+        Bengkulu: [
+            {
+                id: "baju_betabur",
+                name: "Baju Betabur (Bengkulu)",
+                provinsi: "Bengkulu",
+            },
+        ],
+        Jambi: [
+            {
+                id: "baju_kurung_jambi",
+                name: "Baju Kurung (Jambi)",
+                provinsi: "Jambi",
+            },
+        ],
+        "Bangka Belitung": [
+            {
+                id: "paksian",
+                name: "Paksian (Bangka Belitung)",
+                provinsi: "Bangka Belitung",
+            },
+        ],
+        Lampung: [
+            {
+                id: "tulang_bawang",
+                name: "Tulang Bawang (Lampung)",
+                provinsi: "Lampung",
+            },
+        ],
+        Banten: [
+            {
+                id: "pangsi",
+                name: "Pangsi (Banten)",
+                provinsi: "Banten",
+            },
+        ],
+        "DKI Jakarta": [
+            {
+                id: "kebaya_encim",
+                name: "Kebaya Encim (DKI Jakarta)",
+                provinsi: "DKI Jakarta",
+            },
+        ],
+        "Jawa Barat": [
+            {
+                id: "kebaya_sunda",
+                name: "Kebaya Sunda (Jawa Barat)",
+                provinsi: "Jawa Barat",
+            },
+        ],
+        "Daerah Istimewa Yogyakarta": [
+            {
+                id: "kesatrian_ageng",
+                name: "Kesatrian Ageng (DI Yogyakarta)",
+                provinsi: "Daerah Istimewa Yogyakarta",
+            },
+        ],
+        "Jawa Tengah": [
+            {
+                id: "jawi_jangkep",
+                name: "Jawi Jangkep (Jawa Tengah)",
+                provinsi: "Jawa Tengah",
+            },
+        ],
+        "Jawa Timur": [
+            {
+                id: "pesaan",
+                name: "Pesa’an (Jawa Timur)",
+                provinsi: "Jawa Timur",
+            },
+        ],
+        Bali: [
+            {
+                id: "payas_agung",
+                name: "Payas Agung (Bali)",
+                provinsi: "Bali",
+            },
+        ],
+        "Nusa Tenggara Barat": [
+            {
+                id: "pegon",
+                name: "Pegon (Nusa Tenggara Barat)",
+                provinsi: "Nusa Tenggara Barat",
+            },
+        ],
+        "Nusa Tenggara Timur": [
+            {
+                id: "amarasi",
+                name: "Amarasi (Nusa Tenggara Timur)",
+                provinsi: "Nusa Tenggara Timur",
+            },
+        ],
+        "Kalimantan Barat": [
+            {
+                id: "king_bibinge_baba",
+                name: "King Bibinge dan King Baba (Kalimantan Barat)",
+                provinsi: "Kalimantan Barat",
+            },
+        ],
+        "Kalimantan Tengah": [
+            {
+                id: "upak_nyamu",
+                name: "Upak Nyamu (Kalimantan Tengah)",
+                provinsi: "Kalimantan Tengah",
+            },
+        ],
+        "Kalimantan Utara": [
+            {
+                id: "taa_sapei_sapaq",
+                name: "Ta’a dan Sapei Sapaq (Kalimantan Utara)",
+                provinsi: "Kalimantan Utara",
+            },
+        ],
+        "Kalimantan Selatan": [
+            {
+                id: "bagajah_gamuling",
+                name: "Bagajah Gamuling (Kalimantan Selatan)",
+                provinsi: "Kalimantan Selatan",
+            },
+        ],
+        "Kalimantan Timur": [
+            {
+                id: "kustin",
+                name: "Kustin (Kalimantan Timur)",
+                provinsi: "Kalimantan Timur",
+            },
+        ],
+        "Sulawesi Barat": [
+            {
+                id: "pattuqduq_towaine",
+                name: "Pattuqduq Towaine (Sulawesi Barat)",
+                provinsi: "Sulawesi Barat",
+            },
+        ],
+        "Sulawesi Tengah": [
+            {
+                id: "nggembe",
+                name: "Nggembe (Sulawesi Tengah)",
+                provinsi: "Sulawesi Tengah",
+            },
+        ],
+        "Sulawesi Utara": [
+            {
+                id: "laku_tepu",
+                name: "Laku Tepu (Sulawesi Utara)",
+                provinsi: "Sulawesi Utara",
+            },
+        ],
+        "Sulawesi Tenggara": [
+            {
+                id: "babu_nggawi",
+                name: "Babu Nggawi (Sulawesi Tenggara)",
+                provinsi: "Sulawesi Tenggara",
+            },
+        ],
+        "Sulawesi Selatan": [
+            {
+                id: "baju_bodo",
+                name: "Baju Bodo (Sulawesi Selatan)",
+                provinsi: "Sulawesi Selatan",
+            },
+        ],
+        Gorontalo: [
+            {
+                id: "biliu_makuta",
+                name: "Biliu dan Makuta (Gorontalo)",
+                provinsi: "Gorontalo",
+            },
+        ],
+        Maluku: [
+            {
+                id: "cele",
+                name: "Cele (Maluku)",
+                provinsi: "Maluku",
+            },
+        ],
+        "Maluku Utara": [
+            {
+                id: "manteren_lamo",
+                name: "Manteren Lamo (Maluku Utara)",
+                provinsi: "Maluku Utara",
+            },
+        ],
+        "Papua Barat": [
+            {
+                id: "ewer",
+                name: "Ewer (Papua Barat)",
+                provinsi: "Papua Barat",
+            },
+        ],
+        Papua: [
+            {
+                id: "koteka_holim",
+                name: "Koteka (Papua)",
+                provinsi: "Papua",
+            },
+        ],
+        "Papua Selatan": [
+            {
+                id: "pummi",
+                name: "Pummi (Papua Selatan)",
+                provinsi: "Papua Selatan",
+            },
+        ],
+        "Papua Tengah": [
+            {
+                id: "yokal",
+                name: "Yokal (Papua Tengah)",
+                provinsi: "Papua Tengah",
+            },
+        ],
+        "Papua Pegunungan": [
+            {
+                id: "holim_dani",
+                name: "Holim (Papua Pegunungan)",
+                provinsi: "Papua Pegunungan",
+            },
+        ],
+        "Papua Barat Daya": [
+            {
+                id: "ewer_tehit",
+                name: "Ewer Tehit (Papua Barat Daya)",
+                provinsi: "Papua Barat Daya",
+            },
+        ],
     },
     all_ids: [
         "ulee_balang",
         "bundo_kanduang",
         "ulos",
-        // "aesan_gede",
-        // "teluk_belanga",
-        // "kebaya_laboh_kurung",
-        // "baju_betabur",
-        // "baju_kurung_jambi",
-        // "paksian",
-        // "tulang_bawang",
-        // "pangsi",
-        // "kebaya_encim",
-        // "kebaya_sunda",
-        // "kesatrian_ageng",
-        // "jawi_jangkep",
-        // "pesaan",
-        // "payas_agung",
-        // "pegon",
-        // "amarasi",
-        // "king_bibinge_baba",
-        // "upak_nyamu",
-        // "taa_sapei_sapaq",
-        // "bagajah_gamuling",
-        // "kustin",
-        // "pattuqduq_towaine",
-        // "nggembe",
-        // "laku_tepu",
-        // "babu_nggawi",
-        // "baju_bodo",
-        // "biliu_makuta",
-        // "cele",
-        // "manteren_lamo",
-        // "ewer",
-        // "koteka_holim",
-        // "pummi",
-        // "yokal",
-        // "holim_dani",
-        // "ewer_tehit",
+        "aesan_gede",
+        "teluk_belanga",
+        "kebaya_laboh_kurung",
+        "baju_betabur",
+        "baju_kurung_jambi",
+        "paksian",
+        "tulang_bawang",
+        "pangsi",
+        "kebaya_encim",
+        "kebaya_sunda",
+        "kesatrian_ageng",
+        "jawi_jangkep",
+        "pesaan",
+        "payas_agung",
+        "pegon",
+        "amarasi",
+        "king_bibinge_baba",
+        "upak_nyamu",
+        "taa_sapei_sapaq",
+        "bagajah_gamuling",
+        "kustin",
+        "pattuqduq_towaine",
+        "nggembe",
+        "laku_tepu",
+        "babu_nggawi",
+        "baju_bodo",
+        "biliu_makuta",
+        "cele",
+        "manteren_lamo",
+        "ewer",
+        "koteka_holim",
+        "pummi",
+        "yokal",
+        "holim_dani",
+        "ewer_tehit",
     ],
 };
 
@@ -328,6 +578,19 @@ export default function Page() {
                     </div>
                 </div>
             </div>
+
+            <div className="flex flex-wrap items-center justify-between gap-4 rounded-3xl border border-sky-300 bg-sky-100/70 p-4 text-sm font-semibold text-sky-900 dark:border-sky-700 dark:bg-sky-900/40 dark:text-sky-100">
+                <p className="flex-1">Mau langsung coba tampilan atau merasa perlu tahu detail daerah dulu?</p>
+                <div className="flex gap-2">
+                    <Button size="sm" variant={viewMode === "upload" ? "default" : "outline"} onClick={() => setViewMode("upload")}>
+                        Coba Tampilan
+                    </Button>
+                    <Button size="sm" variant={viewMode === "detail" ? "default" : "outline"} onClick={() => setViewMode("detail")}>
+                        Detail Daerah
+                    </Button>
+                </div>
+            </div>
+
             <div className="space-y-6">
                 <AnimatePresence mode="wait">
                     {viewMode === "upload" ? (
@@ -338,7 +601,7 @@ export default function Page() {
                                         <CardTitle>Sesi 1 · Unggah & Siapkan</CardTitle>
                                         <CardDescription>Unggah foto apa pun—manusia, hewan, atau detail lokasi—lalu sesuaikan catatan singkat agar hasil try-on terasa personal.</CardDescription>
                                     </CardHeader>
-                                    <CardContent className="space-y-4 px-6 pb-4">
+                                    <CardContent className="px-6 pb-4">
                                         <div className="flex min-h-[200px] flex-col items-center justify-center gap-2 rounded-3xl border border-dashed border-sky-200 bg-sky-50/60 p-4 dark:border-sky-600 dark:bg-sky-900/40">
                                             {previewURL ? (
                                                 <div className="relative h-64 w-full overflow-hidden rounded-2xl bg-white shadow-inner">
@@ -360,115 +623,108 @@ export default function Page() {
                                                 </div>
                                             )}
                                         </div>
-
-                                        {previewURL && (
-                                            <motion.div layoutId="template-panel" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
-                                                <div className="space-y-3 rounded-2xl border border-sky-100 bg-sky-50/60 p-4 dark:border-sky-600 dark:bg-sky-900/30">
-                                                    <div>
-                                                        <p className="text-sm font-semibold text-gray-900 dark:text-white">Sesi 2 · Pilih Baju Adat Lain</p>
-                                                        <p className="text-xs text-gray-600 dark:text-gray-400">Pilih baju adat dari daerah lain untuk inspirasi visual yang berbeda.</p>
-                                                    </div>
-                                                    <CardCarousel />
-                                                    <div className="flex flex-wrap gap-2">
-                                                        <div className="flex items-center gap-2">
-                                                            <label className="text-sm dark:text-gray-200">API:</label>
-                                                            <select value={selectedAPI} onChange={(e) => setSelectedAPI(e.target.value as "modal" | "qwen")} className="rounded border px-2 py-1 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-white">
-                                                                <option value="qwen">Qwen</option>
-                                                                <option value="modal">Modal</option>
-                                                            </select>
-                                                        </div>
-                                                        <Button size="default" variant="default" className="rounded-md" onClick={handleProcessTryOn} disabled={isProcessing}>
-                                                            {isProcessing ? (isBuilding ? (downloadProgress > 0 ? `Loading... ${downloadProgress}%` : "Sedang memproses gambar...") : `Uploading... ${uploadProgress}%`) : "Proses Gambar"}
-                                                        </Button>
-                                                    </div>
-                                                    {errorMessage && <p className="text-sm text-red-600">{errorMessage}</p>}
-                                                </div>
-                                            </motion.div>
-                                        )}
                                     </CardContent>
+                                    <CardFooter></CardFooter>
                                 </Card>
-                            </motion.div>
-                            {(isProcessing || previewReady) && (
-                                <motion.div layoutId="preview-column" className="space-y-6" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} transition={{ duration: 0.3 }}>
-                                    <Card className="bg-white/80 p-0 shadow-xl dark:bg-gray-900/80">
-                                        <CardHeader className="px-6 pt-6">
-                                            <CardTitle>Hasil Transformasi</CardTitle>
-                                            <CardDescription>{isProcessing ? "Sedang memproses gambar..." : "Lihat perbandingan sebelum dan sesudah"}</CardDescription>
-                                        </CardHeader>
-                                        <CardContent className="space-y-4 px-6 pb-6">
-                                            {/* Before Image */}
-                                            <div className="space-y-2">
-                                                <p className="text-xs font-semibold text-gray-600 dark:text-gray-400">Sebelum</p>
-                                                <div className="relative h-48 w-full overflow-hidden rounded-xl border border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800">{previewURL && <img src={previewURL} alt="Original" className="h-full w-full object-contain" />}</div>
-                                            </div>
 
-                                            {/* After Image */}
-                                            <div className="space-y-2">
-                                                <p className="text-xs font-semibold text-gray-600 dark:text-gray-400">Sesudah</p>
-                                                <div className="relative h-48 w-full overflow-hidden rounded-xl border border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800">
-                                                    {isProcessing ? (
-                                                        <div className="flex h-full flex-col items-center justify-center gap-3">
-                                                            <div className="border-primary-blue h-8 w-8 animate-spin rounded-full border-4 border-t-transparent"></div>
-                                                            <p className="text-xs font-semibold text-gray-600 dark:text-gray-400">{isBuilding ? (downloadProgress > 0 ? `Loading... ${downloadProgress}%` : "Memproses...") : `Upload... ${uploadProgress}%`}</p>
-                                                        </div>
-                                                    ) : previewReady && processedImageURL ? (
-                                                        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-                                                            <DialogTrigger asChild>
-                                                                <img src={processedImageURL} alt="Edited" className="h-full w-full cursor-pointer object-contain transition-transform hover:scale-105" />
-                                                            </DialogTrigger>
-                                                            <DialogContent className="max-w-4xl dark:bg-gray-900">
-                                                                <div className="flex flex-col items-center gap-4 dark:text-white">
-                                                                    <img src={processedImageURL} alt="Full Edited preview" className="max-h-[70vh] max-w-full object-contain" />
-                                                                    <div className="flex gap-2">
-                                                                        <Button
-                                                                            onClick={() => {
-                                                                                const link = document.createElement("a");
-                                                                                link.href = processedImageURL;
-                                                                                link.download = "edited-image.png";
-                                                                                link.click();
-                                                                            }}
-                                                                        >
-                                                                            Download
-                                                                        </Button>
-                                                                        <Button variant="outline" onClick={() => setDialogOpen(false)}>
-                                                                            Close
-                                                                        </Button>
-                                                                    </div>
-                                                                </div>
-                                                            </DialogContent>
-                                                        </Dialog>
-                                                    ) : (
-                                                        <div className="flex h-full flex-col items-center justify-center text-xs font-semibold text-gray-400">
-                                                            <span>Menunggu hasil...</span>
+                                <motion.div layoutId="template-panel" className="space-y-4">
+                                    <Card className="space-y-3 bg-white/90 p-0 shadow-xl dark:bg-gray-900/80">
+                                        <CardHeader className="px-6 pt-6">
+                                            <CardTitle>Sesi 2 · Pilih Baju Adat Lain</CardTitle>
+                                            <CardDescription>Pilih baju adat dari daerah lain untuk inspirasi visual yang berbeda.</CardDescription>
+                                        </CardHeader>
+                                        <CardContent className="space-y-3 px-6 pb-4">
+                                            {displayedBaju.length === 0 ? (
+                                                <p className="text-sm text-gray-600 dark:text-gray-300">Baju adat dari daerah lain belum tersedia.</p>
+                                            ) : (
+                                                <>
+                                                    <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
+                                                        {displayedBaju.map((item, index) => (
+                                                            <Card key={`${item.province}-${index}`} className={`relative cursor-pointer p-3 transition-all duration-200 hover:shadow-md ${selectedBajuIndex === index ? "ring-primary/25 ring-1" : ""}`} onClick={() => setSelectedBajuIndex(index)}>
+                                                                {item.isCurrent && <div className="absolute inset-0 right-0 bottom-0 rounded-lg bg-linear-to-tl from-blue-500/30 from-1% to-transparent"></div>}
+                                                                <CardHeader className="p-0 pb-1">
+                                                                    <CardTitle className="text-xs font-semibold">{item.baju}</CardTitle>
+                                                                    <CardDescription className="text-[0.6rem]">dari daerah {item.province}</CardDescription>
+                                                                </CardHeader>
+                                                            </Card>
+                                                        ))}
+                                                    </div>
+                                                    {otherBajuAdat.length > 9 && (
+                                                        <div className="mt-4 flex justify-center">
+                                                            <button onClick={() => setShowAll(!showAll)} className="flex cursor-pointer items-center gap-2 text-sm text-gray-600 transition-colors hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200">
+                                                                {showAll ? (
+                                                                    <>
+                                                                        <span>Sembunyikan</span>
+                                                                        <ChevronUp className="h-4 w-4" />
+                                                                    </>
+                                                                ) : (
+                                                                    <>
+                                                                        <span>Lihat Selengkapnya</span>
+                                                                        <ChevronDown className="h-4 w-4" />
+                                                                    </>
+                                                                )}
+                                                            </button>
                                                         </div>
                                                     )}
-                                                </div>
-                                            </div>
-
-                                            {/* Action Buttons */}
-                                            {previewReady && processedImageURL && (
-                                                <div className="flex gap-2 pt-2">
-                                                    <Button variant="default" className="flex-1" onClick={() => setDialogOpen(true)}>
-                                                        Lihat Full Size
-                                                    </Button>
-                                                    <Button
-                                                        variant="outline"
-                                                        className="flex-1"
-                                                        onClick={() => {
-                                                            const link = document.createElement("a");
-                                                            link.href = processedImageURL;
-                                                            link.download = "edited-image.png";
-                                                            link.click();
-                                                        }}
-                                                    >
-                                                        Download
-                                                    </Button>
-                                                </div>
+                                                </>
                                             )}
                                         </CardContent>
+                                        <CardFooter className="-mt-8 flex flex-wrap gap-1 px-6 pb-4">
+                                            <div className="mr-4 flex items-center gap-2">
+                                                <label className="text-sm dark:text-gray-200">API:</label>
+                                                <select value={selectedAPI} onChange={(e) => setSelectedAPI(e.target.value as "modal" | "qwen")} className="rounded border px-2 py-1 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-white">
+                                                    <option value="qwen">Qwen</option>
+                                                    <option value="modal">Modal</option>
+                                                </select>
+                                            </div>
+                                            <Button size="default" variant="default" className="rounded-md" onClick={handleProcessTryOn} disabled={isProcessing}>
+                                                {isProcessing ? (isBuilding ? (downloadProgress > 0 ? `Loading... ${downloadProgress}%` : "Sedang memproses gambar...") : `Uploading... ${uploadProgress}%`) : "Proses Gambar"}
+                                            </Button>
+                                            {errorMessage && <p className="mt-2 text-sm text-red-600">{errorMessage}</p>}
+                                        </CardFooter>
                                     </Card>
                                 </motion.div>
-                            )}
+                            </motion.div>
+
+                            <motion.div layoutId="preview-column" className="space-y-6">
+                                <Card className="flex flex-col items-center justify-center gap-3 rounded-3xl border border-dashed border-slate-200 bg-white/70 p-6 text-center text-slate-500 shadow-xl dark:border-slate-700 dark:bg-gray-900/60 dark:text-slate-300">
+                                    <div className="w-full rounded-2xl border border-slate-200 bg-slate-50 dark:border-slate-600 dark:bg-slate-800" aria-hidden>
+                                        {previewReady ? (
+                                            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                                                <DialogTrigger asChild>
+                                                    <img src={processedImageURL ?? ""} alt="Edited preview" className="max-h-[40vh] w-full cursor-pointer rounded-2xl object-contain" />
+                                                </DialogTrigger>
+                                                <DialogContent className="max-w-4xl dark:bg-gray-900">
+                                                    <div className="flex flex-col items-center gap-4 dark:text-white">
+                                                        <img src={processedImageURL ?? ""} alt="Full Edited preview" className="max-h-[70vh] max-w-full object-contain" />
+                                                        <div className="flex gap-2">
+                                                            <Button
+                                                                onClick={() => {
+                                                                    const link = document.createElement("a");
+                                                                    link.href = processedImageURL ?? "";
+                                                                    link.download = "edited-image.png";
+                                                                    link.click();
+                                                                }}
+                                                            >
+                                                                Download
+                                                            </Button>
+                                                            <Button variant="outline" onClick={() => setDialogOpen(false)}>
+                                                                Close
+                                                            </Button>
+                                                        </div>
+                                                    </div>
+                                                </DialogContent>
+                                            </Dialog>
+                                        ) : (
+                                            <div className="flex h-40 flex-col items-center justify-center text-xs font-semibold tracking-[0.3em] text-slate-400 uppercase">
+                                                <span>Edited Image</span>
+                                                <span className="mt-1 text-[0.55rem]">Menunggu proses</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                    <p className="text-sm font-semibold text-slate-700 dark:text-slate-100">{isBuilding ? (downloadProgress > 0 ? `Loading... ${downloadProgress}%` : "Sedang memproses gambar...") : "Preview siap ketika proses selesai"}</p>
+                                </Card>
+                            </motion.div>
                         </motion.div>
                     ) : (
                         <motion.div ref={detailSectionRef} key="detail" initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -18 }} transition={{ duration: 0.35 }}>

@@ -7,7 +7,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Button } from "@/components/ui/button";
 import { useConversation } from "@elevenlabs/react";
-import { Mic, MessageSquare, Volume2, X } from "lucide-react";
+import { Mic, MessageSquare, Volume2, X, Send } from "lucide-react";
 
 import raniBahagia from "@/assets/rani/rani-bahagia.svg";
 import raniBercanda from "@/assets/rani/rani-bercanda.svg";
@@ -287,13 +287,13 @@ const RaniChatCompanion = () => {
             {/* Widget Chat */}
             {isWidgetOpen && (
                 <motion.div initial={{ opacity: 0, y: 20, scale: 0.9 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 20, scale: 0.9 }} className="w-96 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl dark:border-gray-700 dark:bg-gray-900">
-                    <div className="from-primary-blue to-secondary-green bg-linear-to-r p-4">
+                    <div className="from-primary-blue bg-linear-to-r to-cyan-300 p-4">
                         <div className="mb-3 flex items-center justify-between">
                             <div className="flex items-center gap-3">
                                 <Image src={currentMood.src} alt={currentMood.mood} width={50} height={50} className="object-contain" />
                                 <div>
                                     <h3 className="text-lg font-bold text-white">Rani</h3>
-                                    <p className="text-xs text-white/80">AI Assistant</p>
+                                    <p className="text-xs text-white">AI Assistant</p>
                                 </div>
                             </div>
                             <Button size="icon" variant="ghost" onClick={() => setIsWidgetOpen(false)} className="h-8 w-8 text-white hover:bg-white/20">
@@ -302,7 +302,7 @@ const RaniChatCompanion = () => {
                         </div>
 
                         {/* Mode Selection */}
-                        <div className="flex gap-2 rounded-lg bg-white/10 p-2 backdrop-blur-sm">
+                        {/* <div className="flex gap-2 rounded-lg bg-white/10 p-2 backdrop-blur-sm">
                             <Button size="sm" variant={mode === "text" ? "default" : "ghost"} onClick={() => setMode("text")} className="h-8 flex-1 gap-1.5 text-xs">
                                 <MessageSquare size={14} />
                                 Text
@@ -315,7 +315,7 @@ const RaniChatCompanion = () => {
                                 <Mic size={14} />
                                 Speech
                             </Button>
-                        </div>
+                        </div> */}
                     </div>
 
                     {/* Chat Area */}
@@ -326,7 +326,7 @@ const RaniChatCompanion = () => {
                             <>
                                 {chatHistory.map((chat, index) => (
                                     <motion.div key={`${index}-${chat.text.slice(0, 10)}`} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className={chat.sender === "user" ? "flex justify-end" : "flex justify-start"}>
-                                        <div className={`max-w-[80%] rounded-2xl p-3 shadow-sm ${chat.sender === "user" ? "rounded-br-sm bg-pink-500 text-white" : "rounded-bl-sm bg-white text-gray-800 dark:bg-gray-700 dark:text-gray-100"}`}>
+                                        <div className={`max-w-[80%] rounded-2xl p-3 shadow-sm ${chat.sender === "user" ? "bg-primary-blue rounded-br-sm text-white" : "rounded-bl-sm bg-white text-gray-800 dark:bg-gray-700 dark:text-gray-100"}`}>
                                             <div className={`prose prose-sm prose-p:my-1 prose-pre:my-2 prose-ul:my-1 prose-ol:my-1 prose-code:text-xs max-w-none ${chat.sender === "user" ? "prose-invert prose-headings:text-white prose-p:text-white prose-strong:text-white prose-code:text-white prose-a:text-white" : "dark:prose-invert"}`}>
                                                 <ReactMarkdown remarkPlugins={[remarkGfm]}>{chat.text}</ReactMarkdown>
                                             </div>
@@ -353,10 +353,10 @@ const RaniChatCompanion = () => {
                                     onKeyPress={(e) => e.key === "Enter" && !isProcessing && handleUserMessage()}
                                     placeholder="Type your message..."
                                     disabled={isProcessing}
-                                    className="flex-1 rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-pink-500 focus:ring-2 focus:ring-pink-200 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+                                    className="focus:border-primary-blue focus:ring-primary-blue/20 flex-1 rounded-lg border border-gray-300 px-4 py-2 text-sm focus:ring-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
                                 />
-                                <Button onClick={handleUserMessage} variant="default" size="icon" disabled={isProcessing || !userMessage.trim()}>
-                                    <MessageSquare size={16} />
+                                <Button onClick={handleUserMessage} variant="outline" size="icon" disabled={isProcessing || !userMessage.trim()}>
+                                    <Send size={16} />
                                 </Button>
                             </div>
                         )}
