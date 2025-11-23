@@ -11,7 +11,7 @@ const CtaSection = () => {
                 <div className="absolute -top-24 -left-24 z-10 -rotate-45 transform rounded-tl-md">
                     <Image alt="logo" src={logo} draggable="false" className="h-80 w-80" />
                 </div>
-                <div className="text-text-primary relative rounded-md border-2 border-dashed border-[#345063] bg-white p-16 text-center dark:text-white">
+                <div className="text-text-primary relative rounded-md border-2 border-dashed border-[#345063] bg-white p-16 text-center dark:border-gray-600 dark:bg-gray-900 dark:text-white">
                     <h1 className="text-2xl font-semibold text-gray-900 sm:text-3xl dark:text-white">
                         Siap Menjelajah <span className="text-primary-blue dark:text-blue-400">Budaya Nusantara?</span>
                     </h1>
