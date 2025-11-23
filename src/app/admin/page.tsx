@@ -10,6 +10,12 @@ interface ModalConfig {
     usageCount: number;
 }
 
+interface QwenToken {
+    id: string;
+    token: string;
+    usageCount: number;
+}
+
 interface GeminiConfig {
     id: string;
     url: string;
@@ -20,6 +26,7 @@ export default function AdminPage() {
     const [modalConfigs, setModalConfigs] = useState<ModalConfig[]>([]);
     const [qwenTokens, setQwenTokens] = useState<QwenToken[]>([]);
     const [editingModal, setEditingModal] = useState<ModalConfig | null>(null);
+    const [editingQwen, setEditingQwen] = useState<QwenToken | null>(null);
     const [geminiConfigs, setGeminiConfigs] = useState<GeminiConfig[]>([]);
     const [editingGemini, setEditingGemini] = useState<GeminiConfig | null>(null);
 
@@ -38,6 +45,14 @@ export default function AdminPage() {
         if (res.ok) {
             const data = await res.json();
             setModalConfigs(data);
+        }
+    };
+
+    const fetchQwenTokens = async () => {
+        const res = await fetch("/api/admin/qwen");
+        if (res.ok) {
+            const data = await res.json();
+            setQwenTokens(data);
         }
     };
 
@@ -110,6 +125,17 @@ export default function AdminPage() {
         });
         if (res.ok) {
             fetchGeminiConfigs();
+        }
+    };
+
+    const handleDeleteQwen = async (id: string) => {
+        const res = await fetch("/api/admin/qwen", {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id }),
+        });
+        if (res.ok) {
+            fetchQwenTokens();
         }
     };
 
@@ -288,6 +314,31 @@ function GeminiForm({ config, onSave, onCancel }: { config: Partial<GeminiConfig
             <div className="mb-4">
                 <label className="mb-2 block">URL</label>
                 <input type="text" value={url} onChange={(e) => setUrl(e.target.value)} className="w-full border border-gray-300 p-2" required />
+            </div>
+            <button type="submit" className="mr-2 bg-blue-500 px-4 py-2 text-white">
+                Save
+            </button>
+            <button type="button" onClick={onCancel} className="bg-gray-500 px-4 py-2 text-white">
+                Cancel
+            </button>
+        </form>
+    );
+}
+
+function QwenForm({ token, onSave, onCancel }: { token: Partial<QwenToken>; onSave: (token: Partial<QwenToken>) => void; onCancel: () => void }) {
+    const [tokenValue, setTokenValue] = useState(token.token || "");
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        onSave({ token: tokenValue });
+    };
+
+    return (
+        <form onSubmit={handleSubmit} className="mb-8 border border-gray-300 p-4">
+            <h3 className="mb-4 text-lg font-semibold">{token.id ? "Edit" : "Add"} Qwen Token</h3>
+            <div className="mb-4">
+                <label className="mb-2 block">Token</label>
+                <input type="text" value={tokenValue} onChange={(e) => setTokenValue(e.target.value)} className="w-full border border-gray-300 p-2" required />
             </div>
             <button type="submit" className="mr-2 bg-blue-500 px-4 py-2 text-white">
                 Save
