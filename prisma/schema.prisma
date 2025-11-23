@@ -180,3 +180,24 @@ model VerificationToken {
 
     @@unique([identifier, token])
 }
+
+model ModalConfig {
+    id         String   @id @default(auto()) @map("_id") @db.ObjectId
+    url        String
+    token      String
+    usageCount Int      @default(0)
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
+
+    @@map("modal_configs")
+}
+
+model QwenToken {
+    id         String   @id @default(auto()) @map("_id") @db.ObjectId
+    token      String
+    usageCount Int      @default(0)
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
+
+    @@map("qwen_tokens")
+}

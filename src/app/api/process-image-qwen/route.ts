@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import axios from "axios";
+import prisma from "@/lib/prisma";
 
 export async function POST(request: NextRequest) {
     try {
@@ -16,17 +17,20 @@ export async function POST(request: NextRequest) {
         qwenFormData.append("image", imageFile);
         qwenFormData.append("prompt", prompt);
 
-        const tokens =
-            process.env.QWEN_ACCESS_TOKENS?.split(",")
-                .map((t) => t.trim())
-                .filter(Boolean) ?? [];
-        if (!tokens.length && process.env.QWEN_ACCESS_TOKEN) {
-            tokens.push(process.env.QWEN_ACCESS_TOKEN);
+        const tokens = await prisma.qwenToken.findMany({ orderBy: { usageCount: "asc" } });
+        if (tokens.length === 0) {
+            throw new Error("No Qwen tokens configured");
         }
-        if (!tokens.length) {
-            throw new Error("No Qwen access token configured");
-        }
-        const selectedToken = tokens[Math.floor(Math.random() * tokens.length)];
+        const selectedTokenData = tokens[0];
+
+        // Increment usageCount
+        await prisma.qwenToken.update({
+            where: { id: selectedTokenData.id },
+            data: { usageCount: selectedTokenData.usageCount + 1 },
+        });
+
+        const selectedToken = selectedTokenData.token;
+
         const response = await axios.post("https://qwen.aikit.club/v1/images/edits", qwenFormData, {
             headers: {
                 Authorization: `Bearer ${selectedToken}`,

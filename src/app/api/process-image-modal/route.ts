@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import axios from "axios";
+import prisma from "@/lib/prisma";
 
 export async function POST(request: NextRequest) {
     try {
@@ -11,12 +12,18 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: "No image provided" }, { status: 400 });
         }
 
-        // Get URLs from env and pick one randomly for round-robin
-        const urls = process.env.MODAL_URLS?.split(",");
-        if (!urls || urls.length === 0) {
-            return NextResponse.json({ error: "No Modal URLs configured" }, { status: 500 });
+        // Get configs from DB and pick one with lowest usageCount for round-robin
+        const configs = await prisma.modalConfig.findMany({ orderBy: { usageCount: "asc" } });
+        if (configs.length === 0) {
+            return NextResponse.json({ error: "No Modal configs configured" }, { status: 500 });
         }
-        const selectedUrl = urls[Math.floor(Math.random() * urls.length)];
+        const selectedConfig = configs[0];
+
+        // Increment usageCount
+        await prisma.modalConfig.update({
+            where: { id: selectedConfig.id },
+            data: { usageCount: selectedConfig.usageCount + 1 },
+        });
 
         const modalFormData = new FormData();
         modalFormData.append("pakaian_id", pakaian_id);
@@ -25,9 +32,9 @@ export async function POST(request: NextRequest) {
         const seed = Math.floor(Math.random() * 999) + 1;
         modalFormData.append("seed", seed.toString());
 
-        const response = await axios.post(`${selectedUrl}/generate`, modalFormData, {
+        const response = await axios.post(`${selectedConfig.url}/generate`, modalFormData, {
             headers: {
-                Authorization: `Bearer ${process.env.MODAL_ACCESS_TOKEN}`,
+                Authorization: `Bearer ${selectedConfig.token}`,
                 "Content-Type": "multipart/form-data",
             },
         });
