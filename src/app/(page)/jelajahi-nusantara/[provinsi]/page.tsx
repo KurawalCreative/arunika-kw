@@ -399,7 +399,7 @@ export default function Page() {
     const [isProcessing, setIsProcessing] = useState(false);
     const [showAll, setShowAll] = useState(false);
     const [selectedBajuIndex, setSelectedBajuIndex] = useState(0);
-    const [selectedAPI, setSelectedAPI] = useState<"qwen" | "modal" | "gemini">("qwen");
+    const [selectedAPI, setSelectedAPI] = useState<"qwen" | "modal" | "gemini">("gemini");
     const [uploadProgress, setUploadProgress] = useState(0);
     const [isBuilding, setIsBuilding] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
