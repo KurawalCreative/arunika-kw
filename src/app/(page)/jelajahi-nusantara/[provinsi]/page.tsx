@@ -673,9 +673,9 @@ export default function Page() {
                                             <div className="mr-4 flex items-center gap-2">
                                                 <label className="text-sm dark:text-gray-200">API:</label>
                                                 <select value={selectedAPI} onChange={(e) => setSelectedAPI(e.target.value as "modal" | "qwen" | "gemini")} className="rounded border px-2 py-1 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-white">
+                                                    <option value="gemini">Gemini</option>
                                                     <option value="qwen">Qwen</option>
                                                     <option value="modal">Modal</option>
-                                                    <option value="gemini">Gemini</option>
                                                 </select>
                                             </div>
                                             <Button size="default" variant="default" className="rounded-md" onClick={handleProcessTryOn} disabled={isProcessing}>
