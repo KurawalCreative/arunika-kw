@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import axios from "axios";
+import prisma from "@/lib/prisma";
 
 export async function POST(request: NextRequest) {
     try {
@@ -11,12 +12,25 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: "Image and prompt are required" }, { status: 400 });
         }
 
+        // Get configs from DB and pick one with lowest usageCount for round-robin
+        const configs = await prisma.geminiConfig.findMany({ orderBy: { usageCount: "asc" } });
+        if (configs.length === 0) {
+            return NextResponse.json({ error: "No Gemini configs configured" }, { status: 500 });
+        }
+        const selectedConfig = configs[0];
+
+        // Increment usageCount
+        await prisma.geminiConfig.update({
+            where: { id: selectedConfig.id },
+            data: { usageCount: selectedConfig.usageCount + 1 },
+        });
+
         // Prepare FormData for Gemini API
         const geminiFormData = new FormData();
         geminiFormData.append("image", image);
         geminiFormData.append("prompt", prompt);
 
-        const response = await axios.post("https://test-saja-production.up.railway.app/generate", geminiFormData, {
+        const response = await axios.post(`${selectedConfig.url}/generate`, geminiFormData, {
             headers: {
                 "Content-Type": "multipart/form-data",
             },

@@ -98,6 +98,14 @@ async function main() {
             });
         }
         console.log("Channels upsert completed");
+
+        // Seed Gemini configs
+        await prisma.geminiConfig.create({
+            data: {
+                url: "https://test-saja-production.up.railway.app",
+            },
+        });
+        console.log("Gemini configs created");
     } catch (e) {
         console.error("Seed error:", e);
         process.exitCode = 1;
