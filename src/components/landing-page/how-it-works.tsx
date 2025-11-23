@@ -3,6 +3,12 @@
 import { useState } from "react";
 import { DottedMap } from "../ui/dotted-map";
 import { Cursor, CursorFollow, CursorProvider, type CursorFollowProps } from "@/components/animate-ui/components/animate/cursor";
+import { Component } from "lucide-react";
+import Step4 from "../ui/step-4";
+import { Step1 } from "../ui/step-1";
+import { Step3 } from "../ui/step-3";
+import { Step2 } from "../ui/step-2";
+// import Step1 from "../ui/step-1";
 
 interface CursorDemoProps {
     global?: boolean;
@@ -17,32 +23,35 @@ interface CursorDemoProps {
 const steps = [
     {
         num: "01",
-        title: "Masuk atau Buat Akun",
-        desc: "Login pake Google/Apple, langsung bisa coba semua 700+ pakaian adat dari 38 provinsi",
+        title: "Masuk atau Daftar Sekejap",
+        desc: "Login cepat pakai Google/Apple. Langsung jelajahi baju adat dari berbagai derah!",
         color: "text-orange-500",
         border: "border-orange-500",
+        component: <Step1 />,
     },
     {
         num: "02",
-        title: "Buka Peta Indonesia",
-        desc: "Klik provinsi mana saja dari Sabang sampai Merauke.",
-        component: <DottedMap />,
+        title: "Jelajahi Peta Indonesia",
+        desc: "Klik provinsi favoritmu—dari Sabang sampai Merauke—dan kenali gaya khasnya.",
         color: "text-primary-blue",
         border: "border-primary-blue",
+        component: <Step2 />,
     },
     {
         num: "03",
-        title: "Dengar Cerita di Baliknya",
-        desc: "Setiap motif dan warna punya makna & kisah seru yang langsung muncul.",
+        title: "Unggah Foto, Pilih Baju Adat",
+        desc: "Unggah fotomu, pilih baju adat yang kamu suka, dan biarkan AI menyulapnya dalam hitungan detik.",
         color: "text-accent-coral",
         border: "border-accent-coral",
+        component: <Step3 />,
     },
     {
         num: "04",
-        title: "Pilih & Pakai Baju Adat",
-        desc: "Coba langsung baju adatnya secara virtual – foto bareng juga bisa!",
+        title: "Simpan & Bagikan",
+        desc: "Simpan hasilnya lalu bagikan ke teman. Tampil keren, bangga jadi anak Indonesia!",
         color: "text-secondary-green",
         border: "border-secondary-green",
+        component: <Step4 />,
     },
 ];
 
