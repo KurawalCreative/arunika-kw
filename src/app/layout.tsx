@@ -12,7 +12,7 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
-    title: "Arunika | Jelajahi Nusantara",
+    title: "Adatry | Jelajahi Nusantara",
     description: "Petakan budaya Indonesia dengan peta interaktif, cerita provinsi, dan inspirasi komunitas dari Arunika.",
 };
 

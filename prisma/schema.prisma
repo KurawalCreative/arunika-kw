@@ -201,3 +201,13 @@ model QwenToken {
 
     @@map("qwen_tokens")
 }
+
+model GeminiConfig {
+    id         String   @id @default(auto()) @map("_id") @db.ObjectId
+    url        String
+    usageCount Int      @default(0)
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
+
+    @@map("gemini_configs")
+}

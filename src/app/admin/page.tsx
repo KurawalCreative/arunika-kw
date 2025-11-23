@@ -15,12 +15,20 @@ interface QwenToken {
     token: string;
     usageCount: number;
 }
+
+interface GeminiConfig {
+    id: string;
+    url: string;
+    usageCount: number;
+}
 export default function AdminPage() {
     const { data: session, status } = useSession();
     const [modalConfigs, setModalConfigs] = useState<ModalConfig[]>([]);
     const [qwenTokens, setQwenTokens] = useState<QwenToken[]>([]);
     const [editingModal, setEditingModal] = useState<ModalConfig | null>(null);
     const [editingQwen, setEditingQwen] = useState<QwenToken | null>(null);
+    const [geminiConfigs, setGeminiConfigs] = useState<GeminiConfig[]>([]);
+    const [editingGemini, setEditingGemini] = useState<GeminiConfig | null>(null);
 
     const allowedEmails = ["ozan6825@gmail.com"];
 
@@ -28,6 +36,7 @@ export default function AdminPage() {
         if (status === "authenticated" && session?.user?.email && allowedEmails.includes(session.user.email)) {
             fetchModalConfigs();
             fetchQwenTokens();
+            fetchGeminiConfigs();
         }
     }, [status, session]);
 
@@ -44,6 +53,14 @@ export default function AdminPage() {
         if (res.ok) {
             const data = await res.json();
             setQwenTokens(data);
+        }
+    };
+
+    const fetchGeminiConfigs = async () => {
+        const res = await fetch("/api/admin/gemini");
+        if (res.ok) {
+            const data = await res.json();
+            setGeminiConfigs(data);
         }
     };
 
@@ -83,6 +100,31 @@ export default function AdminPage() {
         if (res.ok) {
             fetchQwenTokens();
             setEditingQwen(null);
+        }
+    };
+
+    const handleSaveGemini = async (config: Partial<GeminiConfig>) => {
+        const method = editingGemini?.id ? "PUT" : "POST";
+        const body = editingGemini?.id ? { id: editingGemini.id, ...config } : config;
+        const res = await fetch("/api/admin/gemini", {
+            method,
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
+        });
+        if (res.ok) {
+            fetchGeminiConfigs();
+            setEditingGemini(null);
+        }
+    };
+
+    const handleDeleteGemini = async (id: string) => {
+        const res = await fetch("/api/admin/gemini", {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id }),
+        });
+        if (res.ok) {
+            fetchGeminiConfigs();
         }
     };
 
@@ -186,6 +228,44 @@ export default function AdminPage() {
             </div>
 
             {editingQwen && <QwenForm token={editingQwen} onSave={handleSaveQwen} onCancel={() => setEditingQwen(null)} />}
+
+            <div className="mb-8">
+                <h2 className="mb-4 text-xl font-semibold">Gemini Configurations</h2>
+                <div className="overflow-x-auto">
+                    <table className="w-full min-w-max border-collapse border border-gray-300">
+                        <thead>
+                            <tr>
+                                <th className="border border-gray-300 p-2">URL</th>
+                                <th className="border border-gray-300 p-2">Usage Count</th>
+                                <th className="border border-gray-300 p-2">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {geminiConfigs.map((config) => (
+                                <tr key={config.id}>
+                                    <td className="max-w-xs truncate border border-gray-300 p-2" title={config.url}>
+                                        {config.url}
+                                    </td>
+                                    <td className="border border-gray-300 p-2">{config.usageCount}</td>
+                                    <td className="border border-gray-300 p-2">
+                                        <button onClick={() => setEditingGemini(config)} className="mr-2 bg-blue-500 px-2 py-1 text-white">
+                                            Edit
+                                        </button>
+                                        <button onClick={() => handleDeleteGemini(config.id)} className="bg-red-500 px-2 py-1 text-white">
+                                            Delete
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+                <button onClick={() => setEditingGemini({ id: "", url: "", usageCount: 0 })} className="mt-4 bg-green-500 px-4 py-2 text-white">
+                    Add New
+                </button>
+            </div>
+
+            {editingGemini && <GeminiForm config={editingGemini} onSave={handleSaveGemini} onCancel={() => setEditingGemini(null)} />}
         </div>
     );
 }
@@ -209,6 +289,31 @@ function ModalForm({ config, onSave, onCancel }: { config: Partial<ModalConfig>;
             <div className="mb-4">
                 <label className="mb-2 block">Token</label>
                 <input type="text" value={token} onChange={(e) => setToken(e.target.value)} className="w-full border border-gray-300 p-2" required />
+            </div>
+            <button type="submit" className="mr-2 bg-blue-500 px-4 py-2 text-white">
+                Save
+            </button>
+            <button type="button" onClick={onCancel} className="bg-gray-500 px-4 py-2 text-white">
+                Cancel
+            </button>
+        </form>
+    );
+}
+
+function GeminiForm({ config, onSave, onCancel }: { config: Partial<GeminiConfig>; onSave: (config: Partial<GeminiConfig>) => void; onCancel: () => void }) {
+    const [url, setUrl] = useState(config.url || "");
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        onSave({ url });
+    };
+
+    return (
+        <form onSubmit={handleSubmit} className="mb-8 border border-gray-300 p-4">
+            <h3 className="mb-4 text-lg font-semibold">{config.id ? "Edit" : "Add"} Gemini Config</h3>
+            <div className="mb-4">
+                <label className="mb-2 block">URL</label>
+                <input type="text" value={url} onChange={(e) => setUrl(e.target.value)} className="w-full border border-gray-300 p-2" required />
             </div>
             <button type="submit" className="mr-2 bg-blue-500 px-4 py-2 text-white">
                 Save

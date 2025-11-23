@@ -68,7 +68,7 @@ const HeroSection = () => {
 
                 <div className="relative mx-auto mb-48 flex max-w-7xl flex-col items-center justify-center gap-6 px-4 md:mb-40 lg:mb-32">
                     <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2 }} className="w-full max-w-6xl text-center text-2xl leading-tight font-extrabold text-gray-900 sm:text-3xl md:text-4xl lg:text-5xl dark:text-white">
-                        Dari Sabang hingga Merauke, setiap <span className="text-secondary-green">pakaian adat punya cerita</span>.
+                        Dari Sabang hingga Merauke, setiap <span className="text-secondary-green">pakaian adat punya cerita</span>
                     </motion.h1>
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.5 }} className="relative max-w-[749px] text-center">
                         {/* Paper Plane */}
@@ -107,13 +107,13 @@ const HeroSection = () => {
                                 />
                             </svg>
                         </motion.div>
-                        <p className="relative text-base font-medium text-text-primary sm:text-lg dark:text-neutral-100">Dari pakaian adat yang memukau hingga kisah dan sejarah di baliknya, jelajahi semuanya bersama Adatry petualangan budaya Indonesia yang seru, interaktif, dan penuh warna!</p>
+                        <p className="text-text-primary relative text-base font-medium sm:text-lg dark:text-neutral-100">Dari pakaian adat yang memukau hingga kisah dan sejarah di baliknya, jelajahi semuanya bersama Adatry petualangan budaya Indonesia yang seru, interaktif, dan penuh warna!</p>
                         <div className="absolute -top-2 -right-7 hidden md:block">
                             <Image src={petik} alt="_" width={27} height={23} />
                         </div>
                     </motion.div>
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.7 }}>
-                        <Link href={"/"} className="bg-primary-blue hover:bg-primary-blue-hover dark:bg-primary-blue-dark dark:hover:bg-primary-blue-hover-dark flex items-center justify-center gap-3 rounded-full py-1 pr-1 pl-4 text-sm font-normal text-white transition-colors sm:text-base">
+                        <Link href={"/jelajahi-nusantara"} className="bg-primary-blue hover:bg-primary-blue-hover dark:bg-primary-blue-dark dark:hover:bg-primary-blue-hover-dark flex items-center justify-center gap-3 rounded-full py-1 pr-1 pl-4 text-sm font-normal text-white transition-colors sm:text-base">
                             Coba Sekarang
                             <span className="text-primary-blue dark:text-primary-blue-dark flex h-9 w-9 items-center justify-center rounded-full bg-white transition-colors dark:bg-gray-100">
                                 <ArrowUpRight size={28} />

@@ -402,7 +402,7 @@ export default function Page() {
     const [isProcessing, setIsProcessing] = useState(false);
     const [showAll, setShowAll] = useState(false);
     const [selectedBajuIndex, setSelectedBajuIndex] = useState(0);
-    const [selectedAPI, setSelectedAPI] = useState<"qwen" | "modal">("qwen");
+    const [selectedAPI, setSelectedAPI] = useState<"qwen" | "modal" | "gemini">("gemini");
     const [uploadProgress, setUploadProgress] = useState(0);
     const [isBuilding, setIsBuilding] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -645,7 +645,8 @@ export default function Page() {
                                             <div className="flex flex-wrap gap-2">
                                                 <div className="flex items-center gap-2">
                                                     <label className="text-sm dark:text-gray-200">API:</label>
-                                                    <select value={selectedAPI} onChange={(e) => setSelectedAPI(e.target.value as "modal" | "qwen")} className="rounded border px-2 py-1 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-white">
+                                                    <select value={selectedAPI} onChange={(e) => setSelectedAPI(e.target.value as "modal" | "qwen" | "gemini")} className="rounded border px-2 py-1 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-white">
+                                                        <option value="gemini">Gemini</option>
                                                         <option value="qwen">Qwen</option>
                                                         <option value="modal">Modal</option>
                                                     </select>
