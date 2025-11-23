@@ -9,6 +9,7 @@ import HowItWorksSection from "@/components/landing-page/how-it-works";
 import KnowUsSection from "@/components/landing-page/know-us";
 import WhatCanLearnSection from "@/components/landing-page/what-can-learn";
 import NavbarArunika from "@/components/navbar";
+import RaniChatCompanion from "@/components/rani-chat-companion";
 import { Step3 } from "@/components/ui/step-3";
 
 export default function Home() {
@@ -21,6 +22,7 @@ export default function Home() {
             <HowItWorksSection />
             <FeaturesSection />
             <CtaSection />
+            <RaniChatCompanion />
         </>
     );
 }
