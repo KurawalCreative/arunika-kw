@@ -9,13 +9,15 @@ import { Menu, X, LogOut } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import Image from "next/image";
 import { authClient } from "@/lib/auth-client";
-import logo from "@/assets/svg/logo.svg";
+import logoLight from "@/assets/svg/logo-light.svg";
+import logoDark from "@/assets/svg/logo-dark.svg";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useSearchParams } from "next/navigation";
 import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger } from "@/components/ui/navigation-menu";
+import { useTheme } from "next-themes";
 
 const NavbarList = [
     { label: "Komunitas", href: "/komunitas" },
@@ -61,6 +63,8 @@ function Navbar() {
     const [isMobileDropdownOpen, setIsMobileDropdownOpen] = useState(false);
     const [session, setSession] = useState<any>(null);
     const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+    const [isDark, setIsDark] = useState(false);
+    const [mounted, setMounted] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
     const pathname = usePathname();
     const isKomunitasPage = !!pathname.match(/\/komunitas/i);
@@ -74,6 +78,31 @@ function Navbar() {
         const handleScroll = () => setIsScrolled(window.scrollY > 10);
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    useEffect(() => {
+        // 1. Apply saved theme from localStorage
+        const saved = localStorage.getItem("theme");
+        const darkEnabled = saved === "dark";
+
+        document.documentElement.classList.toggle("dark", darkEnabled);
+        setIsDark(darkEnabled);
+
+        // 2. Listen for changes (sync with your AnimatedThemeToggler)
+        const updateTheme = () => {
+            setIsDark(document.documentElement.classList.contains("dark"));
+        };
+
+        const observer = new MutationObserver(updateTheme);
+        observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+
+        setMounted(true);
+
+        return () => observer.disconnect();
     }, []);
 
     useEffect(() => {
@@ -99,13 +128,13 @@ function Navbar() {
 
     return (
         <>
-            <nav className={`fixed top-0 right-0 left-0 z-50 bg-gray-50 backdrop-blur-md transition-all duration-200 dark:bg-gray-900/80 ${isScrolled && !isKomunitasPage ? "border-b border-gray-200 shadow-sm dark:border-gray-700" : ""} ${isKomunitasPage ? "border-b dark:border-gray-700" : ""}`}>
+            <nav className={`fixed top-0 right-0 left-0 z-50 bg-white backdrop-blur-md transition-all duration-200 dark:bg-neutral-900 ${isScrolled && !isKomunitasPage ? "border-b border-gray-100 shadow-sm dark:border-gray-700" : ""} ${isKomunitasPage ? "border-b dark:border-gray-700" : ""}`}>
                 <motion.div layoutId="nav-width" className={`mx-auto w-full px-4 sm:px-6 ${!isKomunitasPage ? "max-w-7xl" : ""}`} transition={{ type: "spring", stiffness: 120, damping: 20 }}>
-                    <div className="relative flex h-16 items-center justify-between sm:h-16">
+                    <div className="relative flex h-14 items-center justify-between sm:h-16">
                         {/* Logo */}
                         <div className="flex shrink-0 items-center">
                             <Link href="/" className="flex items-center gap-2">
-                                <Image src={logo} alt="Arunika Logo" className="block h-7 w-auto" priority />
+                                <Image src={!mounted ? logoDark : isDark ? logoDark : logoLight} alt="Arunika Logo" className="block h-7 md:h-8 w-auto" priority />
                             </Link>
                         </div>
 
@@ -149,7 +178,7 @@ function Navbar() {
                                             >
                                                 <span className="inline-flex items-center gap-2">
                                                     <span className="sr-only">Jelajahi Nusantara</span>
-                                                    <span className="mr-1 h-2 w-2 rounded-full bg-sky-600/30" aria-hidden />
+                                                    {/* <span className="mr-1 h-2 w-2 rounded-full bg-sky-600/30" aria-hidden /> */}
                                                     <span className="truncate">Jelajahi Nusantara</span>
                                                 </span>
                                             </Link>

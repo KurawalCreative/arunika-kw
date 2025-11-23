@@ -23,7 +23,7 @@ export default async function RootLayout({
 }>) {
     return (
         <html lang="id" suppressHydrationWarning>
-            <body className={`${manrope.className} dark:bg-foreground text-font-primary dark:text-background antialiased`}>
+            <body className={`${manrope.className} dark:bg-neutral-900 text-font-primary dark:text-neutral-100 antialiased`}>
                 <NextAuthProvider>
                     <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
                         <SmoothScroll />

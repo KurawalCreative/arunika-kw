@@ -1,61 +1,73 @@
-import { Facebook, Instagram, Mail, Twitter } from "lucide-react";
+"use client";
+
+import { Facebook, Github, Instagram, Mail, Twitter } from "lucide-react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import Image from "next/image";
+
+import logoLight from "@/assets/svg/logo-light.svg";
+import logoDark from "@/assets/svg/logo-dark.svg";
 
 const FooterSection = () => {
+    const [isDark, setIsDark] = useState(false);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    useEffect(() => {
+        const saved = localStorage.getItem("theme");
+        const darkEnabled = saved === "dark";
+
+        document.documentElement.classList.toggle("dark", darkEnabled);
+        setIsDark(darkEnabled);
+
+        const updateTheme = () => {
+            setIsDark(document.documentElement.classList.contains("dark"));
+        };
+
+        const observer = new MutationObserver(updateTheme);
+        observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+
+        return () => observer.disconnect();
+    }, []);
+
     return (
         <footer className="w-full border-t border-gray-200 bg-gray-50 text-gray-900 dark:border-neutral-700 dark:bg-gray-900 dark:text-gray-100">
-            {/* Container utama */}
-            <div className="mx-auto grid max-w-7xl grid-cols-1 gap-8 px-4 py-8 sm:py-12 md:grid-cols-3">
-                {/* Brand / Logo */}
-                <div>
-                    <h2 className="text-xl font-bold tracking-wide text-gray-900 sm:text-2xl dark:text-gray-100">Arunika</h2>
-                    <p className="mt-3 text-sm leading-relaxed text-gray-600 dark:text-gray-400">Membawa cahaya di setiap langkah digitalmu — platform kreatif untuk desain dan pengalaman digital yang bermakna.</p>
+            <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-4 py-10 md:grid-cols-2">
+                {/* Kolom Kiri: Logo + Social */}
+                <div className="flex flex-col gap-4">
+                    <Link href="/" className="flex items-center">
+                        <Image src={!mounted ? logoDark : isDark ? logoDark : logoLight} alt="adatry Logo" className="h-8 w-auto" priority />
+                    </Link>
+                    <p className="text-text-secondary max-w-xl text-start text-sm leading-relaxed dark:text-gray-400">Adatry tempat kamu bisa pakai ratusan pakaian adat Indonesia hanya dengan upload foto. Dari Sabang sampai Merauke, satu klik jadi kebanggaan Nusantara.</p>
+
+                    <div className="text-text-primary flex items-center gap-4">
+                        <Link href="mailto:hello@adatry.com" className="hover:text-[#1A73E8]">
+                            <Mail size={20} />
+                        </Link>
+                        <Link href="mailto:hello@adatry.com" className="hover:text-[#181717]">
+                            <Github size={20} />
+                        </Link>
+                    </div>
                 </div>
 
-                {/* Navigasi cepat */}
+                {/* Kolom Tengah: Navigasi */}
                 <div className="text-left md:text-end">
-                    <h3 className="mb-3 text-base font-semibold text-gray-900 sm:text-lg dark:text-gray-100">Navigasi</h3>
+                    <h3 className="mb-3 text-base font-semibold sm:text-lg">Navigasi</h3>
                     <ul className="space-y-2 text-sm text-gray-600 sm:text-base dark:text-gray-400">
                         <li>
-                            <Link href="/komunitas" className="hover:text-green-lime-dark transition dark:hover:text-green-400">
-                                Komunitas
-                            </Link>
-                        </li>
-                        <li>
-                            <Link href="/" className="hover:text-green-lime-dark transition dark:hover:text-green-400">
-                                Beranda
-                            </Link>
-                        </li>
-                        <li>
-                            <Link href="/jelajahi-nusantara" className="hover:text-green-lime-dark transition dark:hover:text-green-400">
+                            <Link href="/jelajahi-nusantara" className="hover:text-green-lime-dark dark:hover:text-green-400">
                                 Jelajahi Nusantara
                             </Link>
                         </li>
                         <li>
-                            <Link href="/tentang" className="hover:text-green-lime-dark transition dark:hover:text-green-400">
+                            <Link href="/tentang" className="hover:text-green-lime-dark dark:hover:text-green-400">
                                 Tentang
                             </Link>
                         </li>
                     </ul>
-                </div>
-
-                {/* Sosial media */}
-                <div className="text-left md:text-end">
-                    <h3 className="mb-3 text-base font-semibold text-gray-900 sm:text-lg dark:text-gray-100">Terhubung</h3>
-                    <div className="flex items-center justify-start gap-4 md:justify-end">
-                        <Link href="mailto:hello@arunika.com" className="hover:text-green-lime-dark transition dark:hover:text-green-400">
-                            <Mail size={18} className="sm:h-5 sm:w-5" />
-                        </Link>
-                        <Link href="#" className="hover:text-green-lime-dark transition dark:hover:text-green-400">
-                            <Facebook size={18} className="sm:h-5 sm:w-5" />
-                        </Link>
-                        <Link href="#" className="hover:text-green-lime-dark transition dark:hover:text-green-400">
-                            <Instagram size={18} className="sm:h-5 sm:w-5" />
-                        </Link>
-                        <Link href="#" className="hover:text-green-lime-dark transition dark:hover:text-green-400">
-                            <Twitter size={18} className="sm:h-5 sm:w-5" />
-                        </Link>
-                    </div>
                 </div>
             </div>
 

@@ -11,7 +11,7 @@ export default function Layout(props: { children: ReactNode }) {
                 <div className="flex flex-1 flex-col">
                     <>
                         {props.children}
-                        <RaniChatCompanion />
+                        {/* <RaniChatCompanion /> */}
                     </>
                 </div>
             </div>
